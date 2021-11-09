@@ -1,13 +1,54 @@
 package game;
 
+import framework.MsgCodes;
+
 public class Player {
 	// ===============================CAPRICIOUS===============================
-	private float x, y;
+	char curDirection; //direction the player's looking at
 
-	private boolean moveUp;
-	private boolean moveDown;
-	private boolean moveLeft;
-	private boolean moveRight;
+	float x, y;
+
+	boolean moveUp;
+	boolean moveDown;
+	boolean moveLeft;
+	boolean moveRight;
+	// char moveUp;
+	// char moveDown;
+	// char moveLeft;
+	// char moveRight;
+
+	int moveSpeed; //movement speed(pixels per second)
+
+	PlayerState curState; //player's current state
+	private NormalState normalState;
+	private DodgeState dodgeState;
+
+	//constructor
+	public Player() {
+		normalState = new NormalState(this);
+		dodgeState = new DodgeState(this);
+	}
+
+	//constructor
+	public Player(float initX, float initY, int initSpeed, int initState) {
+		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
+		x = initX;
+		y = initY;
+		moveSpeed = initSpeed;
+
+		normalState = new NormalState(this);
+		dodgeState = new DodgeState(this);
+
+		switch (initState) {
+			case MsgCodes.Game.NORMAL_STATE:
+				curState = normalState;
+				break;
+			case MsgCodes.Game.DODGE_STATE:
+				curState = dodgeState;
+				break;
+			default:
+		}
+	}
 
 	public void setPosition(float x, float y) {
 		this.x = x;
@@ -16,41 +57,84 @@ public class Player {
 
 	public void setMoveUp(boolean bool) {
 		moveUp = bool;
+		updateDirection();
 	}
 
 	public void setMoveDown(boolean bool) {
 		moveDown = bool;
+		updateDirection();
 	}
 
 	public void setMoveLeft(boolean bool) {
 		moveLeft = bool;
+		updateDirection();
 	}
 
 	public void setMoveRight(boolean bool) {
 		moveRight = bool;
+		updateDirection();
+	}
+
+	public void setSpeed(int speed) {
+		moveSpeed = speed;
+	}
+
+	public void dodge() {
+		//dodgeState.setDirection(curDirection);
+		//dodgeState.init(curDirection, moveUp, moveDown, moveLeft, moveRight);
+		dodgeState.init(curDirection);
+		curState = dodgeState;
+	}
+
+	public void setState(int state) {
+		switch (state) {
+			case MsgCodes.Game.NORMAL_STATE:
+				curState = normalState;
+				break;
+			case MsgCodes.Game.DODGE_STATE:
+				curState = dodgeState;
+				break;
+			default:
+		}
 	}
 
 	public void update(long progressTime) {
-		if (moveUp) {
-			y += 200 * progressTime/1000; //1초에 200픽셀씩 움직임
+		curState.update(progressTime);
+	}
+
+	public void updateDirection() {
+		if (moveUp && !moveDown && !moveLeft && !moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_NORTH;
 		}
-		if (moveDown) {
-			y -= 200 * progressTime / 1000; // 1초에 200픽셀씩 움직임
+		else if (moveUp && !moveDown && !moveLeft && moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_NORTH_EAST;
 		}
-		if (moveLeft) {
-			x -= 200 * progressTime / 1000; // 1초에 200픽셀씩 움직임
+		else if (!moveUp && !moveDown && !moveLeft && moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_EAST;
 		}
-		if (moveRight) {
-			x += 200 * progressTime / 1000; // 1초에 200픽셀씩 움직임
+		else if (!moveUp && moveDown && !moveLeft && moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_SOUTH_EAST;
+		}
+		else if (!moveUp && moveDown && !moveLeft && !moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_SOUTH;
+		}
+		else if (!moveUp && moveDown && moveLeft && !moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_SOUTH_WEST;
+		}
+		else if (!moveUp && !moveDown && moveLeft && !moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_WEST;
+		}
+		else if (moveUp && !moveDown && moveLeft && !moveRight) {
+			curDirection = MsgCodes.Game.DIRECTION_NORTH_WEST;
 		}
 	}
 
-	public float getX() {
-		return x;
-	}
+	// public float getX() {
+	// 	return x;
+	// }
 
-	public float getY() {
-		return y;
-	}
+	// public float getY() {
+	// 	return y;
+	// }
 	// ===============================CAPRICIOUS===============================
 }

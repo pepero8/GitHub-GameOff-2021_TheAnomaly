@@ -60,16 +60,21 @@ public class TestScreen implements Screen {
 			public boolean keyDown(InputEvent event, int keycode) {
 				switch (keycode) {
 				case Keys.W:
-					game.client.sendInput(MsgCodes.Client.UP, MsgCodes.Client.KEY_DOWN);
+					game.client.sendInput(MsgCodes.Game.UP, MsgCodes.Game.KEY_DOWN);
 					return true;
 				case Keys.A:
-					game.client.sendInput(MsgCodes.Client.LEFT, MsgCodes.Client.KEY_DOWN);
+					game.client.sendInput(MsgCodes.Game.LEFT, MsgCodes.Game.KEY_DOWN);
 					return true;
 				case Keys.S:
-					game.client.sendInput(MsgCodes.Client.DOWN, MsgCodes.Client.KEY_DOWN);
+					game.client.sendInput(MsgCodes.Game.DOWN, MsgCodes.Game.KEY_DOWN);
 					return true;
 				case Keys.D:
-					game.client.sendInput(MsgCodes.Client.RIGHT, MsgCodes.Client.KEY_DOWN);
+					game.client.sendInput(MsgCodes.Game.RIGHT, MsgCodes.Game.KEY_DOWN);
+					return true;
+				case Keys.SHIFT_LEFT:
+				case Keys.SHIFT_RIGHT:
+					if (game.playerNum != 0)
+						game.client.sendInput(MsgCodes.Game.DODGE, MsgCodes.Game.KEY_DOWN);
 					return true;
 				default:
 					return false;
@@ -80,16 +85,16 @@ public class TestScreen implements Screen {
 			public boolean keyUp(InputEvent event, int keycode) {
 				switch (keycode) {
 				case Keys.W:
-					game.client.sendInput(MsgCodes.Client.UP, MsgCodes.Client.KEY_UP);
+					game.client.sendInput(MsgCodes.Game.UP, MsgCodes.Game.KEY_UP);
 					return true;
 				case Keys.A:
-					game.client.sendInput(MsgCodes.Client.LEFT, MsgCodes.Client.KEY_UP);
+					game.client.sendInput(MsgCodes.Game.LEFT, MsgCodes.Game.KEY_UP);
 					return true;
 				case Keys.S:
-					game.client.sendInput(MsgCodes.Client.DOWN, MsgCodes.Client.KEY_UP);
+					game.client.sendInput(MsgCodes.Game.DOWN, MsgCodes.Game.KEY_UP);
 					return true;
 				case Keys.D:
-					game.client.sendInput(MsgCodes.Client.RIGHT, MsgCodes.Client.KEY_UP);
+					game.client.sendInput(MsgCodes.Game.RIGHT, MsgCodes.Game.KEY_UP);
 					return true;
 				default:
 					return false;
@@ -114,6 +119,17 @@ public class TestScreen implements Screen {
 
 		float[] robotPosition = game.world.robot.accessPosition("get", 0, 0); // [x, y]
 		float[] player1Position = game.world.player1.accessPosition("get", 0, 0); // [x, y]
+		
+		char robotState = game.world.robot.accessState("get", '0');
+		char player1State = game.world.player1.accessState("get", '0');
+		
+		char robotDirection = game.world.robot.accessDirection("get", '0');
+		char player1Direction = game.world.player1.accessDirection("get", '0');
+		
+		String robotStateStr = codeToString(robotState);
+		String player1StateStr = codeToString(player1State);
+		String robotDirectionStr = codeToString(robotDirection);
+		String player1DirectionStr = codeToString(player1Direction);
 
 		playerPositions[0] = robotPosition;
 		playerPositions[1] = player1Position; 
@@ -201,16 +217,21 @@ public class TestScreen implements Screen {
 		// 	shapeRenderer.rect(world.player4.getX(), world.player4.getY(), Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		// shapeRenderer.end();
 		
-		//show camera's position & players' position & players' current area
+		//show camera's position & players' info
 		batch.setProjectionMatrix(playerCamera.combined);
 		batch.begin();
 			font.draw(batch, "camera pos: (" + playerCamera.position.x + ", " + playerCamera.position.y + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y - playerCamera.viewportHeight/2 + 11);
 			//robot's info
 			font.draw(batch, "robot's pos: (" + robotPosition[0] + ", " + robotPosition[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2);
 			//font.draw(batch, "robot's current area: " + game.world.robot.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 12);
+			font.draw(batch, "robot's state: " + robotStateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 12);
+			font.draw(batch, "robot's direction: " + robotDirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 24);
+			
 			//player1's info
-			font.draw(batch, "player1's pos: (" + player1Position[0] + ", " + player1Position[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 24);
+			font.draw(batch, "player1's pos: (" + player1Position[0] + ", " + player1Position[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
 			//font.draw(batch, "player1's current area: " + game.world.player1.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
+			font.draw(batch, "player1's state: (" + player1StateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 48);
+			font.draw(batch, "player1's direction: (" + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 60);
 		batch.end();
 
 		if (!game.start) {
@@ -230,6 +251,36 @@ public class TestScreen implements Screen {
 		// 		iterator.remove();
 		// 	}
 		// }
+	}
+
+	//temporary utility method
+	private String codeToString(char code) {
+		switch(code) {
+			case MsgCodes.Game.NORMAL_STATE:
+				return "normal";
+			case MsgCodes.Game.DODGE_STATE:
+				return "dodging";
+
+			case MsgCodes.Game.DIRECTION_NORTH:
+				return "north";
+			case MsgCodes.Game.DIRECTION_NORTH_EAST:
+				return "north-east";
+			case MsgCodes.Game.DIRECTION_EAST:
+				return "east";
+			case MsgCodes.Game.DIRECTION_SOUTH_EAST:
+				return "south-east";
+			case MsgCodes.Game.DIRECTION_SOUTH:
+				return "south";
+			case MsgCodes.Game.DIRECTION_SOUTH_WEST:
+				return "south-west";
+			case MsgCodes.Game.DIRECTION_WEST:
+				return "west";
+			case MsgCodes.Game.DIRECTION_NORTH_WEST:
+				return "north-west";
+
+			default:
+				return null;
+		}
 	}
 
 	@Override

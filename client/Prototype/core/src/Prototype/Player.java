@@ -17,6 +17,9 @@ public class Player extends Actor implements Disposable {
 
 	private Area curArea; //area where the player is located
 
+	private char curState; //current state of this character
+	private char curDirection; //current direction of this character
+
 	//private Rectangle bound; //bounding rectangle of this player
 
 	//private boolean killed;
@@ -123,6 +126,25 @@ public class Player extends Actor implements Disposable {
 		return null;
 
 		//update rectangle?
+	}
+
+	public synchronized char accessState(String operation, char state) {
+		if (operation.contentEquals("set")) {
+			curState = state;
+		}
+		else if (operation.contentEquals("get")) {
+			return curState;
+		}
+		return 0;
+	}
+
+	public synchronized char accessDirection(String operation, char direction) {
+		if (operation.contentEquals("set")) {
+			curDirection = direction;
+		} else if (operation.contentEquals("get")) {
+			return curDirection;
+		}
+		return 0;
 	}
 
 	/**

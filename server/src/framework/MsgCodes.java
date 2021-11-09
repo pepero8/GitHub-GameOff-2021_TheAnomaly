@@ -18,11 +18,30 @@ public class MsgCodes {
 	// client message code
 	public class Client {
 		public static final char CLOSE_CONNECTION = 'c';
+	}
+
+	public class Game {
+		//keyboard keys
 		public static final char UP = 'n';
 		public static final char DOWN = 's';
 		public static final char LEFT = 'l';
 		public static final char RIGHT = 'r';
+		public static final char DODGE = 'd';
+
 		public static final char KEY_UP = 'u'; // key released
 		public static final char KEY_DOWN = 'd'; // key pressed
+
+		//player's states
+		public static final char NORMAL_STATE = 'n';
+		public static final char DODGE_STATE = 'd';
+
+		public static final char DIRECTION_NORTH = '0';
+		public static final char DIRECTION_NORTH_EAST = '1';
+		public static final char DIRECTION_EAST = '2';
+		public static final char DIRECTION_SOUTH_EAST = '3';
+		public static final char DIRECTION_SOUTH = '4';
+		public static final char DIRECTION_SOUTH_WEST = '5';
+		public static final char DIRECTION_WEST = '6';
+		public static final char DIRECTION_NORTH_WEST = '7';
 	}
 }

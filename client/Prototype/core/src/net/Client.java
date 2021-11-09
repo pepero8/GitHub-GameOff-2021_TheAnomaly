@@ -19,7 +19,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 22;
+	private static final int PACKET_SIZE = 30;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -69,6 +69,7 @@ public class Client extends Thread implements Disposable {
 		ByteBuffer packetBuffer = ByteBuffer.wrap(packet);
 		char msgType = packetBuffer.getChar();
 
+		//lot of duplicate codes here
 		if (msgType == MsgCodes.DATA) {
 			char character = packetBuffer.getChar();
 
@@ -76,8 +77,12 @@ public class Client extends Thread implements Disposable {
 			if (character == 'r') {
 				float x = packetBuffer.getFloat();
 				float y = packetBuffer.getFloat();
+				char state = packetBuffer.getChar();
+				char direction = packetBuffer.getChar();
 
 				game.world.robot.accessPosition("set", x, y); //using this function to achieve synchronization
+				game.world.robot.accessState("set", state);
+				game.world.robot.accessDirection("set", direction);
 			}
 
 			character = packetBuffer.getChar();
@@ -85,8 +90,12 @@ public class Client extends Thread implements Disposable {
 			if (character == '1') {
 				float x = packetBuffer.getFloat();
 				float y = packetBuffer.getFloat();
+				char state = packetBuffer.getChar();
+				char direction = packetBuffer.getChar();
 
 				game.world.player1.accessPosition("set", x, y); // using this function to achieve synchronization
+				game.world.player1.accessState("set", state);
+				game.world.player1.accessDirection("set", direction);
 			}
 		}		
 		else if (msgType == MsgCodes.MESSAGECODE) {

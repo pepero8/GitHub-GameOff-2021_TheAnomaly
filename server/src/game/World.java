@@ -6,8 +6,10 @@ import framework.ClientHandler;
 import framework.MsgCodes;
 
 public class World {
-	public static final int NUM_PLAYERS = 2;
 	// ===============================CAPRICIOUS===============================
+	public static final int NUM_PLAYERS = 2;
+	public static final int ROBOT_SPEED = 150;
+	public static final int PLAYER_SPEED = 200;
 
 	private Player robot;
 	private Player player1;
@@ -17,13 +19,17 @@ public class World {
 
 	private Player[] players;
 
-	private long remainingTime;
-
 	public World() {
-		robot = new Player();
-		robot.setPosition(0, 0);
-		player1 = new Player();
-		player1.setPosition(100, 100);
+		robot = new Player(0, 0, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE);
+		// robot = new Player();
+		// robot.setPosition(0, 0);
+		// robot.setSpeed(ROBOT_SPEED);
+		// robot.setState(Player.NORMAL_STATE);
+		player1 = new Player(100, 100, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE);
+		// player1 = new Player();
+		// player1.setPosition(100, 100);
+		// player1.setSpeed(PLAYER_SPEED);
+		// player1.setState(Player.NORMAL_STATE);
 
 		players = new Player[NUM_PLAYERS];
 		players[0] = robot;
@@ -35,17 +41,22 @@ public class World {
 		char key = msg.getChar();
 		char downOrUp = msg.getChar();
 
-		if (key == MsgCodes.Client.UP) {
-			players[playerNum].setMoveUp(downOrUp == MsgCodes.Client.KEY_DOWN);
+		if (key == MsgCodes.Game.UP) {
+			players[playerNum].setMoveUp(downOrUp == MsgCodes.Game.KEY_DOWN);
 		}
-		if (key == MsgCodes.Client.DOWN) {
-			players[playerNum].setMoveDown(downOrUp == MsgCodes.Client.KEY_DOWN);
+		else if (key == MsgCodes.Game.DOWN) {
+			players[playerNum].setMoveDown(downOrUp == MsgCodes.Game.KEY_DOWN);
 		}
-		if (key == MsgCodes.Client.LEFT) {
-			players[playerNum].setMoveLeft(downOrUp == MsgCodes.Client.KEY_DOWN);
+		else if (key == MsgCodes.Game.LEFT) {
+			players[playerNum].setMoveLeft(downOrUp == MsgCodes.Game.KEY_DOWN);
 		}
-		if (key == MsgCodes.Client.RIGHT) {
-			players[playerNum].setMoveRight(downOrUp == MsgCodes.Client.KEY_DOWN);
+		else if (key == MsgCodes.Game.RIGHT) {
+			players[playerNum].setMoveRight(downOrUp == MsgCodes.Game.KEY_DOWN);
+		}
+		else if (key == MsgCodes.Game.DODGE) {
+			//if player is not the robot
+			if (playerNum != 0)
+				players[playerNum].dodge();
 		}
 	}
 
@@ -63,12 +74,16 @@ public class World {
 
 		// add robot state
 		packetBuffer.putChar('r');
-		packetBuffer.putFloat(robot.getX());
-		packetBuffer.putFloat(robot.getY());
+		packetBuffer.putFloat(robot.x);
+		packetBuffer.putFloat(robot.y);
+		packetBuffer.putChar(robot.curState.code);
+		packetBuffer.putChar(robot.curDirection);
 		//add player1's state
 		packetBuffer.putChar('1');
-		packetBuffer.putFloat(player1.getX());
-		packetBuffer.putFloat(player1.getY());
+		packetBuffer.putFloat(player1.x);
+		packetBuffer.putFloat(player1.y);
+		packetBuffer.putChar(player1.curState.code);
+		packetBuffer.putChar(player1.curDirection);
 
 		return packetBuffer.array();
 	}
