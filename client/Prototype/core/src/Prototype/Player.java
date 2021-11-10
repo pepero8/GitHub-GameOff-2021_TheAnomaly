@@ -2,11 +2,8 @@ package Prototype;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Disposable;
 
 /**
@@ -21,6 +18,7 @@ public class Player extends Actor implements Disposable {
 	private char curDirection; //current direction of this character
 
 	//private Rectangle bound; //bounding rectangle of this player
+	Rectangle attackBound; //bounding rectangle of the robot bounding its attack range
 
 	//private boolean killed;
 
@@ -28,6 +26,7 @@ public class Player extends Actor implements Disposable {
 	public Player() {
 		setSize(Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		//bound = new Rectangle(getX(), getY(), getWidth(), getHeight());
+		attackBound = new Rectangle(getX() - Prototype.ATTACK_RANGE, getY() - Prototype.ATTACK_RANGE, Prototype.CHAR_WIDTH + Prototype.ATTACK_RANGE*2, Prototype.CHAR_HEIGHT + Prototype.ATTACK_RANGE*2);
 
 		//configure action
 		// RepeatAction loop = new RepeatAction();
@@ -56,6 +55,10 @@ public class Player extends Actor implements Disposable {
 	// public void setCurrentArea(Area curArea) {
 	// 	this.curArea = curArea;
 	// }
+
+	public void updateAttackBound(float x, float y) {
+		attackBound.setPosition(x - Prototype.ATTACK_RANGE, y - Prototype.ATTACK_RANGE);
+	}
 
 	public synchronized Area accessCurArea(String operation, Area curArea) {
 		if (operation.contentEquals("set")) {

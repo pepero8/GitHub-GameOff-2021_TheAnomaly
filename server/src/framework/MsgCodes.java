@@ -27,6 +27,7 @@ public class MsgCodes {
 		public static final char LEFT = 'l';
 		public static final char RIGHT = 'r';
 		public static final char DODGE = 'd';
+		public static final char ATTACK = 'a';
 
 		public static final char KEY_UP = 'u'; // key released
 		public static final char KEY_DOWN = 'd'; // key pressed
@@ -34,6 +35,8 @@ public class MsgCodes {
 		//player's states
 		public static final char NORMAL_STATE = 'n';
 		public static final char DODGE_STATE = 'd';
+		public static final char ATTACK_STATE = 'a';
+		public static final char DEAD_STATE = 'k';
 
 		public static final char DIRECTION_NORTH = '0';
 		public static final char DIRECTION_NORTH_EAST = '1';

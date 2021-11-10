@@ -13,6 +13,7 @@ public class Prototype extends Game {
 	public static int VP_HEIGHT; // viewport height. equals to monitor's height
 	public static final int CHAR_WIDTH = 64; // all character's width
 	public static final int CHAR_HEIGHT = 128; // all character's height
+	public static final int ATTACK_RANGE = 25; // all character's height
 
 	public int playerNum = -1; //initialized by client
 

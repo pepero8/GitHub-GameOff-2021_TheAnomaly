@@ -11,12 +11,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.Array.ArrayIterator;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import net.Client;
 import net.MsgCodes;
 
 public class TestScreen implements Screen {
@@ -56,6 +53,16 @@ public class TestScreen implements Screen {
 		//stage.setKeyboardFocus(game.world.robot); //sets keyboard focus on game.world.robot -> should change to stage?
 		//stage.addListener(new UserInputListener(game.client));
 		stage.addListener(new InputListener() {
+			@Override
+			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+				// TODO Auto-generated method stub
+				Gdx.app.log("TestScreen", "mouse clicked: " + button);
+				//if player is robot and left mouse button is clicked
+				if (game.playerNum == 0 && button == 0)
+					game.client.sendInput(MsgCodes.Game.ATTACK, MsgCodes.Game.KEY_DOWN);
+				return true;
+			}
+
 			@Override
 			public boolean keyDown(InputEvent event, int keycode) {
 				switch (keycode) {
@@ -134,6 +141,9 @@ public class TestScreen implements Screen {
 		playerPositions[0] = robotPosition;
 		playerPositions[1] = player1Position; 
 
+		//update robot's attack bound rectangle's position
+		game.world.robot.updateAttackBound(robotPosition[0], robotPosition[1]);
+
 		//checkHit(); //check if robot hits any player. It doesn't use robotPosition and playerPosition so it might not be accurate
 
 		// sets the camera's position equal to player's position
@@ -182,16 +192,26 @@ public class TestScreen implements Screen {
 		//shapeRenderer.rect(game.world.area3.getX(), game.world.area3.getY(), game.world.area3.getWidth()+Prototype.CHAR_WIDTH, game.world.area3.getHeight()+Prototype.CHAR_HEIGHT);
 		//shapeRenderer.end();
 
-		//render game.world.robot
+		//render robot
 		shapeRenderer.begin(ShapeType.Filled);
 		shapeRenderer.setColor(1, 0, 0, 0); //red
 			shapeRenderer.rect(robotPosition[0], robotPosition[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		shapeRenderer.end();
+		//rener robot's attack rectangle
+		shapeRenderer.begin(ShapeType.Line);
+		if (robotState == MsgCodes.Game.ATTACK_STATE)
+			shapeRenderer.setColor(1, 1, 0, 0); //yellow
+		else
+			shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); // grey
+		shapeRenderer.rect(game.world.robot.attackBound.x, game.world.robot.attackBound.y,
+						   game.world.robot.attackBound.width, game.world.robot.attackBound.height);
+		shapeRenderer.end();
 
-		//render game.world.player1
+		//render player1
 		shapeRenderer.begin(ShapeType.Filled);
-		//if (game.world.player1.isKilled()) shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
-		//else
+		if (player1State == MsgCodes.Game.DEAD_STATE)
+			shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
+		else
 			shapeRenderer.setColor(0, 1, 0, 0); //green
 			shapeRenderer.rect(player1Position[0], player1Position[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		shapeRenderer.end();
@@ -230,8 +250,8 @@ public class TestScreen implements Screen {
 			//player1's info
 			font.draw(batch, "player1's pos: (" + player1Position[0] + ", " + player1Position[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
 			//font.draw(batch, "player1's current area: " + game.world.player1.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
-			font.draw(batch, "player1's state: (" + player1StateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 48);
-			font.draw(batch, "player1's direction: (" + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 60);
+			font.draw(batch, "player1's state: " + player1StateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 48);
+			font.draw(batch, "player1's direction: " + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 60);
 		batch.end();
 
 		if (!game.start) {
@@ -243,7 +263,7 @@ public class TestScreen implements Screen {
 	 * Checks robot hits any player.
 	 * If the game.world.robot hit a player, that player's kill() is invoked and removed from the activePlayers array
 	 */
-	private void checkHit() {
+	//private void checkHit() {
 		// for (ArrayIterator<Player> iterator = game.world.activePlayers.iterator(); iterator.hasNext();) {
 		// 	Player player = iterator.next();
 		// 	if (player.isContact(game.world.robot)) {
@@ -251,7 +271,7 @@ public class TestScreen implements Screen {
 		// 		iterator.remove();
 		// 	}
 		// }
-	}
+	//}
 
 	//temporary utility method
 	private String codeToString(char code) {
@@ -260,6 +280,10 @@ public class TestScreen implements Screen {
 				return "normal";
 			case MsgCodes.Game.DODGE_STATE:
 				return "dodging";
+			case MsgCodes.Game.ATTACK_STATE:
+				return "attacking";
+			case MsgCodes.Game.DEAD_STATE:
+				return "dead";
 
 			case MsgCodes.Game.DIRECTION_NORTH:
 				return "north";
