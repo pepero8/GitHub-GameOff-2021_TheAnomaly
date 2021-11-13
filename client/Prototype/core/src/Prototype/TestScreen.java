@@ -1,5 +1,7 @@
 package Prototype;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -8,9 +10,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -53,6 +58,7 @@ public class TestScreen implements Screen {
 		//stage.setKeyboardFocus(game.world.robot); //sets keyboard focus on game.world.robot -> should change to stage?
 		//stage.addListener(new UserInputListener(game.client));
 		stage.addListener(new InputListener() {
+			//Vector3 touchPoint = new Vector3();
 			@Override
 			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
 				// TODO Auto-generated method stub
@@ -60,6 +66,14 @@ public class TestScreen implements Screen {
 				//if player is robot and left mouse button is clicked
 				if (game.playerNum == 0 && button == 0)
 					game.client.sendInput(MsgCodes.Game.ATTACK, MsgCodes.Game.KEY_DOWN);
+				// if player is robot and right mouse button is clicked
+				if (game.playerNum == 0 && button == 1) {
+					//touchPoint.set(x, y, 0);
+					//Gdx.app.log("before fuck", "(" + touchPoint.x + ", " + touchPoint.y + ")");
+					//playerCamera.unproject(touchPoint);
+					//Gdx.app.log("fuck", "(" + touchPoint.x + ", " + touchPoint.y + ")");
+					game.client.sendInput(MsgCodes.Game.GRAB, x, y, MsgCodes.Game.KEY_DOWN);
+				}
 				return true;
 			}
 
@@ -126,6 +140,12 @@ public class TestScreen implements Screen {
 
 		float[] robotPosition = game.world.robot.accessPosition("get", 0, 0); // [x, y]
 		float[] player1Position = game.world.player1.accessPosition("get", 0, 0); // [x, y]
+
+		// System.out.println("robot: " + Arrays.toString(robotPosition));
+		// System.out.println("player1: " + Arrays.toString(player1Position));
+
+		//used for rendering robot's projectile
+		float[] projectilePos = game.world.robot.accessProjectilePos("get", 0, 0);
 		
 		char robotState = game.world.robot.accessState("get", '0');
 		char player1State = game.world.player1.accessState("get", '0');
@@ -197,20 +217,37 @@ public class TestScreen implements Screen {
 		shapeRenderer.setColor(1, 0, 0, 0); //red
 			shapeRenderer.rect(robotPosition[0], robotPosition[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		shapeRenderer.end();
-		//rener robot's attack rectangle
+		//render robot's attack rectangle
 		shapeRenderer.begin(ShapeType.Line);
-		if (robotState == MsgCodes.Game.ATTACK_STATE)
+		if (robotState == MsgCodes.Game.ATTACK_STATE || robotState == MsgCodes.Game.ATTACK_GRABBING_STATE)
 			shapeRenderer.setColor(1, 1, 0, 0); //yellow
 		else
 			shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); // grey
 		shapeRenderer.rect(game.world.robot.attackBound.x, game.world.robot.attackBound.y,
 						   game.world.robot.attackBound.width, game.world.robot.attackBound.height);
 		shapeRenderer.end();
+		//render robot's grab range circle
+		shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
+			shapeRenderer.circle(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, 250);
+		shapeRenderer.end();
+		
+		//if robot's current state is grabbing, render robot's projectile
+		if (robotState == MsgCodes.Game.GRABBING_STATE || robotState == MsgCodes.Game.ATTACK_GRABBING_STATE) {
+			Gdx.app.log("Projectile", "(" + projectilePos[0] + ", " + projectilePos[1] + ")");
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(1, 1, 1, 0); //white
+				shapeRenderer.rect(projectilePos[0] - Prototype.PROJECTILE_WIDTH/2, projectilePos[1] - Prototype.PROJECTILE_HEIGHT/2, Prototype.PROJECTILE_WIDTH, Prototype.PROJECTILE_HEIGHT);
+				shapeRenderer.line(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, projectilePos[0], projectilePos[1]);
+			shapeRenderer.end();
+		}
 
 		//render player1
 		shapeRenderer.begin(ShapeType.Filled);
 		if (player1State == MsgCodes.Game.DEAD_STATE)
 			shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
+		else if (player1State == MsgCodes.Game.DRAGGED_STATE)
+			shapeRenderer.setColor(1, 0.8f, 0, 0); //yellow
 		else
 			shapeRenderer.setColor(0, 1, 0, 0); //green
 			shapeRenderer.rect(player1Position[0], player1Position[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
@@ -282,6 +319,12 @@ public class TestScreen implements Screen {
 				return "dodging";
 			case MsgCodes.Game.ATTACK_STATE:
 				return "attacking";
+			case MsgCodes.Game.GRABBING_STATE:
+				return "grabbing";
+			case MsgCodes.Game.ATTACK_GRABBING_STATE:
+				return "grabbing";
+			case MsgCodes.Game.DRAGGED_STATE:
+				return "dragged";
 			case MsgCodes.Game.DEAD_STATE:
 				return "dead";
 

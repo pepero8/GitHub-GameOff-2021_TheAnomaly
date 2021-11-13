@@ -45,7 +45,7 @@ public class DodgeState extends PlayerState {
 	// }
 
 	@Override
-	public void update(long progressTime) {
+	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
 		elapsed += progressTime;
 
@@ -94,12 +94,19 @@ public class DodgeState extends PlayerState {
 		}
 		else if (elapsed >= 1000) {
 			//state 초기화
-			elapsed = 0;
-			player.updateDirection();
-			player.setState(MsgCodes.Game.NORMAL_STATE);
-			return;
+			// elapsed = 0;
+			// player.updateDirection();
+			reset();
+			//player.setState(MsgCodes.Game.NORMAL_STATE);
+			return false;
 		}
 
 		player.curDirection = direction; //dodge 모션중 방향키를 입력해도 캐릭터 방향을 바꾸지 않기 위함
-	}	
+		return true;
+	}
+
+	void reset() {
+		elapsed = 0;
+		player.updateDirection();
+	}
 }

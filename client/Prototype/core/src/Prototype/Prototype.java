@@ -14,6 +14,8 @@ public class Prototype extends Game {
 	public static final int CHAR_WIDTH = 64; // all character's width
 	public static final int CHAR_HEIGHT = 128; // all character's height
 	public static final int ATTACK_RANGE = 25; // all character's height
+	public static final int PROJECTILE_WIDTH = 25;
+	public static final int PROJECTILE_HEIGHT = 25;
 
 	public int playerNum = -1; //initialized by client
 

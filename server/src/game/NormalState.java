@@ -11,7 +11,24 @@ public class NormalState extends PlayerState {
 	}
 
 	@Override
-	public void update(long progressTime) {
+	void dodge() {
+		player.dodgeState.init(player.curDirection);
+		player.curState = player.dodgeState; //replace with setState()?
+	}
+
+	@Override
+	void attack() {
+		player.curState = player.attackState;
+	}
+
+	@Override
+	void grab(float cursorX, float cursorY) {
+		player.grabbingState.init(cursorX, cursorY);
+		player.curState = player.grabbingState;
+	}
+
+	@Override
+	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
 		// float prevX = player.x;
 		// float prevY = player.y;
@@ -54,6 +71,7 @@ public class NormalState extends PlayerState {
 		// if (prevX > player.x && prevY < player.y) {
 		// 	player.curDirection = MsgCodes.Game.DIRECTION_NORTH_WEST;
 		// }
+		return true;
 	}
 	
 }

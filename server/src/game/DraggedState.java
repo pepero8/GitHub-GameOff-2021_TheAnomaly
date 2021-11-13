@@ -2,10 +2,10 @@ package game;
 
 import framework.MsgCodes;
 
-public class DeadState extends PlayerState{
+public class DraggedState extends PlayerState {
 
-	DeadState() {
-		code = MsgCodes.Game.DEAD_STATE;
+	DraggedState() {
+		code = MsgCodes.Game.DRAGGED_STATE;
 	}
 
 	@Override

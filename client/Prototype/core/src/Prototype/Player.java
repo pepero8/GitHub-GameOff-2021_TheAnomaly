@@ -17,6 +17,9 @@ public class Player extends Actor implements Disposable {
 	private char curState; //current state of this character
 	private char curDirection; //current direction of this character
 
+	private float projectileX;
+	private float projectileY;
+
 	//private Rectangle bound; //bounding rectangle of this player
 	Rectangle attackBound; //bounding rectangle of the robot bounding its attack range
 
@@ -148,6 +151,17 @@ public class Player extends Actor implements Disposable {
 			return curDirection;
 		}
 		return 0;
+	}
+
+	public synchronized float[] accessProjectilePos(String operation, float x, float y) {
+		if (operation.contentEquals("set")) {
+			projectileX = x;
+			projectileY = y;
+		}
+		else if (operation.contentEquals("get")) {
+			return new float[] {projectileX, projectileY};
+		}
+		return null;
 	}
 
 	/**

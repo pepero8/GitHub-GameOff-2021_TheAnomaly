@@ -19,15 +19,17 @@ public class Player {
 	// char moveDown;
 	// char moveLeft;
 	// char moveRight;
-	boolean dead;
+	//boolean dead;
 
 	int moveSpeed; //movement speed(pixels per second)
 
 	PlayerState curState; //player's current state
 	private NormalState normalState;
-	private DodgeState dodgeState;
+	DodgeState dodgeState;
 	private DeadState deadState;
-	AttackState attackState; //initialized by world
+	private DraggedState draggedState;
+	GrabbingState grabbingState; //initialized by world(needs player[])
+	AttackState attackState; //initialized by world(needs player[])
 
 	//constructor
 	// public Player() {
@@ -36,7 +38,7 @@ public class Player {
 	// }
 
 	//constructor
-	public Player(float initX, float initY, int playerWidth, int playerHeight, int initSpeed, int initState) {
+	public Player(float initX, float initY, int playerWidth, int playerHeight, int initSpeed, int initState/* needed? */) {
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
 		x = initX;
 		y = initY;
@@ -47,7 +49,9 @@ public class Player {
 		normalState = new NormalState(this);
 		dodgeState = new DodgeState(this);
 		deadState = new DeadState();
+		draggedState = new DraggedState();
 
+		//duplicate. replace with setState()
 		switch (initState) {
 			case MsgCodes.Game.NORMAL_STATE:
 				curState = normalState;
@@ -58,8 +62,14 @@ public class Player {
 			case MsgCodes.Game.ATTACK_STATE:
 				curState = attackState;
 				break;
+			case MsgCodes.Game.GRABBING_STATE:
+				curState = grabbingState;
+				break;
 			case MsgCodes.Game.DEAD_STATE:
 				curState = deadState;
+				break;
+			case MsgCodes.Game.DRAGGED_STATE:
+				curState = draggedState;
 				break;
 			default:
 		}
@@ -112,24 +122,42 @@ public class Player {
 		return ret;
 	}
 
-	public void dodge() {
-		//dodgeState.setDirection(curDirection);
-		//dodgeState.init(curDirection, moveUp, moveDown, moveLeft, moveRight);
-		dodgeState.init(curDirection);
-		curState = dodgeState;
+	public boolean isContact(float projectileX, float projectileY) {
+		return projectileX > x && projectileX < x + width &&
+			   projectileY > y && projectileY < y + height;
 	}
 
-	public void attack() {
-		curState = attackState;
-	}
+	// public void dodge() {
+	// 	//dodgeState.setDirection(curDirection);
+	// 	//dodgeState.init(curDirection, moveUp, moveDown, moveLeft, moveRight);
+	// 	dodgeState.init(curDirection);
+	// 	curState = dodgeState;
+	// }
+
+	// public void attack() {
+	// 	curState = attackState;
+	// }
 
 	public void kill() {
-		dead = true;
+		//dead = true;
 		curState = deadState;
 	}
 
+	// public void grab(float cursorX, float cursorY) {
+	// 	grabbingState.init(cursorX, cursorY);
+	// 	curState = grabbingState;
+	// }
+
+	//called by grabbingState
+	public void drag() {
+		if (curState == dodgeState) {
+			dodgeState.reset();
+		}
+		curState = draggedState;
+	}
+
 	public boolean isDead() {
-		return dead;
+		return curState == deadState;
 	}
 
 	public void setState(int state) {
@@ -143,15 +171,23 @@ public class Player {
 			case MsgCodes.Game.ATTACK_STATE:
 				curState = attackState;
 				break;
+			case MsgCodes.Game.GRABBING_STATE:
+				curState = grabbingState;
+				break;
 			case MsgCodes.Game.DEAD_STATE:
 				curState = deadState;
+				break;
+			case MsgCodes.Game.DRAGGED_STATE:
+				curState = draggedState;
 				break;
 			default:
 		}
 	}
 
 	public void update(long progressTime) {
-		curState.update(progressTime);
+		if (!curState.update(progressTime)) {
+			curState = normalState;
+		}
 	}
 
 	public void updateDirection() {

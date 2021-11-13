@@ -3,5 +3,13 @@ package game;
 public abstract class PlayerState {
 	char code;
 
-	abstract void update(long progressTime);
+	void dodge() {}
+	void attack() {}
+	void grab(float cursorX, float cursorY) {}
+
+	/**
+	 * @param progressTime
+	 * @return false if this state's process is over
+	 */
+	abstract boolean update(long progressTime);
 }

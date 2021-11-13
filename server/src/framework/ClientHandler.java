@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ClientHandler extends Thread {
 	// ===============================CAPRICIOUS===============================
-	public static final int PACKET_SIZE = 30;
+	public static final int PACKET_SIZE = 38;
 	// ===============================CAPRICIOUS===============================
 	private Socket connectionSocket;
 	private InetAddress ip_client;

@@ -16,7 +16,7 @@ public class AttackState extends PlayerState {
 	}
 
 	@Override
-	void update(long progressTime) {
+	boolean update(long progressTime) {
 		elapsed += progressTime;
 		
 		if (elapsed < 300) {
@@ -29,8 +29,11 @@ public class AttackState extends PlayerState {
 		}
 		else if (elapsed >= 600) {
 			elapsed = 0;
-			robot.setState(MsgCodes.Game.NORMAL_STATE);
+			//robot.setState(MsgCodes.Game.NORMAL_STATE);
+			return false;
 		}
+
+		return true;
 	}
 	
 }

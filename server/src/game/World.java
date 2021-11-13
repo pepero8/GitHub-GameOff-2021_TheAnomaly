@@ -13,6 +13,8 @@ public class World {
 	public static final int PLAYER_WIDTH = 64;
 	public static final int PLAYER_HEIGHT = 128;
 	public static final int ROBOT_ATTACK_RANGE = 25;
+	public static final int PROJECTILE_DISTANCE = 250; //maximum distance the projectile travels
+	public static final int PROJECTILE_CAST_TIME = 500; //arrives to the target location in 0.5 seconds
 
 	private Player robot;
 	private Player player1;
@@ -38,8 +40,9 @@ public class World {
 		players[0] = robot;
 		players[1] = player1; // index matches with player number
 
-		//initialize robot's attackState
+		//initialize robot's attackState, grabbingState
 		robot.attackState = new AttackState(players, robot);
+		robot.grabbingState = new GrabbingState(players, robot);
 	}
 
 	public void processInput(ByteBuffer msg, int playerNum) {
@@ -62,12 +65,19 @@ public class World {
 		else if (key == MsgCodes.Game.DODGE) {
 			//if player is not the robot and not dead
 			if (playerNum != 0 && !players[playerNum].isDead())
-				players[playerNum].dodge();
+				players[playerNum].curState.dodge();
 		}
 		else if (key == MsgCodes.Game.ATTACK) {
 			//if player is the robot
 			if (playerNum == 0)
-				robot.attack();
+				robot.curState.attack();
+		}
+		else if (key == MsgCodes.Game.GRAB) {
+			float cursorX = msg.getFloat();
+			float cursorY = msg.getFloat();
+			// if player is the robot
+			if (playerNum == 0)
+				robot.curState.grab(cursorX, cursorY);
 		}
 	}
 
@@ -88,6 +98,12 @@ public class World {
 		packetBuffer.putFloat(robot.x);
 		packetBuffer.putFloat(robot.y);
 		packetBuffer.putChar(robot.curState.code);
+		//if robot's current state is grabbing
+		if (robot.curState.code == MsgCodes.Game.GRABBING_STATE || robot.curState.code == MsgCodes.Game.ATTACK_GRABBING_STATE) {
+			//System.out.println("(" + robot.grabbingState.projectileX + ", " + robot.grabbingState.projectileY + ")");
+			packetBuffer.putFloat(robot.grabbingState.projectileX);
+			packetBuffer.putFloat(robot.grabbingState.projectileY);
+		}
 		packetBuffer.putChar(robot.curDirection);
 		//add player1's state
 		packetBuffer.putChar('1');

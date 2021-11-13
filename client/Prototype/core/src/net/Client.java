@@ -19,7 +19,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 30;
+	private static final int PACKET_SIZE = 38;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -77,11 +77,19 @@ public class Client extends Thread implements Disposable {
 			if (character == 'r') {
 				float x = packetBuffer.getFloat();
 				float y = packetBuffer.getFloat();
+				float projectileX = 0;
+				float projectileY = 0;
 				char state = packetBuffer.getChar();
+				if (state == MsgCodes.Game.GRABBING_STATE || state == MsgCodes.Game.ATTACK_GRABBING_STATE) {
+					projectileX = packetBuffer.getFloat();
+					projectileY = packetBuffer.getFloat();
+					//Gdx.app.log("Projectile", "(" + projectileX + ", " + projectileY + ")");
+				}
 				char direction = packetBuffer.getChar();
 
 				game.world.robot.accessPosition("set", x, y); //using this function to achieve synchronization
 				game.world.robot.accessState("set", state);
+				game.world.robot.accessProjectilePos("set", projectileX, projectileY);
 				game.world.robot.accessDirection("set", direction);
 			}
 
@@ -171,6 +179,28 @@ public class Client extends Thread implements Disposable {
 		packetBuffer.putChar(MsgCodes.DATA);
 		packetBuffer.putChar(key);
 		packetBuffer.putChar(downOrUp);
+
+		byte[] packet = packetBuffer.array();
+
+		try {
+			out.write(packet);
+			out.flush();
+			//====================================FOR DEBUG==========================================
+			System.out.println("(Client)sent(" + packet.length + "bytes)");
+			//====================================FOR DEBUG==========================================
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	//called when grab attack input is received
+	public void sendInput(char key, float x, float y, char downOrUp) {
+		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
+		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.putChar(key);
+		packetBuffer.putChar(downOrUp);
+		packetBuffer.putFloat(x);
+		packetBuffer.putFloat(y);
 
 		byte[] packet = packetBuffer.array();
 
