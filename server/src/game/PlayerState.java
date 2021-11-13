@@ -6,6 +6,7 @@ public abstract class PlayerState {
 	void dodge() {}
 	void attack() {}
 	void grab(float cursorX, float cursorY) {}
+	void rush() {}
 
 	/**
 	 * @param progressTime

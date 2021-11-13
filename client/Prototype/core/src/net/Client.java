@@ -89,6 +89,7 @@ public class Client extends Thread implements Disposable {
 
 				game.world.robot.accessPosition("set", x, y); //using this function to achieve synchronization
 				game.world.robot.accessState("set", state);
+				//if (state == MsgCodes.Game.GRABBING_STATE || state == MsgCodes.Game.ATTACK_GRABBING_STATE)
 				game.world.robot.accessProjectilePos("set", projectileX, projectileY);
 				game.world.robot.accessDirection("set", direction);
 			}

@@ -21,7 +21,7 @@ public class AttackState extends PlayerState {
 		
 		if (elapsed < 300) {
 			for (int i = 1; i < players.length; i++) {
-				if (!players[i].isDead() && players[i].isContact(robot)) {
+				if (!players[i].isDead() && players[i].isContact(robot, World.ROBOT_ATTACK_RANGE)) {
 					//kill
 					players[i].kill();
 				}

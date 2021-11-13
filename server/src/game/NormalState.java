@@ -28,6 +28,11 @@ public class NormalState extends PlayerState {
 	}
 
 	@Override
+	void rush() {
+		player.curState = player.rushState;
+	}
+
+	@Override
 	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
 		// float prevX = player.x;

@@ -30,6 +30,7 @@ public class Player {
 	private DraggedState draggedState;
 	GrabbingState grabbingState; //initialized by world(needs player[])
 	AttackState attackState; //initialized by world(needs player[])
+	RushState rushState; //initialized by world(needs player[])
 
 	//constructor
 	// public Player() {
@@ -64,6 +65,9 @@ public class Player {
 				break;
 			case MsgCodes.Game.GRABBING_STATE:
 				curState = grabbingState;
+				break;
+			case MsgCodes.Game.RUSH_STATE:
+				curState = rushState;
 				break;
 			case MsgCodes.Game.DEAD_STATE:
 				curState = deadState;
@@ -104,16 +108,16 @@ public class Player {
 		moveSpeed = speed;
 	}
 
-	public boolean isContact(Player player) {
+	public boolean isContact(Player player, int range) {
 		// System.out.println("fuck player.x: " + player.x);
 		// System.out.println("fuck player.width: " + player.width);
 		// System.out.println("fuck attack_range: " + World.ROBOT_ATTACK_RANGE);
 		//System.out.println("fuck: " + player.x + player.width + World.ROBOT_ATTACK_RANGE);
 
-		boolean ret =  (x < (player.x + player.width + World.ROBOT_ATTACK_RANGE)) &&
-			   ((x + width) > (player.x - World.ROBOT_ATTACK_RANGE)) &&
-			   (y < (player.y + player.height + World.ROBOT_ATTACK_RANGE)) &&
-			   ((y + height) > (player.y - World.ROBOT_ATTACK_RANGE));
+		boolean ret =  (x < (player.x + player.width + range)) &&
+			   ((x + width) > (player.x - range)) &&
+			   (y < (player.y + player.height + range)) &&
+			   ((y + height) > (player.y - range));
 
 		// System.out.println("[Player]contact with robot: " + ret);
 		// System.out.println("[Player]player1's pos: (" + x + ", " + y + ")");
@@ -139,6 +143,9 @@ public class Player {
 	// }
 
 	public void kill() {
+		if (curState == dodgeState) {
+			dodgeState.reset();
+		}
 		//dead = true;
 		curState = deadState;
 	}
@@ -173,6 +180,9 @@ public class Player {
 				break;
 			case MsgCodes.Game.GRABBING_STATE:
 				curState = grabbingState;
+				break;
+			case MsgCodes.Game.RUSH_STATE:
+				curState = rushState;
 				break;
 			case MsgCodes.Game.DEAD_STATE:
 				curState = deadState;

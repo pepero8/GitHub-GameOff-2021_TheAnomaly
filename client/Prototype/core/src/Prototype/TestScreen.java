@@ -94,7 +94,12 @@ public class TestScreen implements Screen {
 					return true;
 				case Keys.SHIFT_LEFT:
 				case Keys.SHIFT_RIGHT:
-					if (game.playerNum != 0)
+					//robot
+					if (game.playerNum == 0) {
+						game.client.sendInput(MsgCodes.Game.RUSH, MsgCodes.Game.KEY_DOWN);
+					}
+					//player
+					else
 						game.client.sendInput(MsgCodes.Game.DODGE, MsgCodes.Game.KEY_DOWN);
 					return true;
 				default:
@@ -234,7 +239,7 @@ public class TestScreen implements Screen {
 		
 		//if robot's current state is grabbing, render robot's projectile
 		if (robotState == MsgCodes.Game.GRABBING_STATE || robotState == MsgCodes.Game.ATTACK_GRABBING_STATE) {
-			Gdx.app.log("Projectile", "(" + projectilePos[0] + ", " + projectilePos[1] + ")");
+			//Gdx.app.log("Projectile", "(" + projectilePos[0] + ", " + projectilePos[1] + ")");
 			shapeRenderer.begin(ShapeType.Filled);
 			shapeRenderer.setColor(1, 1, 1, 0); //white
 				shapeRenderer.rect(projectilePos[0] - Prototype.PROJECTILE_WIDTH/2, projectilePos[1] - Prototype.PROJECTILE_HEIGHT/2, Prototype.PROJECTILE_WIDTH, Prototype.PROJECTILE_HEIGHT);
@@ -323,6 +328,8 @@ public class TestScreen implements Screen {
 				return "grabbing";
 			case MsgCodes.Game.ATTACK_GRABBING_STATE:
 				return "grabbing";
+			case MsgCodes.Game.RUSH_STATE:
+				return "rushing";
 			case MsgCodes.Game.DRAGGED_STATE:
 				return "dragged";
 			case MsgCodes.Game.DEAD_STATE:

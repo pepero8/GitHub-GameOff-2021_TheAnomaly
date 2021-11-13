@@ -9,6 +9,7 @@ public class World {
 	// ===============================CAPRICIOUS===============================
 	public static final int NUM_PLAYERS = 2;
 	public static final int ROBOT_SPEED = 150;
+	public static final int RUSH_SPEED = 300;
 	public static final int PLAYER_SPEED = 200;
 	public static final int PLAYER_WIDTH = 64;
 	public static final int PLAYER_HEIGHT = 128;
@@ -43,6 +44,7 @@ public class World {
 		//initialize robot's attackState, grabbingState
 		robot.attackState = new AttackState(players, robot);
 		robot.grabbingState = new GrabbingState(players, robot);
+		robot.rushState = new RushState(players, robot);
 	}
 
 	public void processInput(ByteBuffer msg, int playerNum) {
@@ -78,6 +80,11 @@ public class World {
 			// if player is the robot
 			if (playerNum == 0)
 				robot.curState.grab(cursorX, cursorY);
+		}
+		else if (key == MsgCodes.Game.RUSH) {
+			if (playerNum == 0) {
+				robot.curState.rush();
+			}
 		}
 	}
 
