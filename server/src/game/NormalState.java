@@ -33,6 +33,17 @@ public class NormalState extends PlayerState {
 	}
 
 	@Override
+	void interact(int playerNum, Interactable target) {
+		if (!target.isInteractable(playerNum) || !target.isContact(player, Interactable.INTERACTION_AVAILABLE_RANGE) || target.interacted()) {
+			// System.out.println("contact? " + target.isContact(player, Interactable.INTERACTION_AVAILABLE_RANGE));
+			// System.out.println("interacted? " + target.interacted());
+			return;
+		}
+		player.interactState.init(player, target);
+		player.curState = player.interactState;
+	}
+
+	@Override
 	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
 		// float prevX = player.x;
@@ -77,6 +88,12 @@ public class NormalState extends PlayerState {
 		// 	player.curDirection = MsgCodes.Game.DIRECTION_NORTH_WEST;
 		// }
 		return true;
+	}
+
+	@Override
+	void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

@@ -5,31 +5,43 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class World implements Disposable {
+	private static final int MAIN_AREA_NUM = 0;
+
 	public Player robot;
 	public Player player1;
 	//public Player player2;
 	//public Player player3;
 	//public Player player4;
-	public Array<Player> activePlayers; // array containing alive players(not including robot)
+	//public Array<Player> activePlayers; // array containing alive players(not including robot)
 
-	//public Area area1; // area for test
-	//public Area area2; // area for test
-	//public Area area3; // area for test
+	public Player[] players;
+
+	public Area mainArea;
+	//public Area area2;
+	//public Area area3;
 
 	//constructor
 	public World() {
+		players = new Player[2];
+		
 		//create areas
-		// area1 = new Area() {
-		// 	@Override
-		// 	public Area determineArea(float x, float y) {
-		// 		//entry line to area2
-		// 		if (x == Prototype.MAP_WIDTH*3/8 - Prototype.CHAR_WIDTH && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
-		// 			return area2;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
+		mainArea = new Area(MAIN_AREA_NUM, 1) {
+			@Override
+			public Area determineArea(float x, float y) {
+				//entry line to area2
+				// if (x == Prototype.MAP_WIDTH*3/8 - Prototype.CHAR_WIDTH && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
+				// 	return area2;
+				// }
+				// else
+				// 	return this;
+				return this;
+			}
+		};
+		//add objects to the area
+		mainArea.addObject(new BoxObject(572, 128, "main area box1"));
+
+		mainArea.setBounds(0, 0, 1144, 1336);
+		mainArea.setName("main zone");
 		// area1.setBounds(0, 0, Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT-Prototype.CHAR_HEIGHT);
 		// area1.setName("area1");
 		// area2 = new Area() {
@@ -67,12 +79,12 @@ public class World implements Disposable {
 		robot = new Player();
 		// robot.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//robot.setPos(0, 0); // sets the robot's initial position to the middle
-		//robot.setCurrentArea(area1);
+		robot.setCurrentArea(mainArea);
 
 		player1 = new Player();
 		//player1.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//player1.setPos(50, 200); //sets the player1's position on the upper left quarter of the map
-		//player1.setCurrentArea(area1);
+		player1.setCurrentArea(mainArea);
 
 		// player2 = new Player();
 		// //player2.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
@@ -89,9 +101,12 @@ public class World implements Disposable {
 		// player4.setPos(Prototype.MAP_WIDTH*5/8+100, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player4's position on the bottom right quarter of the map
 		// player4.setCurrentArea(area3);
 		
-		activePlayers = new Array<Player>();
-		activePlayers.add(player1);
+		//activePlayers = new Array<Player>();
+		//activePlayers.add(player1);
 		//activePlayers.add(player1, player2, player3, player4);
+
+		players[0] = robot;
+		players[1] = player1;
 	}
 
 	@Override

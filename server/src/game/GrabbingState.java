@@ -24,7 +24,8 @@ public class GrabbingState extends PlayerState {
 
 	//float ratioX, ratioY;
 
-	private boolean pulling;
+	private boolean pulling; //true when the projectile hits any player
+	private boolean retrieve; //true when the projectile hits the area's wall or any object in the area
 	private Player target;
 
 	GrabbingState(Player[] players, Player robot) {
@@ -62,6 +63,7 @@ public class GrabbingState extends PlayerState {
 		// denominator = numeratorX + numeratorY;
 		// ratioX = numeratorX / denominator;
 		// ratioY = numeratorY / denominator;
+		reset();
 	}
 
 	@Override
@@ -82,22 +84,24 @@ public class GrabbingState extends PlayerState {
 			}
 		}
 
-		if (pulling) {
+		if (retrieve) {
 			//pullPlayer(target);
 			//projectileX += -1 * signX * World.PROJECTILE_SPEED * ratioX * progressTime / 1000;
 			projectileX = endX + (startX - endX) * (elapsed - projectileElapsed) / projectileElapsed;
 			//projectileY += -1 * signY * World.PROJECTILE_SPEED * ratioY * progressTime / 1000;
 			projectileY = endY + (startY - endY) * (elapsed - projectileElapsed) / projectileElapsed;
-			if (!target.isDead())
-			target.setPosition(projectileX - target.width/2, projectileY - target.height/2); //sets projectile's pos at the middle of the target
+			if (pulling && !target.isDead())
+				target.setPosition(projectileX - target.width/2, projectileY - target.height/2); //sets projectile's pos at the middle of the target
 
 			if (robot.isContact(projectileX, projectileY)) {
-				elapsed = 0;
-				pulling = false;
-				if (!target.isDead())
+				//elapsed = 0;
+				if (pulling && !target.isDead())
 					target.setState(MsgCodes.Game.NORMAL_STATE);
 				//robot.setState(MsgCodes.Game.NORMAL_STATE);
-				target = null;
+				// target = null;
+				// pulling = false;
+				// retrieve = false;
+				reset();
 				if (code == MsgCodes.Game.ATTACK_GRABBING_STATE) {
 					code = MsgCodes.Game.GRABBING_STATE;
 					robot.setState(MsgCodes.Game.ATTACK_STATE);
@@ -110,12 +114,21 @@ public class GrabbingState extends PlayerState {
 		}
 
 		if (elapsed <= 500) {
+			//if projectile hits the area's wall or hits any object in the area
+			if (robot.curArea.hitWall(projectileX, projectileY) || robot.curArea.hitObject(projectileX, projectileY)) {
+				retrieve = true;
+				projectileElapsed = elapsed;
+				endX = projectileX;
+				endY = projectileY;
+				return true;
+			}
 			for (int i = 1; i < players.length; i++) {
 				if (!players[i].isDead() && players[i].isContact(projectileX, projectileY)) {
 					//pullPlayer(players[i]);
 					players[i].drag();
 					target = players[i];
 					pulling = true;
+					retrieve = true;
 					projectileElapsed = elapsed;
 					endX = projectileX;
 					endY = projectileY;
@@ -134,8 +147,10 @@ public class GrabbingState extends PlayerState {
 			projectileY = endY + (startY - endY) * (elapsed-World.PROJECTILE_CAST_TIME) / World.PROJECTILE_CAST_TIME;
 		}
 		else {
-			elapsed = 0;
-			pulling = false;
+			// elapsed = 0;
+			// pulling = false;
+			// retrieve = false;
+			reset();
 			//robot.setState(MsgCodes.Game.NORMAL_STATE);
 			if (code == MsgCodes.Game.ATTACK_GRABBING_STATE) {
 				code = MsgCodes.Game.GRABBING_STATE;
@@ -146,6 +161,15 @@ public class GrabbingState extends PlayerState {
 		}
 
 		return true;
+	}
+
+	@Override
+	void reset() {
+		// TODO Auto-generated method stub
+		elapsed = 0;
+		target = null;
+		pulling = false;
+		retrieve = false;
 	}
 
 	// private void updateAttack() {

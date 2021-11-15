@@ -11,11 +11,12 @@ public class Prototype extends Game {
 	public static final int MAP_HEIGHT = 2160; // map height
 	public static int VP_WIDTH; // viewport width. equals to monitor's width
 	public static int VP_HEIGHT; // viewport height. equals to monitor's height
-	public static final int CHAR_WIDTH = 64; // all character's width
-	public static final int CHAR_HEIGHT = 128; // all character's height
-	public static final int ATTACK_RANGE = 25; // all character's height
+	public static final int CHAR_WIDTH = 32; // all character's width
+	public static final int CHAR_HEIGHT = 32; // all character's height
+	public static final int ATTACK_RANGE = 25; // robot's attack range
 	public static final int PROJECTILE_WIDTH = 25;
 	public static final int PROJECTILE_HEIGHT = 25;
+	public static final int PROJECTILE_DISTANCE = 320;
 
 	public int playerNum = -1; //initialized by client
 

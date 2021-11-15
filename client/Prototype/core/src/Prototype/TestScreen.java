@@ -52,6 +52,7 @@ public class TestScreen implements Screen {
 		// stage.addActor(game.world.player2);
 		// stage.addActor(game.world.player3);
 		// stage.addActor(game.world.player4);
+		stage.addActor(game.world.mainArea);
 		//stage.addActor(game.world.area1);
 		//stage.addActor(game.world.area2);
 		//stage.addActor(game.world.area3);
@@ -92,6 +93,14 @@ public class TestScreen implements Screen {
 				case Keys.D:
 					game.client.sendInput(MsgCodes.Game.RIGHT, MsgCodes.Game.KEY_DOWN);
 					return true;
+				case Keys.E:
+					Interactable obj = game.world.players[game.playerNum].getNearbyObject();
+					if (obj != null) {
+						game.client.sendInput(MsgCodes.Game.INTERACT, game.world.players[game.playerNum].getCurrentArea().getNum(), obj.getNum(), MsgCodes.Game.KEY_DOWN);
+						return true;
+					}
+					else
+						return false;
 				case Keys.SHIFT_LEFT:
 				case Keys.SHIFT_RIGHT:
 					//robot
@@ -122,6 +131,12 @@ public class TestScreen implements Screen {
 				case Keys.D:
 					game.client.sendInput(MsgCodes.Game.RIGHT, MsgCodes.Game.KEY_UP);
 					return true;
+				case Keys.E:
+					//if (game.world.players[game.playerNum].accessState("get", '0') == MsgCodes.Game.INTERACT_STATE) {
+						game.client.sendInput(MsgCodes.Game.INTERACT, MsgCodes.Game.KEY_UP);
+						return true;
+					//}
+					//return false;
 				default:
 					return false;
 				}
@@ -154,9 +169,18 @@ public class TestScreen implements Screen {
 		
 		char robotState = game.world.robot.accessState("get", '0');
 		char player1State = game.world.player1.accessState("get", '0');
+
+		boolean player1HasKey = game.world.player1.accessHasKey("get", false);
 		
 		char robotDirection = game.world.robot.accessDirection("get", '0');
 		char player1Direction = game.world.player1.accessDirection("get", '0');
+
+		String player1NearbyObj;
+		if (game.world.player1.getNearbyObject() == null)
+			player1NearbyObj = "null";
+		else
+			player1NearbyObj = game.world.player1.getNearbyObject().getName();
+		
 		
 		String robotStateStr = codeToString(robotState);
 		String player1StateStr = codeToString(player1State);
@@ -184,12 +208,25 @@ public class TestScreen implements Screen {
 		//shapeRenderer.setColor(0, 0, 1, 0); // blue
 		//	shapeRenderer.rect(game.world.area1.getX(), game.world.area1.getY(), game.world.area1.getWidth(), game.world.area1.getHeight());
 		//shapeRenderer.end();
-		// render actual world.area1
-		//shapeRenderer.setProjectionMatrix(playerCamera.combined);
-		//shapeRenderer.begin(ShapeType.Line);
+		// render actual area1
+		shapeRenderer.begin(ShapeType.Line);
+		shapeRenderer.setColor(1, 1, 1, 0); // white
+			shapeRenderer.rect(game.world.mainArea.getX(), game.world.mainArea.getY(), game.world.mainArea.getWidth(), game.world.mainArea.getHeight());
+			shapeRenderer.rect(game.world.mainArea.getX()+256, game.world.mainArea.getY()+256, 632, 824);
+		shapeRenderer.end();
+		//render objects in area1
+		shapeRenderer.begin(ShapeType.Filled);
 		//shapeRenderer.setColor(1, 1, 1, 0); // white
-		//	shapeRenderer.rect(game.world.area1.getX(), game.world.area1.getY(), game.world.area1.getWidth()+Prototype.CHAR_WIDTH, game.world.area1.getHeight()+Prototype.CHAR_HEIGHT);
-		//shapeRenderer.end();
+			for (Interactable obj : game.world.mainArea.getObjects()) {
+				if (obj.isInteracting())
+					shapeRenderer.setColor(0.8f, 1, 1, 0);
+				else if (obj.interacted())
+					shapeRenderer.setColor(0.8f, 0.8f, 0.8f, 0);
+				else
+					shapeRenderer.setColor(1, 1, 1, 0); //white
+				shapeRenderer.rect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+			}
+		shapeRenderer.end();
 
 		// render world.area2's position boundary
 		//shapeRenderer.setProjectionMatrix(playerCamera.combined);
@@ -234,7 +271,7 @@ public class TestScreen implements Screen {
 		//render robot's grab range circle
 		shapeRenderer.begin(ShapeType.Line);
 		shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
-			shapeRenderer.circle(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, 250);
+			shapeRenderer.circle(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, Prototype.PROJECTILE_DISTANCE);
 		shapeRenderer.end();
 		
 		//if robot's current state is grabbing, render robot's projectile
@@ -285,15 +322,17 @@ public class TestScreen implements Screen {
 			font.draw(batch, "camera pos: (" + playerCamera.position.x + ", " + playerCamera.position.y + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y - playerCamera.viewportHeight/2 + 11);
 			//robot's info
 			font.draw(batch, "robot's pos: (" + robotPosition[0] + ", " + robotPosition[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2);
-			//font.draw(batch, "robot's current area: " + game.world.robot.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 12);
-			font.draw(batch, "robot's state: " + robotStateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 12);
-			font.draw(batch, "robot's direction: " + robotDirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 24);
+			font.draw(batch, "robot's current area: " + game.world.robot.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 12);
+			font.draw(batch, "robot's state: " + robotStateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 24);
+			font.draw(batch, "robot's direction: " + robotDirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
 			
 			//player1's info
-			font.draw(batch, "player1's pos: (" + player1Position[0] + ", " + player1Position[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
-			//font.draw(batch, "player1's current area: " + game.world.player1.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 36);
-			font.draw(batch, "player1's state: " + player1StateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 48);
-			font.draw(batch, "player1's direction: " + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 60);
+			font.draw(batch, "player1's pos: (" + player1Position[0] + ", " + player1Position[1] + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 48);
+			font.draw(batch, "player1's current area: " + game.world.player1.getCurrentArea().getName(), playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 60);
+			font.draw(batch, "player1's state: " + player1StateStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 72);
+			font.draw(batch, "player1's direction: " + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 84);
+			font.draw(batch, "player1's nearby object: " + player1NearbyObj, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 96);
+			font.draw(batch, "player1's key possession: " + player1HasKey, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 108);
 		batch.end();
 
 		if (!game.start) {
@@ -334,7 +373,13 @@ public class TestScreen implements Screen {
 				return "dragged";
 			case MsgCodes.Game.DEAD_STATE:
 				return "dead";
-
+			case MsgCodes.Game.INTERACT_STATE:
+				return "interacting";
+			case MsgCodes.Game.INTERACT_SUCCESS_STATE:
+				return "interact success";
+			case MsgCodes.Game.INTERACT_FAILED_STATE:
+				return "interact failed";
+			
 			case MsgCodes.Game.DIRECTION_NORTH:
 				return "north";
 			case MsgCodes.Game.DIRECTION_NORTH_EAST:

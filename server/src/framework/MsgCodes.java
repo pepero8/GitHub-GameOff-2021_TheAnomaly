@@ -30,6 +30,7 @@ public class MsgCodes {
 		public static final char ATTACK = 'a';
 		public static final char GRAB = 'g';
 		public static final char RUSH = 'u';
+		public static final char INTERACT = 'i';
 
 		public static final char KEY_UP = 'u'; // key released
 		public static final char KEY_DOWN = 'd'; // key pressed
@@ -43,7 +44,11 @@ public class MsgCodes {
 		public static final char DEAD_STATE = 'k';
 		public static final char DRAGGED_STATE = 'r';
 		public static final char RUSH_STATE = 'u';
+		public static final char INTERACT_STATE = 'i';
+		public static final char INTERACT_SUCCESS_STATE = 's';
+		public static final char INTERACT_FAILED_STATE = 'f';
 
+		//player's direction
 		public static final char DIRECTION_NORTH = '0';
 		public static final char DIRECTION_NORTH_EAST = '1';
 		public static final char DIRECTION_EAST = '2';
@@ -52,5 +57,8 @@ public class MsgCodes {
 		public static final char DIRECTION_SOUTH_WEST = '5';
 		public static final char DIRECTION_WEST = '6';
 		public static final char DIRECTION_NORTH_WEST = '7';
+
+		public static final char HAS_KEY = 'y';
+		public static final char NO_KEY = 'n';
 	}
 }

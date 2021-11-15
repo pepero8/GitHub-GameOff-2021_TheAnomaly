@@ -44,8 +44,10 @@ abstract public class WorkerThread extends Thread {
 					}
 
 					//leftover lag?
-					update(lag);
-					lag = 0;
+					if (lag > 0) {
+						update(lag);
+						lag = 0;
+					}
 				}
 
 				broadcast();

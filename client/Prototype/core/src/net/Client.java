@@ -19,7 +19,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 38;
+	private static final int PACKET_SIZE = 40;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -100,13 +100,17 @@ public class Client extends Thread implements Disposable {
 				float x = packetBuffer.getFloat();
 				float y = packetBuffer.getFloat();
 				char state = packetBuffer.getChar();
+				char hasKey = packetBuffer.getChar();
 				char direction = packetBuffer.getChar();
+
+				//Gdx.app.log("Client", "" + hasKey);
 
 				game.world.player1.accessPosition("set", x, y); // using this function to achieve synchronization
 				game.world.player1.accessState("set", state);
+				game.world.player1.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
 				game.world.player1.accessDirection("set", direction);
 			}
-		}		
+		}
 		else if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = packetBuffer.getChar();
 			if (msgCode == MsgCodes.Server.SESSION_TERMINATE_OD) {
@@ -210,6 +214,31 @@ public class Client extends Thread implements Disposable {
 			out.flush();
 			//====================================FOR DEBUG==========================================
 			System.out.println("(Client)sent(" + packet.length + "bytes)");
+			//====================================FOR DEBUG==========================================
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	//called when interact input is received
+	public void sendInput(char key, int areaNum, int objectNum, char downOrUp) {
+		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
+		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.putChar(key);
+		packetBuffer.putChar(downOrUp);
+		packetBuffer.putInt(areaNum);
+		packetBuffer.putInt(objectNum);
+
+		//System.out.println("(Client)sent(" + packetBuffer.asCharBuffer() + ")");
+
+		byte[] packet = packetBuffer.array();
+
+		try {
+			out.write(packet);
+			out.flush();
+			//====================================FOR DEBUG==========================================
+			System.out.println("(Client)sent(" + packet.length + "bytes)");
+			// System.out.println("(Client)sent(" + packetBuffer.asCharBuffer() + ")");
 			//====================================FOR DEBUG==========================================
 		} catch (IOException e) {
 			e.printStackTrace();

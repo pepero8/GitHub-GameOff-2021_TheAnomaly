@@ -40,11 +40,18 @@ public class RushState extends PlayerState {
 			}
 		}
 		else if (elapsed >= 3000) {
-			elapsed = 0;
+			//elapsed = 0;
+			reset();
 			return false;
 		}
 
 		return true;
+	}
+
+	@Override
+	void reset() {
+		// TODO Auto-generated method stub
+		elapsed = 0;
 	}
 	
 }

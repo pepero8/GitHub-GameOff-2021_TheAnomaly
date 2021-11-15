@@ -13,5 +13,11 @@ public class DeadState extends PlayerState{
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+	@Override
+	void reset() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

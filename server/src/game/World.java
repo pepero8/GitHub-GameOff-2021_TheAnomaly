@@ -11,10 +11,10 @@ public class World {
 	public static final int ROBOT_SPEED = 150;
 	public static final int RUSH_SPEED = 300;
 	public static final int PLAYER_SPEED = 200;
-	public static final int PLAYER_WIDTH = 64;
-	public static final int PLAYER_HEIGHT = 128;
+	public static final int PLAYER_WIDTH = 32;
+	public static final int PLAYER_HEIGHT = 32;
 	public static final int ROBOT_ATTACK_RANGE = 25;
-	public static final int PROJECTILE_DISTANCE = 250; //maximum distance the projectile travels
+	public static final int PROJECTILE_DISTANCE = 320; //maximum distance the projectile travels
 	public static final int PROJECTILE_CAST_TIME = 500; //arrives to the target location in 0.5 seconds
 
 	private Player robot;
@@ -23,15 +23,23 @@ public class World {
 	//private Player player3;
 	//private Player player4;
 
+	private Map map;
+
 	Player[] players;
 
 	public World() {
+		map = new Map();
+
 		robot = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE);
+		robot.setMovableSpace(map.spaceMainWest);
+		robot.setArea(map.mainArea);
 		// robot = new Player();
 		// robot.setPosition(0, 0);
 		// robot.setSpeed(ROBOT_SPEED);
 		// robot.setState(Player.NORMAL_STATE);
-		player1 = new Player(100, 100, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE);
+		player1 = new Player(95, 95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE);
+		player1.setMovableSpace(map.spaceMainWest);
+		player1.setArea(map.mainArea);
 		// player1 = new Player();
 		// player1.setPosition(100, 100);
 		// player1.setSpeed(PLAYER_SPEED);
@@ -45,6 +53,8 @@ public class World {
 		robot.attackState = new AttackState(players, robot);
 		robot.grabbingState = new GrabbingState(players, robot);
 		robot.rushState = new RushState(players, robot);
+
+		
 	}
 
 	public void processInput(ByteBuffer msg, int playerNum) {
@@ -86,12 +96,28 @@ public class World {
 				robot.curState.rush();
 			}
 		}
+		else if (key == MsgCodes.Game.INTERACT) {
+			if (downOrUp == MsgCodes.Game.KEY_DOWN) {
+				int areaNum = msg.getInt();
+				int objectNum = msg.getInt();
+				//System.out.println("[World] areaNum: " + areaNum + ", objectNum: " + objectNum);
+				players[playerNum].curState.interact(playerNum, map.areas[areaNum].getObjects()[objectNum]);
+			}
+			else if (downOrUp == MsgCodes.Game.KEY_UP) {
+				Player curPlayer = players[playerNum];
+				if (curPlayer.curState == curPlayer.interactState)
+					((InteractState)players[playerNum].curState).haltInteract();
+			}
+			//map.areas[areaNum].getObjects()[objectNum].interact(playerNum);
+		}
 	}
 
 	public void update(long progressTime) {
 		for (Player player : players) {
 			player.update(progressTime);
 		}
+
+		//System.out.println("after update: (" + robot.x + ", " + robot.y + ")");
 	}
 
 	public byte[] getStatePacket() {
@@ -117,6 +143,9 @@ public class World {
 		packetBuffer.putFloat(player1.x);
 		packetBuffer.putFloat(player1.y);
 		packetBuffer.putChar(player1.curState.code);
+		//System.out.println(player1.curState.code);
+		packetBuffer.putChar(player1.getHaveKeyAsCode());
+		//System.out.println(player1.getHaveKeyAsCode());
 		packetBuffer.putChar(player1.curDirection);
 
 		return packetBuffer.array();

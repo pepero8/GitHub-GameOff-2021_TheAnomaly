@@ -6,6 +6,12 @@ public class Player {
 	// ===============================CAPRICIOUS===============================
 	char curDirection; //direction the player's looking at
 
+	Area curArea;
+	private MovableSpace curSpace;
+
+	//private Interactable possession;
+	boolean haveKey;
+
 	float x, y;
 
 	int width; //player's width
@@ -31,6 +37,7 @@ public class Player {
 	GrabbingState grabbingState; //initialized by world(needs player[])
 	AttackState attackState; //initialized by world(needs player[])
 	RushState rushState; //initialized by world(needs player[])
+	InteractState interactState;
 
 	//constructor
 	// public Player() {
@@ -51,6 +58,7 @@ public class Player {
 		dodgeState = new DodgeState(this);
 		deadState = new DeadState();
 		draggedState = new DraggedState();
+		interactState = new InteractState();
 
 		//duplicate. replace with setState()
 		switch (initState) {
@@ -108,6 +116,18 @@ public class Player {
 		moveSpeed = speed;
 	}
 
+	public void setArea(Area area) {
+		curArea = area;
+	}
+
+	public void setMovableSpace(MovableSpace space) {
+		curSpace = space;
+	}
+
+	// public void setPossession(Interactable object) {
+	// 	possession = object;
+	// }
+
 	public boolean isContact(Player player, int range) {
 		// System.out.println("fuck player.x: " + player.x);
 		// System.out.println("fuck player.width: " + player.width);
@@ -143,9 +163,10 @@ public class Player {
 	// }
 
 	public void kill() {
-		if (curState == dodgeState) {
-			dodgeState.reset();
-		}
+		curState.reset();
+		// if (curState == dodgeState) {
+		// 	dodgeState.reset();
+		// }
 		//dead = true;
 		curState = deadState;
 	}
@@ -157,14 +178,19 @@ public class Player {
 
 	//called by grabbingState
 	public void drag() {
-		if (curState == dodgeState) {
-			dodgeState.reset();
-		}
+		// if (curState == dodgeState) {
+		// 	dodgeState.reset();
+		// }
+		curState.reset();
 		curState = draggedState;
 	}
 
 	public boolean isDead() {
 		return curState == deadState;
+	}
+
+	public char getHaveKeyAsCode() {
+		return (haveKey) ? MsgCodes.Game.HAS_KEY : MsgCodes.Game.NO_KEY;
 	}
 
 	public void setState(int state) {
@@ -190,14 +216,42 @@ public class Player {
 			case MsgCodes.Game.DRAGGED_STATE:
 				curState = draggedState;
 				break;
+			case MsgCodes.Game.INTERACT_STATE:
+				curState = interactState;
+				break;
 			default:
 		}
 	}
 
 	public void update(long progressTime) {
+		float prevX = x;
+		float prevY = y;
 		if (!curState.update(progressTime)) {
 			curState = normalState;
 		}
+
+		curSpace = curSpace.determineSpace(x, y);
+		curArea = curArea.determineArea(x, y);
+
+		//if player overlaps with any object
+		if (curArea.hitObject(this)) {
+			x = prevX;
+			y = prevY;
+		}
+
+		x = curSpace.clampPosX(x);
+		y = curSpace.clampPosY(y);
+
+		// MovableSpace newSpace = curSpace.determineSpace(x, y);
+		// if (newSpace != curSpace) {
+		// 	System.out.println("space changed");
+		// }
+
+		// if (curState == grabbingState) {
+		// 	grabbingState.projectileX = curArea.clampPosX(x);
+		// 	grabbingState.projectileY = curArea.clampPosY(y);
+		// }
+		
 	}
 
 	public void updateDirection() {

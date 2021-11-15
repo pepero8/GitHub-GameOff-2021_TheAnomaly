@@ -28,12 +28,18 @@ public class AttackState extends PlayerState {
 			}
 		}
 		else if (elapsed >= 600) {
-			elapsed = 0;
+			reset();
 			//robot.setState(MsgCodes.Game.NORMAL_STATE);
 			return false;
 		}
 
 		return true;
+	}
+
+	@Override
+	void reset() {
+		// TODO Auto-generated method stub
+		elapsed = 0;
 	}
 	
 }
