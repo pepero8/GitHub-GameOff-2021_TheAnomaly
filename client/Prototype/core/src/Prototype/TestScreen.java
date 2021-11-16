@@ -216,7 +216,6 @@ public class TestScreen implements Screen {
 		shapeRenderer.end();
 		//render objects in area1
 		shapeRenderer.begin(ShapeType.Filled);
-		//shapeRenderer.setColor(1, 1, 1, 0); // white
 			for (Interactable obj : game.world.mainArea.getObjects()) {
 				if (obj.isInteracting())
 					shapeRenderer.setColor(0.8f, 1, 1, 0);

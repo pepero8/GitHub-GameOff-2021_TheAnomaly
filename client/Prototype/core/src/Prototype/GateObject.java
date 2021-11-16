@@ -1,11 +1,11 @@
 package Prototype;
 
-public class BoxObject implements Interactable {
-	static final int BOXOBJECT_WIDTH = 32;
-	static final int BOXOBJECT_HEIGHT = 32;
+public class GateObject implements Interactable {
+	static final int GATEOBJECT_WIDTH = 256;
+	static final int GATEOBJECT_HEIGHT = 32;
 
-	//private Interactable content;
-	//private BoxObjectModel model;
+	// private Interactable content;
+	// private BoxObjectModel model;
 	private float x;
 	private float y;
 	private int width;
@@ -16,7 +16,7 @@ public class BoxObject implements Interactable {
 	private boolean interacting;
 	private boolean interacted;
 
-	BoxObject(float x, float y, int width, int height, String name) {
+	GateObject(float x, float y, int width, int height, String name) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -25,30 +25,10 @@ public class BoxObject implements Interactable {
 		//model = boxModel;
 	}
 
-	// @Override
-	// public Interactable interact() {
-	// 	if (!interacted) {
-	// 		interacted = true;
-	// 		return content;
-	// 	}
-	// 	return null;
-	// }
-
-	// @Override
-	// public boolean overlap(Player player) {
-	// 	// TODO Auto-generated method stub
-	// 	return (x <= (player.getX() + player.getWidth())) &&
-	// 		   ((x + BOXOBJECT_WIDTH) >= (player.getX())) &&
-	// 		   (y <= (player.getY() + player.getHeight())) &&
-	// 		   ((y + BOXOBJECT_HEIGHT) >= (player.getY()));
-	// }
-
 	@Override
 	public boolean isContact(Player player, int range) {
-		return (x < (player.getX() + player.getWidth() + range)) &&
-			   ((x + width) > (player.getX() - range)) &&
-			   (y < (player.getY() + player.getHeight() + range)) &&
-			   ((y + height) > (player.getY() - range));
+		return (x < (player.getX() + player.getWidth() + range)) && ((x + width) > (player.getX() - range))
+				&& (y < (player.getY() + player.getHeight() + range)) && ((y + height) > (player.getY() - range));
 	}
 
 	@Override
@@ -85,7 +65,7 @@ public class BoxObject implements Interactable {
 		// TODO Auto-generated method stub
 		objectNum = num;
 	}
-	
+
 	@Override
 	public int getNum() {
 		// TODO Auto-generated method stub

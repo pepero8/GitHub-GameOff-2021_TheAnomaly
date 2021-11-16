@@ -12,14 +12,18 @@ public class BoxObject implements Interactable {
 	// private BoxObjectModel model;
 	private float x;
 	private float y;
+	private int width;
+	private int height;
 	private String name; //needed?
 	private int objectNum;
 
 	private boolean interacted;
 
-	BoxObject(float x, float y, String name) {
+	BoxObject(float x, float y, int width, int height, String name) {
 		this.x = x;
 		this.y = y;
+		this.width = width;
+		this.height = height;
 		this.name = name;
 		// model = boxModel;
 		TOTAL_BOX_OBJECTS++;
@@ -52,15 +56,15 @@ public class BoxObject implements Interactable {
 	@Override
 	public boolean isContact(Player player, int range) {
 		return (x < (player.x + player.width + range)) &&
-			   ((x + BOXOBJECT_WIDTH) > (player.x - range)) &&
+			   ((x + width) > (player.x - range)) &&
 			   (y < (player.y + player.height + range)) &&
-			   ((y + BOXOBJECT_HEIGHT) > (player.y - range));
+			   ((y + height) > (player.y - range));
 	}
 
 	@Override
 	public boolean isContact(float x, float y) {
-		return x > this.x && x < this.x + BOXOBJECT_WIDTH &&
-			   y > this.y && y < this.y + BOXOBJECT_HEIGHT;
+		return x > this.x && x < this.x + width &&
+			   y > this.y && y < this.y + height;
 	}
 
 	@Override
@@ -78,13 +82,13 @@ public class BoxObject implements Interactable {
 	@Override
 	public float getWidth() {
 		// TODO Auto-generated method stub
-		return BOXOBJECT_WIDTH;
+		return width;
 	}
 
 	@Override
 	public float getHeight() {
 		// TODO Auto-generated method stub
-		return BOXOBJECT_HEIGHT;
+		return height;
 	}
 
 	@Override

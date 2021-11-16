@@ -77,14 +77,16 @@ public class Map {
 			}
 		};
 
-		mainArea = new Area(0, 0, 1144, 1336, MAIN_AREA_NUM, 1) {
+		mainArea = new Area(0, 0, 1144, 1336, MAIN_AREA_NUM, 3) {
 			@Override
 			Area determineArea(float x, float y) {
 				// TODO Auto-generated method stub
 				return this;
 			}
 		};
-		mainArea.addObject(new BoxObject(572, 128, "main area box1"));
+		mainArea.addObject(new BoxObject(572, 128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1"));
+		mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door"));
+		mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate"));
 		areas[MAIN_AREA_NUM] = mainArea;
 	}
 }

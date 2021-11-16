@@ -10,6 +10,7 @@ public class InteractState extends PlayerState {
 	private long elapsed;
 	private long requiredTime;
 	private boolean halt;
+	private boolean interacted;
 
 	InteractState() {
 		code = MsgCodes.Game.INTERACT_STATE;
@@ -46,7 +47,8 @@ public class InteractState extends PlayerState {
 			}
 		}
 		else if (elapsed < requiredTime + 500) {
-			if (targetObj.interacted());
+			//if (targetObj.interacted());
+			if (interacted);
 			else if (targetObj.interact(player)) {
 				//System.out.println("success!");
 				code = MsgCodes.Game.INTERACT_SUCCESS_STATE;
@@ -54,6 +56,7 @@ public class InteractState extends PlayerState {
 			else {
 				code = MsgCodes.Game.INTERACT_FAILED_STATE;
 			}
+			interacted = true;
 		}
 		else {
 			//elapsed = 0;
@@ -69,6 +72,7 @@ public class InteractState extends PlayerState {
 		// TODO Auto-generated method stub
 		elapsed = 0;
 		halt = false;
+		interacted = false;
 		code = MsgCodes.Game.INTERACT_STATE;
 	}
 	
