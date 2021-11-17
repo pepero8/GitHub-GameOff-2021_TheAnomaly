@@ -20,12 +20,17 @@ public class World implements Disposable {
 	//public Area area2;
 	//public Area area3;
 
+	public Area[] areas;
+
+	public CardKeyObject cardKey;
+
 	//constructor
 	public World() {
 		players = new Player[2];
+		areas = new Area[1];
 		
 		//create areas
-		mainArea = new Area(MAIN_AREA_NUM, 3) {
+		mainArea = new Area(MAIN_AREA_NUM, 4) {
 			@Override
 			public Area determineArea(float x, float y) {
 				//entry line to area2
@@ -44,6 +49,8 @@ public class World implements Disposable {
 
 		mainArea.setBounds(0, 0, 1144, 1336);
 		mainArea.setName("main zone");
+
+		areas[MAIN_AREA_NUM] = mainArea;
 		// area1.setBounds(0, 0, Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT-Prototype.CHAR_HEIGHT);
 		// area1.setName("area1");
 		// area2 = new Area() {
@@ -109,6 +116,11 @@ public class World implements Disposable {
 
 		players[0] = robot;
 		players[1] = player1;
+
+		//create card key object
+		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
+		//cardKey = new CardKeyObject(this, mainArea, 872, 240, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
+		//mainArea.addObject(cardKey);
 	}
 
 	@Override

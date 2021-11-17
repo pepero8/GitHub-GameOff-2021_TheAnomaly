@@ -3,6 +3,7 @@ package game;
 import framework.MsgCodes;
 
 public class Player {
+	//private World world;
 	// ===============================CAPRICIOUS===============================
 	char curDirection; //direction the player's looking at
 
@@ -47,6 +48,7 @@ public class Player {
 
 	//constructor
 	public Player(float initX, float initY, int playerWidth, int playerHeight, int initSpeed, int initState/* needed? */) {
+		//this.world = world;
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
 		x = initX;
 		y = initY;
@@ -164,11 +166,21 @@ public class Player {
 
 	public void kill() {
 		curState.reset();
+		dropKey();
 		// if (curState == dodgeState) {
 		// 	dodgeState.reset();
 		// }
 		//dead = true;
 		curState = deadState;
+	}
+
+	public void dropKey() {
+		if (haveKey) {
+			Interactable cardkey = new CardKeyObject(curArea, x + width/4, y + height/4, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
+			curArea.addObject(cardkey);
+			haveKey = false;
+			//world.cardKey = cardkey;
+		}
 	}
 
 	// public void grab(float cursorX, float cursorY) {

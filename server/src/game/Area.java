@@ -1,7 +1,11 @@
 package game;
 
+import java.util.ArrayList;
+
 public abstract class Area {
-	private Interactable[] objects;
+	private Map map;
+	//private Interactable[] objects;
+	private ArrayList<Interactable> objects;
 	private int index = -1;
 
 	private int areaNum;
@@ -11,23 +15,57 @@ public abstract class Area {
 	private int width;
 	private int height;
 
-	Area(float x, float y, int width, int height, int areaNum, int numObjects) {
+	/**
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param areaNum
+	 * @param numObjects number of objects in this area. It should have an empty room for the card key
+	 */
+	Area(Map map, float x, float y, int width, int height, int areaNum, int numObjects) {
+		this.map = map;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 
 		this.areaNum = areaNum;
-		objects = new Interactable[numObjects];
+		objects = new ArrayList<Interactable>();
+		//objects = new Interactable[numObjects];
 	}
 
 	void addObject(Interactable object) {
-		objects[++index] = object;
+		//objects[++index] = object;
+		objects.add(++index, object);
 		object.setNum(index);
+
+		if (object instanceof CardKeyObject) {
+			map.cardKey = (CardKeyObject)object;
+		}
 	}
 
-	Interactable[] getObjects() {
+	//called only for card key
+	Interactable removeObject(int objectNum) {
+		Interactable ret = objects.remove(objectNum);
+		index--;
+		if (ret instanceof CardKeyObject) {
+			map.cardKey = null;
+		}
+		return ret;
+	}
+
+	// Interactable[] getObjects() {
+	// 	return objects;
+	// }
+
+	ArrayList<Interactable> getObjects() {
 		return objects;
+	}
+
+	int getNumber() {
+		return areaNum;
 	}
 
 	boolean hitWall(float objX, float objY) {
@@ -44,7 +82,7 @@ public abstract class Area {
 	}
 
 	boolean hitObject(Player player) {
-		for (Interactable obj : objects) {
+		for (Interactable obj : objects) { 
 			if (obj.isContact(player, 0)) {
 				return true;
 			}

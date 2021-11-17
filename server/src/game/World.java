@@ -23,6 +23,8 @@ public class World {
 	//private Player player3;
 	//private Player player4;
 
+	//Interactable cardKey;
+
 	private Map map;
 
 	Player[] players;
@@ -101,7 +103,7 @@ public class World {
 				int areaNum = msg.getInt();
 				int objectNum = msg.getInt();
 				//System.out.println("[World] areaNum: " + areaNum + ", objectNum: " + objectNum);
-				players[playerNum].curState.interact(playerNum, map.areas[areaNum].getObjects()[objectNum]);
+				players[playerNum].curState.interact(playerNum, map.areas[areaNum].getObjects().get(objectNum));
 			}
 			else if (downOrUp == MsgCodes.Game.KEY_UP) {
 				Player curPlayer = players[playerNum];
@@ -117,7 +119,7 @@ public class World {
 			player.update(progressTime);
 		}
 
-		//System.out.println("after update: (" + robot.x + ", " + robot.y + ")");
+		//System.out.println(" robot.x + ", " + robot.y + ")");
 	}
 
 	public byte[] getStatePacket() {
@@ -147,6 +149,11 @@ public class World {
 		packetBuffer.putChar(player1.getHaveKeyAsCode());
 		//System.out.println(player1.getHaveKeyAsCode());
 		packetBuffer.putChar(player1.curDirection);
+
+		//add card key info
+		packetBuffer.putFloat((map.cardKey == null) ? -1f : map.cardKey.getX());
+		packetBuffer.putFloat((map.cardKey == null) ? -1f : map.cardKey.getY());
+		packetBuffer.putInt((map.cardKey == null) ? -1 : map.cardKey.getArea().getNumber());
 
 		return packetBuffer.array();
 	}

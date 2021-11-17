@@ -12,6 +12,8 @@ public class Map {
 
 	Area[] areas;
 
+	CardKeyObject cardKey;
+
 	Map() {
 		areas = new Area[1];
 
@@ -77,7 +79,7 @@ public class Map {
 			}
 		};
 
-		mainArea = new Area(0, 0, 1144, 1336, MAIN_AREA_NUM, 3) {
+		mainArea = new Area(this, 0, 0, 1144, 1336, MAIN_AREA_NUM, 3+1) {
 			@Override
 			Area determineArea(float x, float y) {
 				// TODO Auto-generated method stub
@@ -87,6 +89,7 @@ public class Map {
 		mainArea.addObject(new BoxObject(572, 128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1"));
 		mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door"));
 		mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate"));
+		//mainArea.addObject(new CardKeyObject(mainArea, 872, 240, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key"));
 		areas[MAIN_AREA_NUM] = mainArea;
 	}
 }

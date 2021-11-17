@@ -19,7 +19,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 40;
+	private static final int PACKET_SIZE = 52;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -110,6 +110,15 @@ public class Client extends Thread implements Disposable {
 				game.world.player1.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
 				game.world.player1.accessDirection("set", direction);
 			}
+
+			//card key
+			float cardKeyX = packetBuffer.getFloat();
+			float cardKeyY = packetBuffer.getFloat();
+			int areaNum = packetBuffer.getInt();
+			//if (areaNum != -1)
+			//	Gdx.app.log("Client", "(" + cardKeyX + ", " + cardKeyY + ")");
+			game.world.cardKey.setPosition(cardKeyX, cardKeyY);
+			game.world.cardKey.setArea(areaNum);
 		}
 		else if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = packetBuffer.getChar();

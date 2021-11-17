@@ -6,6 +6,7 @@ public class BoxObject implements Interactable {
 	static final long BOXOBJECT_REQUIRE_TIME = 2000; //required time to finish interaction in milliseconds
 	static int TOTAL_BOX_OBJECTS = 0;
 	static int REMAINING_BOX_OBJECTS = 0;
+	static int HIT = 0;
 	//static float SUCCESS_RATE;
 	
 	//private Interactable content;
@@ -34,12 +35,13 @@ public class BoxObject implements Interactable {
 	public boolean interact(Player player) {
 		//if (!interacted) {
 			interacted = true;
-			int hit = (int)(Math.random() * REMAINING_BOX_OBJECTS);
-			System.out.println("hit: " + hit);
-			if (hit == 0) {
+			int trial = (int)(Math.random() * REMAINING_BOX_OBJECTS);
+			System.out.println("trial: " + trial);
+			if (trial == HIT) {
 				//player.setPossession(new CardKey());
 				player.haveKey = true;
-				REMAINING_BOX_OBJECTS--;
+				HIT = -1; //no more keys
+				//REMAINING_BOX_OBJECTS--;
 				return true;
 			}
 			REMAINING_BOX_OBJECTS--;

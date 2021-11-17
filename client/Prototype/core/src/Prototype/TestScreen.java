@@ -217,13 +217,15 @@ public class TestScreen implements Screen {
 		//render objects in area1
 		shapeRenderer.begin(ShapeType.Filled);
 			for (Interactable obj : game.world.mainArea.getObjects()) {
-				if (obj.isInteracting())
-					shapeRenderer.setColor(0.8f, 1, 1, 0);
-				else if (obj.interacted())
-					shapeRenderer.setColor(0.8f, 0.8f, 0.8f, 0);
-				else
-					shapeRenderer.setColor(1, 1, 1, 0); //white
-				shapeRenderer.rect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+				if (obj != null && !(obj instanceof CardKeyObject)) {
+					if (obj.isInteracting())
+						shapeRenderer.setColor(0.8f, 1, 1, 0);
+					else if (obj.interacted())
+						shapeRenderer.setColor(0.8f, 0.8f, 0.8f, 0);
+					else
+						shapeRenderer.setColor(1, 1, 1, 0); //white
+					shapeRenderer.rect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+				}
 			}
 		shapeRenderer.end();
 
@@ -314,6 +316,15 @@ public class TestScreen implements Screen {
 		// else shapeRenderer.setColor(0, 1, 0, 0); //green
 		// 	shapeRenderer.rect(world.player4.getX(), world.player4.getY(), Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		// shapeRenderer.end();
+		
+		//render card key
+		if (game.world.cardKey.getX() != -1f) {
+			//Gdx.app.log("TestScreen", "rendering card key: (" + game.world.cardKey.getX() + ", " + game.world.cardKey.getY() + ")");
+			shapeRenderer.begin(ShapeType.Filled);
+			shapeRenderer.setColor(1, 1, 1, 0);
+			shapeRenderer.rect(game.world.cardKey.getX(), game.world.cardKey.getY(), game.world.cardKey.getWidth(), game.world.cardKey.getHeight());
+			shapeRenderer.end();
+		}
 		
 		//show camera's position & players' info
 		batch.setProjectionMatrix(playerCamera.combined);

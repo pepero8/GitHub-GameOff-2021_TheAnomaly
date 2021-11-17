@@ -1,7 +1,7 @@
 package Prototype;
 
 public interface Interactable {
-	int INTERACTION_AVAILABLE_RANGE = 16;
+	int INTERACTION_AVAILABLE_RANGE = 10;
 	boolean isContact(Player player, int range);
 	//boolean overlap(Player player);
 	//Interactable interact();

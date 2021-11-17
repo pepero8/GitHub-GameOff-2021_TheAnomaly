@@ -24,6 +24,11 @@ public abstract class Area extends Actor implements Disposable {
 		object.setNum(index);
 	}
 
+	//called for removing card key
+	public void removeLast() {
+		index--;
+	}
+
 	public Interactable[] getObjects() {
 		return objects;
 	}
@@ -33,9 +38,11 @@ public abstract class Area extends Actor implements Disposable {
 	}
 
 	public Interactable checkCollision(Player player) {
-		for (Interactable object : objects) {
-			if (object.isContact(player, Interactable.INTERACTION_AVAILABLE_RANGE)) {
-				return object;
+		//returns card key first if exists
+		for (int i = objects.length - 1; i != -1; i--) {
+		//for (Interactable object : objects) {
+			if (objects[i] != null && objects[i].isContact(player, Interactable.INTERACTION_AVAILABLE_RANGE)) {
+				return objects[i];
 			}
 		}
 
