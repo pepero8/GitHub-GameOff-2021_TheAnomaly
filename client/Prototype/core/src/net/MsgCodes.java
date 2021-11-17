@@ -13,6 +13,7 @@ public class MsgCodes {
 		public static final char SESSION_START_PLAYER3 = '3';
 		public static final char SESSION_START_PLAYER4 = '4';
 		public static final char SESSION_TERMINATE_OD = 't'; // opponent player disconnected
+		public static final char SESSION_TERMINATE_GAMEOVER = 'g';
 	}
 
 	// client message code

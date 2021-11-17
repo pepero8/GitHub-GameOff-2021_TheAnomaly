@@ -19,7 +19,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 52;
+	private static final int PACKET_SIZE = 60;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -119,11 +119,19 @@ public class Client extends Thread implements Disposable {
 			//	Gdx.app.log("Client", "(" + cardKeyX + ", " + cardKeyY + ")");
 			game.world.cardKey.setPosition(cardKeyX, cardKeyY);
 			game.world.cardKey.setArea(areaNum);
+
+			//remaining time
+			long remainingTime = packetBuffer.getLong();
+			game.world.setRemainTime(remainingTime);
 		}
 		else if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = packetBuffer.getChar();
 			if (msgCode == MsgCodes.Server.SESSION_TERMINATE_OD) {
 				Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
+				game.start = false;
+			}
+			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER) {
+				Gdx.app.log("Client", "Session terminate[GAMEOVER]");
 				game.start = false;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER0) {

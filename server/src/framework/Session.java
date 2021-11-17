@@ -62,15 +62,16 @@ public class Session extends WorkerThread {
 				else {
 					robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 				}
+				
+				terminate();
+				// robot.unbind();
+				// player1.unbind();
 
-				robot.unbind();
-				player1.unbind();
+				// terminate = true;
 
-				terminate = true;
-
-				//====================================FOR DEBUG==========================================
-				System.out.println("(Session)session over");
-				//====================================FOR DEBUG==========================================
+				// //====================================FOR DEBUG==========================================
+				// System.out.println("(Session)session over");
+				// //====================================FOR DEBUG==========================================
 			}
 		}
 		//delegate handling of inputs to world
@@ -87,10 +88,30 @@ public class Session extends WorkerThread {
 
 	@Override
 	protected void update(long progressTime) {
-		world.update(progressTime);
+		if (!world.gameover)
+			world.update(progressTime);
+		else {
+			robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			//player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			//player3.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			//player4.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			terminate();
+		}
 		//====================================FOR DEBUG==========================================
 		//System.out.println("(Session)updating game state...");
 		//====================================FOR DEBUG==========================================
+	}
+
+	private void terminate() {
+		robot.unbind();
+		player1.unbind();
+
+		terminate = true;
+
+		// ====================================FOR DEBUG==========================================
+		System.out.println("(Session)session over");
+		// ====================================FOR DEBUG==========================================
 	}
 
 	@Override

@@ -326,7 +326,7 @@ public class TestScreen implements Screen {
 			shapeRenderer.end();
 		}
 		
-		//show camera's position & players' info
+		//show camera's position & players' info & remaining time
 		batch.setProjectionMatrix(playerCamera.combined);
 		batch.begin();
 			font.draw(batch, "camera pos: (" + playerCamera.position.x + ", " + playerCamera.position.y + ")", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y - playerCamera.viewportHeight/2 + 11);
@@ -343,7 +343,11 @@ public class TestScreen implements Screen {
 			font.draw(batch, "player1's direction: " + player1DirectionStr, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 84);
 			font.draw(batch, "player1's nearby object: " + player1NearbyObj, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 96);
 			font.draw(batch, "player1's key possession: " + player1HasKey, playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 108);
+		
+			//remaining time
+			font.draw(batch, "remaining time: " + game.world.remainTime + "ms", playerCamera.position.x - playerCamera.viewportWidth/2, playerCamera.position.y + playerCamera.viewportHeight/2 - 132);
 		batch.end();
+
 
 		if (!game.start) {
 			game.disconnect();

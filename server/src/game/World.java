@@ -7,6 +7,7 @@ import framework.MsgCodes;
 
 public class World {
 	// ===============================CAPRICIOUS===============================
+	public static final long TIME_LIMIT = 10000;
 	public static final int NUM_PLAYERS = 2;
 	public static final int ROBOT_SPEED = 150;
 	public static final int RUSH_SPEED = 300;
@@ -28,6 +29,9 @@ public class World {
 	private Map map;
 
 	Player[] players;
+
+	private long elapsed;
+	public boolean gameover;
 
 	public World() {
 		map = new Map();
@@ -56,7 +60,7 @@ public class World {
 		robot.grabbingState = new GrabbingState(players, robot);
 		robot.rushState = new RushState(players, robot);
 
-		
+		elapsed = 0;
 	}
 
 	public void processInput(ByteBuffer msg, int playerNum) {
@@ -115,10 +119,14 @@ public class World {
 	}
 
 	public void update(long progressTime) {
+		elapsed += progressTime;
 		for (Player player : players) {
 			player.update(progressTime);
 		}
 
+		if (elapsed >= TIME_LIMIT) {
+			gameover = true;
+		}
 		//System.out.println(" robot.x + ", " + robot.y + ")");
 	}
 
@@ -154,6 +162,9 @@ public class World {
 		packetBuffer.putFloat((map.cardKey == null) ? -1f : map.cardKey.getX());
 		packetBuffer.putFloat((map.cardKey == null) ? -1f : map.cardKey.getY());
 		packetBuffer.putInt((map.cardKey == null) ? -1 : map.cardKey.getArea().getNumber());
+
+		//add remaining time in milliseconds
+		packetBuffer.putLong(World.TIME_LIMIT - elapsed);
 
 		return packetBuffer.array();
 	}

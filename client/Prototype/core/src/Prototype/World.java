@@ -24,6 +24,8 @@ public class World implements Disposable {
 
 	public CardKeyObject cardKey;
 
+	public long remainTime;
+
 	//constructor
 	public World() {
 		players = new Player[2];
@@ -121,6 +123,10 @@ public class World implements Disposable {
 		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
 		//cardKey = new CardKeyObject(this, mainArea, 872, 240, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
 		//mainArea.addObject(cardKey);
+	}
+
+	public void setRemainTime(long remain) {
+		remainTime = remain;
 	}
 
 	@Override
