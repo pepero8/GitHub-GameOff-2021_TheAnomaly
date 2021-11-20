@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -47,15 +48,18 @@ public class TestScreen implements Screen {
 
 		//register actors to stage
 		stage = new Stage(viewport);
-		stage.addActor(game.world.robot);
-		stage.addActor(game.world.player1);
+
+		stage.addActor(game.world);
+		//is changing the order of adding actors also changes the act/drawing order?
+		//stage.addActor(game.world.mainArea);
+		// stage.addActor(game.world.area1);
+		// stage.addActor(game.world.area2);
+		// stage.addActor(game.world.area3);
+		//stage.addActor(game.world.robot);
+		//stage.addActor(game.world.player1);
 		// stage.addActor(game.world.player2);
 		// stage.addActor(game.world.player3);
 		// stage.addActor(game.world.player4);
-		stage.addActor(game.world.mainArea);
-		//stage.addActor(game.world.area1);
-		//stage.addActor(game.world.area2);
-		//stage.addActor(game.world.area3);
 		//stage.setKeyboardFocus(game.world.robot); //sets keyboard focus on game.world.robot -> should change to stage?
 		//stage.addListener(new UserInputListener(game.client));
 		stage.addListener(new InputListener() {
@@ -155,7 +159,7 @@ public class TestScreen implements Screen {
 	public void render(float delta) {
 		ScreenUtils.clear(0, 0, 0, 0); // clears the background(black)
 		
-		stage.act();
+		stage.act(delta);
 		stage.draw();
 
 		float[] robotPosition = game.world.robot.accessPosition("get", 0, 0); // [x, y]
@@ -179,7 +183,7 @@ public class TestScreen implements Screen {
 		if (game.world.player1.getNearbyObject() == null)
 			player1NearbyObj = "null";
 		else
-			player1NearbyObj = game.world.player1.getNearbyObject().getName();
+			player1NearbyObj = ((Actor)game.world.player1.getNearbyObject()).getName();
 		
 		
 		String robotStateStr = codeToString(robotState);
@@ -191,7 +195,7 @@ public class TestScreen implements Screen {
 		playerPositions[1] = player1Position; 
 
 		//update robot's attack bound rectangle's position
-		game.world.robot.updateAttackBound(robotPosition[0], robotPosition[1]);
+		//game.world.robot.updateAttackBound(robotPosition[0], robotPosition[1]);
 
 		//checkHit(); //check if robot hits any player. It doesn't use robotPosition and playerPosition so it might not be accurate
 
@@ -209,25 +213,25 @@ public class TestScreen implements Screen {
 		//	shapeRenderer.rect(game.world.area1.getX(), game.world.area1.getY(), game.world.area1.getWidth(), game.world.area1.getHeight());
 		//shapeRenderer.end();
 		// render actual area1
-		shapeRenderer.begin(ShapeType.Line);
-		shapeRenderer.setColor(1, 1, 1, 0); // white
-			shapeRenderer.rect(game.world.mainArea.getX(), game.world.mainArea.getY(), game.world.mainArea.getWidth(), game.world.mainArea.getHeight());
-			shapeRenderer.rect(game.world.mainArea.getX()+256, game.world.mainArea.getY()+256, 632, 824);
-		shapeRenderer.end();
+		//shapeRenderer.begin(ShapeType.Line);
+		//shapeRenderer.setColor(1, 1, 1, 0); // white
+		//	shapeRenderer.rect(game.world.mainArea.getX(), game.world.mainArea.getY(), game.world.mainArea.getWidth(), game.world.mainArea.getHeight());
+		//	shapeRenderer.rect(game.world.mainArea.getX()+256, game.world.mainArea.getY()+256, 632, 824);
+		//shapeRenderer.end();
 		//render objects in area1
-		shapeRenderer.begin(ShapeType.Filled);
-			for (Interactable obj : game.world.mainArea.getObjects()) {
-				if (obj != null && !(obj instanceof CardKeyObject)) {
-					if (obj.isInteracting())
-						shapeRenderer.setColor(0.8f, 1, 1, 0);
-					else if (obj.interacted())
-						shapeRenderer.setColor(0.8f, 0.8f, 0.8f, 0);
-					else
-						shapeRenderer.setColor(1, 1, 1, 0); //white
-					shapeRenderer.rect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
-				}
-			}
-		shapeRenderer.end();
+		// shapeRenderer.begin(ShapeType.Filled);
+		// 	for (Interactable obj : game.world.mainArea.getObjects()) {
+		// 		if (obj != null && !(obj instanceof CardKeyObject)) {
+		// 			if (obj.isInteracting())
+		// 				shapeRenderer.setColor(0.8f, 1, 1, 0);
+		// 			else if (obj.interacted())
+		// 				shapeRenderer.setColor(0.8f, 0.8f, 0.8f, 0);
+		// 			else
+		// 				shapeRenderer.setColor(1, 1, 1, 0); //white
+		// 			shapeRenderer.rect(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
+		// 		}
+		// 	}
+		// shapeRenderer.end();
 
 		// render world.area2's position boundary
 		//shapeRenderer.setProjectionMatrix(playerCamera.combined);
@@ -256,10 +260,10 @@ public class TestScreen implements Screen {
 		//shapeRenderer.end();
 
 		//render robot
-		shapeRenderer.begin(ShapeType.Filled);
-		shapeRenderer.setColor(1, 0, 0, 0); //red
-			shapeRenderer.rect(robotPosition[0], robotPosition[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
-		shapeRenderer.end();
+		// shapeRenderer.begin(ShapeType.Filled);
+		// shapeRenderer.setColor(1, 0, 0, 0); //red
+		// 	shapeRenderer.rect(robotPosition[0], robotPosition[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
+		// shapeRenderer.end();
 		//render robot's attack rectangle
 		shapeRenderer.begin(ShapeType.Line);
 		if (robotState == MsgCodes.Game.ATTACK_STATE || robotState == MsgCodes.Game.ATTACK_GRABBING_STATE)
@@ -286,15 +290,15 @@ public class TestScreen implements Screen {
 		}
 
 		//render player1
-		shapeRenderer.begin(ShapeType.Filled);
-		if (player1State == MsgCodes.Game.DEAD_STATE)
-			shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
-		else if (player1State == MsgCodes.Game.DRAGGED_STATE)
-			shapeRenderer.setColor(1, 0.8f, 0, 0); //yellow
-		else
-			shapeRenderer.setColor(0, 1, 0, 0); //green
-			shapeRenderer.rect(player1Position[0], player1Position[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
-		shapeRenderer.end();
+		// shapeRenderer.begin(ShapeType.Filled);
+		// if (player1State == MsgCodes.Game.DEAD_STATE)
+		// 	shapeRenderer.setColor(0.4f, 0.4f, 0.4f, 0); //grey
+		// else if (player1State == MsgCodes.Game.DRAGGED_STATE)
+		// 	shapeRenderer.setColor(1, 0.8f, 0, 0); //yellow
+		// else
+		// 	shapeRenderer.setColor(0, 1, 0, 0); //green
+		// 	shapeRenderer.rect(player1Position[0], player1Position[1], Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
+		// shapeRenderer.end();
 
 		// //render game.world.player2
 		// shapeRenderer.begin(ShapeType.Filled);
@@ -318,13 +322,14 @@ public class TestScreen implements Screen {
 		// shapeRenderer.end();
 		
 		//render card key
-		if (game.world.cardKey.getX() != -1f) {
-			//Gdx.app.log("TestScreen", "rendering card key: (" + game.world.cardKey.getX() + ", " + game.world.cardKey.getY() + ")");
-			shapeRenderer.begin(ShapeType.Filled);
-			shapeRenderer.setColor(1, 1, 1, 0);
-			shapeRenderer.rect(game.world.cardKey.getX(), game.world.cardKey.getY(), game.world.cardKey.getWidth(), game.world.cardKey.getHeight());
-			shapeRenderer.end();
-		}
+		// if (game.world.cardKey.getX() != -1f) {
+		// 	//Gdx.app.log("TestScreen", "rendering card key: (" + game.world.cardKey.getX() + ", " + game.world.cardKey.getY() + ")");
+		// 	// shapeRenderer.begin(ShapeType.Filled);
+		// 	// shapeRenderer.setColor(1, 1, 1, 0);
+		// 	// shapeRenderer.rect(game.world.cardKey.getX(), game.world.cardKey.getY(), game.world.cardKey.getWidth(), game.world.cardKey.getHeight());
+		// 	// shapeRenderer.end();
+		// 	game.world.cardKey.draw(batch, 0);
+		// }
 		
 		//show camera's position & players' info & remaining time
 		batch.setProjectionMatrix(playerCamera.combined);
@@ -371,8 +376,12 @@ public class TestScreen implements Screen {
 	//temporary utility method
 	private String codeToString(char code) {
 		switch(code) {
-			case MsgCodes.Game.NORMAL_STATE:
-				return "normal";
+			// case MsgCodes.Game.NORMAL_STATE:
+			// 	return "normal";
+			case MsgCodes.Game.NORMAL_STATE_STANDING:
+				return "standing";
+			case MsgCodes.Game.NORMAL_STATE_MOVING:
+				return "moving";
 			case MsgCodes.Game.DODGE_STATE:
 				return "dodging";
 			case MsgCodes.Game.ATTACK_STATE:

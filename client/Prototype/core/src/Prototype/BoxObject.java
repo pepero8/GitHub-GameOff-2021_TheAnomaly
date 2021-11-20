@@ -1,27 +1,33 @@
 package Prototype;
 
-public class BoxObject implements Interactable {
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+
+public class BoxObject extends Image implements Interactable {
 	static final int BOXOBJECT_WIDTH = 32;
 	static final int BOXOBJECT_HEIGHT = 32;
 
 	//private Interactable content;
 	//private BoxObjectModel model;
-	private float x;
-	private float y;
-	private int width;
-	private int height;
-	private String name;
+	//private float x;
+	//private float y;
+	//private int width;
+	//private int height;
+	//private String name;
 	private int objectNum;
 
 	private boolean interacting;
 	private boolean interacted;
 
-	BoxObject(float x, float y, int width, int height, String name) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.name = name;
+	BoxObject(float x, float y, int width, int height, String name, Texture image) {
+		super(image);
+		setBounds(x, y, width, height);
+		setName(name);
+		// this.x = x;
+		// this.y = y;
+		// this.width = width;
+		// this.height = height;
+		// this.name = name;
 		//model = boxModel;
 	}
 
@@ -45,40 +51,42 @@ public class BoxObject implements Interactable {
 
 	@Override
 	public boolean isContact(Player player, int range) {
+		float x = getX();
+		float y = getY();
 		return (x < (player.getX() + player.getWidth() + range)) &&
-			   ((x + width) > (player.getX() - range)) &&
+			   ((x + getWidth()) > (player.getX() - range)) &&
 			   (y < (player.getY() + player.getHeight() + range)) &&
-			   ((y + height) > (player.getY() - range));
+			   ((y + getHeight()) > (player.getY() - range));
 	}
 
-	@Override
-	public float getX() {
-		// TODO Auto-generated method stub
-		return x;
-	}
+	// @Override
+	// public float getX() {
+	// 	// TODO Auto-generated method stub
+	// 	return x;
+	// }
 
-	@Override
-	public float getY() {
-		// TODO Auto-generated method stub
-		return y;
-	}
+	// @Override
+	// public float getY() {
+	// 	// TODO Auto-generated method stub
+	// 	return y;
+	// }
 
-	@Override
-	public String getName() {
-		return name;
-	}
+	// @Override
+	// public String getName() {
+	// 	return name;
+	// }
 
-	@Override
-	public float getWidth() {
-		// TODO Auto-generated method stub
-		return width;
-	}
+	// @Override
+	// public float getWidth() {
+	// 	// TODO Auto-generated method stub
+	// 	return width;
+	// }
 
-	@Override
-	public float getHeight() {
-		// TODO Auto-generated method stub
-		return height;
-	}
+	// @Override
+	// public float getHeight() {
+	// 	// TODO Auto-generated method stub
+	// 	return height;
+	// }
 
 	@Override
 	public void setNum(int num) {
@@ -99,9 +107,9 @@ public class BoxObject implements Interactable {
 	}
 
 	@Override
-	public void setInteracted(boolean bool) {
+	public void setInteracted(boolean interacted, boolean success) {
 		// TODO Auto-generated method stub
-		interacted = bool;
+		this.interacted = interacted;
 	}
 
 	@Override

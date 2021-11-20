@@ -7,7 +7,7 @@ public class NormalState extends PlayerState {
 
 	public NormalState(Player player) {
 		this.player = player;
-		code = MsgCodes.Game.NORMAL_STATE;
+		code = MsgCodes.Game.NORMAL_STATE_STANDING;
 	}
 
 	@Override
@@ -46,21 +46,36 @@ public class NormalState extends PlayerState {
 	@Override
 	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
-		// float prevX = player.x;
-		// float prevY = player.y;
+		float prevX = player.x;
+		float prevY = player.y;
+
+		//System.out.println(player.moveUp + ", " + player.moveDown + ", " + player.moveLeft + ", " + player.moveRight);
+		//System.out.println(player.moveSpeed * progressTime / 1000);
+
+		code = MsgCodes.Game.NORMAL_STATE_STANDING;
 
 		if (player.moveUp) {
 			player.y += player.moveSpeed * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+			code = MsgCodes.Game.NORMAL_STATE_MOVING;
 		}
 		if (player.moveDown) {
 			player.y -= player.moveSpeed * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+			code = MsgCodes.Game.NORMAL_STATE_MOVING;
 		}
 		if (player.moveLeft) {
 			player.x -= player.moveSpeed * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+			code = MsgCodes.Game.NORMAL_STATE_MOVING;
 		}
 		if (player.moveRight) {
 			player.x += player.moveSpeed * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+			code = MsgCodes.Game.NORMAL_STATE_MOVING;
 		}
+
+		// if (prevX != player.x || prevY != player.y) {
+		// 	code = MsgCodes.Game.NORMAL_STATE_MOVING;
+		// }
+		// else
+		// 	code = MsgCodes.Game.NORMAL_STATE_STANDING;
 
 		//if x or y changed
 		// if (prevX == player.x && prevY < player.y) {

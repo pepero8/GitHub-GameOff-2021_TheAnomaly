@@ -1,12 +1,16 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Disposable;
 
 import net.MsgCodes;
@@ -16,6 +20,9 @@ import net.MsgCodes;
  * can move around within the map
  */
 public class Player extends Actor implements Disposable {
+	private Animation<TextureRegion>[] animations;
+	private Animation<TextureRegion> curAnimation;
+	private TextureRegion curFrame;
 
 	private Area curArea; //area where the player is located
 
@@ -27,6 +34,8 @@ public class Player extends Actor implements Disposable {
 
 	private Interactable nearbyObject;
 	private boolean hasKey;
+	//private boolean moving;
+	private float stateTime; //for tracking elapsed time for the animation
 
 	//private Rectangle bound; //bounding rectangle of this player
 	Rectangle attackBound; //bounding rectangle of the robot bounding its attack range
@@ -34,10 +43,14 @@ public class Player extends Actor implements Disposable {
 	//private boolean killed;
 
 	//constructor
-	public Player() {
+	public Player(Animation<TextureRegion>[] animations) {
+		this.animations = animations;
+
 		setSize(Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
 		//bound = new Rectangle(getX(), getY(), getWidth(), getHeight());
 		attackBound = new Rectangle(getX() - Prototype.ATTACK_RANGE, getY() - Prototype.ATTACK_RANGE, Prototype.CHAR_WIDTH + Prototype.ATTACK_RANGE*2, Prototype.CHAR_HEIGHT + Prototype.ATTACK_RANGE*2);
+
+		stateTime = 0f;
 
 		//configure action
 		RepeatAction loop = new RepeatAction();
@@ -55,21 +68,25 @@ public class Player extends Actor implements Disposable {
 				nearbyObject = curArea.checkCollision((Player)getActor()); //check if the player is adjacent to any object in the area
 				//bound.setPosition(getX(), getY()); //update the rectangle
 
-				//currently interacting with nearbyObject
+				//if currently interacting with nearbyObject
 				if (nearbyObject != null) {
 					if (curState == MsgCodes.Game.INTERACT_STATE) {
+						Gdx.app.log("Player", "check");
 						nearbyObject.setInteracting(true);
 					}
 					else if (curState == MsgCodes.Game.INTERACT_SUCCESS_STATE) {
-						nearbyObject.setInteracted(true);
+						nearbyObject.setInteracted(true, true);
 					}
 					else if (curState == MsgCodes.Game.INTERACT_FAILED_STATE) {
-						nearbyObject.setInteracted(true);
+						nearbyObject.setInteracted(true, false);
 					}
 					else {
 						nearbyObject.setInteracting(false);
 					}
 				}
+
+				updateAttackBound(getX(), getY());
+				updateAnimation(delta);
 
 				return true;
 			}
@@ -150,6 +167,12 @@ public class Player extends Actor implements Disposable {
 	 */
 	public synchronized float[] accessPosition(String operation, float x, float y) {
 		if (operation.contentEquals("set")) {
+			// if (getX() != x || getY() != y) {
+			// 	moving = true;
+			// }
+			// else
+			// 	moving = false;
+
 			setX(x);
 			setY(y);
 			//Gdx.app.log("Player", "Position set to: (" + x + ", " + y + ")");
@@ -164,6 +187,9 @@ public class Player extends Actor implements Disposable {
 
 	public synchronized char accessState(String operation, char state) {
 		if (operation.contentEquals("set")) {
+			//Gdx.app.log("Player", "state: " + state);
+			if (curState != state)
+				stateTime = 0;
 			curState = state;
 		}
 		else if (operation.contentEquals("get")) {
@@ -201,6 +227,41 @@ public class Player extends Actor implements Disposable {
 		return null;
 	}
 
+	private void updateAnimation(float delta) {
+		stateTime += delta;
+		//Gdx.app.log("Player", "moving: " + moving);
+		boolean loop = false;
+
+		//curAnimation = animations[Assets.ANIMATION_STILL];
+		
+		if (curState == MsgCodes.Game.NORMAL_STATE_MOVING) {
+			//if (moving) {
+				int dir = Integer.parseInt(String.valueOf(curDirection));
+				//Gdx.app.log("Player", "dir: " + dir);
+				curAnimation = animations[dir];
+			//}
+			//else
+			//	curAnimation = animations[Assets.ANIMATION_STILL];
+
+			
+			loop = true;
+		}
+		else if (curState == MsgCodes.Game.DODGE_STATE) {
+			curAnimation = animations[Integer.parseInt(String.valueOf(curDirection)) + 8];
+		}
+		else if (curState == MsgCodes.Game.DRAGGED_STATE) {
+			curAnimation = animations[Assets.ANIMATION_DRAGGED];
+		}
+		else if (curState == MsgCodes.Game.DEAD_STATE) {
+			curAnimation = animations[Assets.ANIMATION_DIE];
+		}
+		else
+			curAnimation = animations[Assets.ANIMATION_STILL];
+
+		//if (curAnimation != null)
+			curFrame = curAnimation.getKeyFrame(stateTime, loop);
+	}
+
 	/**
 	 * Limits the range of x and y
 	 * @param minX min value of x
@@ -216,6 +277,8 @@ public class Player extends Actor implements Disposable {
 	@Override
 	public void draw (Batch batch, float parentAlpha) {
 		//Gdx.app.log("Player", "drawing...");
+		//if (curFrame != null);
+			batch.draw(curFrame, getX(), getY());
 	}
 
 	@Override

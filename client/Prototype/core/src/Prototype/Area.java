@@ -1,21 +1,44 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-public abstract class Area extends Actor implements Disposable {
+public abstract class Area extends Image {
 	private Interactable[] objects;
 	private int index = -1;
 
 	private int areaNum;
 
-	Area(int areaNum, int numObjects) {
+	Area(int areaNum, int numObjects, Texture image) {
+		super(image);
 		this.areaNum = areaNum;
 		objects = new Interactable[numObjects];
+
+		RepeatAction loop = new RepeatAction();
+		loop.setCount(RepeatAction.FOREVER);
+		loop.setAction(new Action() {
+			@Override
+			public boolean act(float delta) {
+				for (Interactable obj : objects) {
+					if (obj != null) {
+						((Actor)obj).act(delta);
+					}
+				}
+
+				return true;
+			}
+
+		});
+
+		addAction(loop);
 	}
 
 	public void addObject(Interactable object) {
@@ -53,13 +76,19 @@ public abstract class Area extends Actor implements Disposable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		
+		super.draw(batch, parentAlpha);
+
+		for (int i = 0; i != objects.length - 1; i++) {
+			if (objects[i] != null) {
+				((Actor)objects[i]).draw(batch, parentAlpha);
+			}
+		}
 	}
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		Gdx.app.log("Area", "disposed");
-	}
+	// @Override
+	// public void dispose() {
+	// 	// TODO Auto-generated method stub
+	// 	Gdx.app.log("Area", "disposed");
+	// }
 	
 }

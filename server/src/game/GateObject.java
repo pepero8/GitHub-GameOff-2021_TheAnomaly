@@ -3,7 +3,8 @@ package game;
 public class GateObject implements Interactable {
 	static final int GATEOBJECT_WIDTH = 256;
 	static final int GATEOBJECT_HEIGHT = 32;
-	static final long GATEOBJECT_REQUIRE_TIME = 1; // required time to finish interaction in milliseconds
+	static final long GATEOBJECT_REQUIRE_TIME = 50; // required time to finish interaction in milliseconds
+													// minimum must be 17
 	// static int TOTAL_DOOR_OBJECTS = 0;
 	// static int REMAINING_DOOR_OBJECTS = 0;
 	// static float SUCCESS_RATE;

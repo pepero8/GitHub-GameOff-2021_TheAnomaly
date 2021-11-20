@@ -37,7 +37,9 @@ public class MsgCodes {
 		public static final char KEY_DOWN = 'd'; // key pressed
 
 		//player's states
-		public static final char NORMAL_STATE = 'n';
+		//public static final char NORMAL_STATE = 'n';
+		public static final char NORMAL_STATE_STANDING = 'n';
+		public static final char NORMAL_STATE_MOVING = 'm';
 		public static final char DODGE_STATE = 'd';
 		public static final char ATTACK_STATE = 'a';
 		public static final char GRABBING_STATE = 'g';

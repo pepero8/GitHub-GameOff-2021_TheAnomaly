@@ -96,7 +96,7 @@ public class GrabbingState extends PlayerState {
 			if (robot.isContact(projectileX, projectileY)) {
 				//elapsed = 0;
 				if (pulling && !target.isDead())
-					target.setState(MsgCodes.Game.NORMAL_STATE);
+					target.setState(MsgCodes.Game.NORMAL_STATE_STANDING);
 				//robot.setState(MsgCodes.Game.NORMAL_STATE);
 				// target = null;
 				// pulling = false;

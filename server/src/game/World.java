@@ -7,11 +7,11 @@ import framework.MsgCodes;
 
 public class World {
 	// ===============================CAPRICIOUS===============================
-	public static final long TIME_LIMIT = 10000;
+	public static final long TIME_LIMIT = 300000; //5min
 	public static final int NUM_PLAYERS = 2;
-	public static final int ROBOT_SPEED = 150;
-	public static final int RUSH_SPEED = 300;
-	public static final int PLAYER_SPEED = 200;
+	public static final float ROBOT_SPEED = 150f;
+	public static final float RUSH_SPEED = 300f;
+	public static final float PLAYER_SPEED = 200f;
 	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 32;
 	public static final int ROBOT_ATTACK_RANGE = 25;
@@ -36,14 +36,14 @@ public class World {
 	public World() {
 		map = new Map();
 
-		robot = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE);
+		robot = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		robot.setMovableSpace(map.spaceMainWest);
 		robot.setArea(map.mainArea);
 		// robot = new Player();
 		// robot.setPosition(0, 0);
 		// robot.setSpeed(ROBOT_SPEED);
 		// robot.setState(Player.NORMAL_STATE);
-		player1 = new Player(95, 95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE);
+		player1 = new Player(95, 95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		player1.setMovableSpace(map.spaceMainWest);
 		player1.setArea(map.mainArea);
 		// player1 = new Player();
@@ -141,6 +141,7 @@ public class World {
 		packetBuffer.putFloat(robot.x);
 		packetBuffer.putFloat(robot.y);
 		packetBuffer.putChar(robot.curState.code);
+		//System.out.println("robot: " + robot.curState.code);
 		//if robot's current state is grabbing
 		if (robot.curState.code == MsgCodes.Game.GRABBING_STATE || robot.curState.code == MsgCodes.Game.ATTACK_GRABBING_STATE) {
 			//System.out.println("(" + robot.grabbingState.projectileX + ", " + robot.grabbingState.projectileY + ")");
@@ -164,7 +165,7 @@ public class World {
 		packetBuffer.putInt((map.cardKey == null) ? -1 : map.cardKey.getArea().getNumber());
 
 		//add remaining time in milliseconds
-		packetBuffer.putLong(World.TIME_LIMIT - elapsed);
+		packetBuffer.putLong(TIME_LIMIT - elapsed);
 
 		return packetBuffer.array();
 	}

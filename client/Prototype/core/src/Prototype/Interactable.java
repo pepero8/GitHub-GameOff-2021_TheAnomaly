@@ -6,14 +6,14 @@ public interface Interactable {
 	//boolean overlap(Player player);
 	//Interactable interact();
 	void setInteracting(boolean bool);
-	void setInteracted(boolean bool);
+	void setInteracted(boolean interacted, boolean success);
 	boolean isInteracting();
 	boolean interacted();
-	float getX();
-	float getY();
-	String getName();
-	float getWidth();
-	float getHeight();
+	//float getX();
+	//float getY();
+	//String getName();
+	//float getWidth();
+	//float getHeight();
 	void setNum(int num);
 	int getNum();
 }

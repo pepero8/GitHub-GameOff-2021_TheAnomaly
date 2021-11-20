@@ -1,11 +1,17 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-public class World implements Disposable {
+public class World extends Actor implements Disposable {
 	private static final int MAIN_AREA_NUM = 0;
+
+	private Assets assets;
 
 	public Player robot;
 	public Player player1;
@@ -28,11 +34,13 @@ public class World implements Disposable {
 
 	//constructor
 	public World() {
+		assets = new Assets();
+
 		players = new Player[2];
 		areas = new Area[1];
 		
 		//create areas
-		mainArea = new Area(MAIN_AREA_NUM, 4) {
+		mainArea = new Area(MAIN_AREA_NUM, 4, assets.mainAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				//entry line to area2
@@ -45,9 +53,9 @@ public class World implements Disposable {
 			}
 		};
 		//add objects to the area
-		mainArea.addObject(new BoxObject(572, 128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1"));
-		mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door"));
-		mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate"));
+		mainArea.addObject(new BoxObject(572, 128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1", assets.boxTexture));
+		mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", assets.doorAnimation));
+		mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", assets.doorAnimationRotated));
 
 		mainArea.setBounds(0, 0, 1144, 1336);
 		mainArea.setName("main zone");
@@ -87,12 +95,12 @@ public class World implements Disposable {
 		// area3.setName("area3");
 		
 		//create characters
-		robot = new Player();
+		robot = new Player(assets.robotAnimations);
 		// robot.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//robot.setPos(0, 0); // sets the robot's initial position to the middle
 		robot.setCurrentArea(mainArea);
 
-		player1 = new Player();
+		player1 = new Player(assets.playerAnimations);
 		//player1.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//player1.setPos(50, 200); //sets the player1's position on the upper left quarter of the map
 		player1.setCurrentArea(mainArea);
@@ -120,9 +128,29 @@ public class World implements Disposable {
 		players[1] = player1;
 
 		//create card key object
-		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
+		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", assets.cardKeyTexture);
 		//cardKey = new CardKeyObject(this, mainArea, 872, 240, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
 		//mainArea.addObject(cardKey);
+
+		//configure action
+		RepeatAction loop = new RepeatAction();
+		loop.setCount(RepeatAction.FOREVER);
+		loop.setAction(new Action() {
+			@Override
+			public boolean act(float delta) {
+				for (Area area : areas) {
+					area.act(delta);
+				}
+				for (Player player : players) {
+					player.act(delta);
+				}
+
+				return true;
+			}
+
+		});
+
+		addAction(loop);
 	}
 
 	public void setRemainTime(long remain) {
@@ -130,10 +158,24 @@ public class World implements Disposable {
 	}
 
 	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		for (Area area : areas) {
+			area.draw(batch, parentAlpha);
+		}
+		for (Player player : players) {
+			player.draw(batch, parentAlpha);
+		}
+		if (cardKey.getX() != -1f) {
+			cardKey.draw(batch, parentAlpha);
+		}
+	}
+
+	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		robot.dispose();
-		player1.dispose();
+		assets.dispose(); //unnecessary
+		robot.dispose(); //unnecessary
+		player1.dispose(); //unnecessary
 		// player2.dispose();
 		// player3.dispose();
 		// player4.dispose();

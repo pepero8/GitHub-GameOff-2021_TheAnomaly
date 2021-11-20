@@ -3,7 +3,8 @@ package game;
 public class DoorObject implements Interactable {
 	static final int DOOROBJECT_WIDTH = 256;
 	static final int DOOROBJECT_HEIGHT = 32;
-	static final long DOOROBJECT_REQUIRE_TIME = 1; // required time to finish interaction in milliseconds
+	static final long DOOROBJECT_REQUIRE_TIME = 50; // required time to finish interaction in milliseconds
+													//minimum must be 17
 	//static int TOTAL_DOOR_OBJECTS = 0;
 	//static int REMAINING_DOOR_OBJECTS = 0;
 	// static float SUCCESS_RATE;

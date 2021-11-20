@@ -28,7 +28,7 @@ public class Player {
 	// char moveRight;
 	//boolean dead;
 
-	int moveSpeed; //movement speed(pixels per second)
+	float moveSpeed; //movement speed(pixels per second)
 
 	PlayerState curState; //player's current state
 	private NormalState normalState;
@@ -47,7 +47,7 @@ public class Player {
 	// }
 
 	//constructor
-	public Player(float initX, float initY, int playerWidth, int playerHeight, int initSpeed, int initState/* needed? */) {
+	public Player(float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
 		//this.world = world;
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
 		x = initX;
@@ -64,7 +64,11 @@ public class Player {
 
 		//duplicate. replace with setState()
 		switch (initState) {
-			case MsgCodes.Game.NORMAL_STATE:
+			// case MsgCodes.Game.NORMAL_STATE:
+			// 	curState = normalState;
+			// 	break;
+			case MsgCodes.Game.NORMAL_STATE_STANDING:
+			case MsgCodes.Game.NORMAL_STATE_MOVING:
 				curState = normalState;
 				break;
 			case MsgCodes.Game.DODGE_STATE:
@@ -207,7 +211,11 @@ public class Player {
 
 	public void setState(int state) {
 		switch (state) {
-			case MsgCodes.Game.NORMAL_STATE:
+			// case MsgCodes.Game.NORMAL_STATE:
+			// 	curState = normalState;
+			// 	break;
+			case MsgCodes.Game.NORMAL_STATE_STANDING:
+			case MsgCodes.Game.NORMAL_STATE_MOVING:
 				curState = normalState;
 				break;
 			case MsgCodes.Game.DODGE_STATE:
