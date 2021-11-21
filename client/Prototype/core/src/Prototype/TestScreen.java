@@ -99,7 +99,7 @@ public class TestScreen implements Screen {
 					return true;
 				case Keys.E:
 					Interactable obj = game.world.players[game.playerNum].getNearbyObject();
-					if (obj != null) {
+					if (obj != null && !obj.isInteracting()) {
 						game.client.sendInput(MsgCodes.Game.INTERACT, game.world.players[game.playerNum].getCurrentArea().getNum(), obj.getNum(), MsgCodes.Game.KEY_DOWN);
 						return true;
 					}

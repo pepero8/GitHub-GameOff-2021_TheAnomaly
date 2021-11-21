@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class GateObject extends Actor implements Interactable {
 	static final int GATEOBJECT_WIDTH = 256;
-	static final int GATEOBJECT_HEIGHT = 32;
+	static final int GATEOBJECT_HEIGHT = 64;
 	static final float GATEOBJECT_ANIMATION_DURATION = 0.6f;
 	static final float GATEOBJECT_FRAME_DURATION = 0.2f;
 
@@ -26,15 +26,19 @@ public class GateObject extends Actor implements Interactable {
 	// private String name;
 	private int objectNum;
 
+	private int offsetX, offsetY;
+
 	private boolean interacting;
 	private boolean interacted;
 	private boolean opened;
 
 	private float stateTime;
 
-	GateObject(float x, float y, int width, int height, String name, Animation<TextureRegion> anim) {
+	GateObject(float x, float y, int width, int height, int offsetX, int offsetY, String name, Animation<TextureRegion> anim) {
 		setBounds(x, y, width, height);
 		setName(name);
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
 		// this.x = x;
 		// this.y = y;
 		// this.width = width;
@@ -150,6 +154,6 @@ public class GateObject extends Actor implements Interactable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		batch.draw(curFrame, getX(), getY());
+		batch.draw(curFrame, getX() + offsetX, getY() + offsetY);
 	}
 }

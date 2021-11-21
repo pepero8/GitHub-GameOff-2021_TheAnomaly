@@ -11,15 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
-public abstract class Area extends Image {
+public abstract class Area extends Actor {
+	private Texture image;
 	private Interactable[] objects;
 	private int index = -1;
 
 	private int areaNum;
 
-	Area(int areaNum, int numObjects, Texture image) {
-		super(image);
+	private int offsetX, offsetY; //used for rendering texture
+
+	Area(int areaNum, int numObjects, int offsetX, int offsetY, Texture image) {
+		//super(image);
+		this.image = image;
 		this.areaNum = areaNum;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
 		objects = new Interactable[numObjects];
 
 		RepeatAction loop = new RepeatAction();
@@ -60,6 +66,7 @@ public abstract class Area extends Image {
 		return areaNum;
 	}
 
+	//used for interacting validity check
 	public Interactable checkCollision(Player player) {
 		//returns card key first if exists
 		for (int i = objects.length - 1; i != -1; i--) {
@@ -76,7 +83,14 @@ public abstract class Area extends Image {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		super.draw(batch, parentAlpha);
+		batch.draw(image, getX() - offsetX, getY() - offsetY);
+		// float originX = getX();
+		// float originY = getY();
+		// float originWidth = getWidth();
+		// float originHeight = getHeight();
+		//setBounds(originX - offsetX, originY - offsetY, originWidth);
+		//super.draw(batch, parentAlpha);
+		//setPosition(originX, originY);
 
 		for (int i = 0; i != objects.length - 1; i++) {
 			if (objects[i] != null) {

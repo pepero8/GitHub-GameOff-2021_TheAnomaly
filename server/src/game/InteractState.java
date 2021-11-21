@@ -14,6 +14,7 @@ public class InteractState extends PlayerState {
 
 	InteractState() {
 		code = MsgCodes.Game.INTERACT_STATE;
+		elapsed = 0;
 	}
 
 	void init(Player player, Interactable target) {
@@ -23,10 +24,12 @@ public class InteractState extends PlayerState {
 		targetObj = target;
 		requiredTime = target.getRequireTime();
 
-		// elapsed = 0;
-		// halt = false;
-		// code = MsgCodes.Game.INTERACT_STATE;
-		reset();
+		target.setInteracting(true);
+
+		//elapsed = 0;
+		//halt = false;
+		//code = MsgCodes.Game.INTERACT_STATE;
+		//reset();
 	}
 
 	@Override
@@ -73,6 +76,7 @@ public class InteractState extends PlayerState {
 		elapsed = 0;
 		halt = false;
 		interacted = false;
+		targetObj.setInteracting(false);
 		code = MsgCodes.Game.INTERACT_STATE;
 	}
 	

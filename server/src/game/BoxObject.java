@@ -19,6 +19,7 @@ public class BoxObject implements Interactable {
 	private int objectNum;
 
 	private boolean interacted;
+	private boolean interacting;
 
 	BoxObject(float x, float y, int width, int height, String name) {
 		this.x = x;
@@ -120,5 +121,17 @@ public class BoxObject implements Interactable {
 	public long getRequireTime() {
 		// TODO Auto-generated method stub
 		return BOXOBJECT_REQUIRE_TIME;
+	}
+
+	@Override
+	public boolean interacting() {
+		// TODO Auto-generated method stub
+		return interacting;
+	}
+
+	@Override
+	public void setInteracting(boolean bool) {
+		// TODO Auto-generated method stub
+		interacting = bool;
 	}
 }

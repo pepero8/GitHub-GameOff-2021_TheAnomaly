@@ -71,18 +71,20 @@ public class Player extends Actor implements Disposable {
 				//if currently interacting with nearbyObject
 				if (nearbyObject != null) {
 					if (curState == MsgCodes.Game.INTERACT_STATE) {
-						Gdx.app.log("Player", "check");
+						//Gdx.app.log("Player", "check");
 						nearbyObject.setInteracting(true);
 					}
 					else if (curState == MsgCodes.Game.INTERACT_SUCCESS_STATE) {
 						nearbyObject.setInteracted(true, true);
+						nearbyObject.setInteracting(false);
 					}
 					else if (curState == MsgCodes.Game.INTERACT_FAILED_STATE) {
 						nearbyObject.setInteracted(true, false);
-					}
-					else {
 						nearbyObject.setInteracting(false);
 					}
+					// else {
+					// 	// nearbyObject.setInteracting(false);
+					// }
 				}
 
 				updateAttackBound(getX(), getY());

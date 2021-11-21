@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class DoorObject extends Actor implements Interactable {
-	static final int DOOROBJECT_WIDTH = 256;
-	static final int DOOROBJECT_HEIGHT = 32;
+	static final int DOOROBJECT_WIDTH = 128;
+	static final int DOOROBJECT_HEIGHT = 64;
 	static final float DOOROBJECT_ANIMATION_DURATION = 0.6f;
 	static final float DOOROBJECT_FRAME_DURATION = 0.2f;
 
@@ -142,6 +142,7 @@ public class DoorObject extends Actor implements Interactable {
 	private void updateAnimation(float delta) {
 		//Gdx.app.log("DoorObject", "" + interacting);
 		if (stateTime >= DOOROBJECT_ANIMATION_DURATION && interacting) {
+			//Gdx.app.log("DoorObject", "" + interacting);
 			//Gdx.app.log("DoorObject", "opening");
 			//prevInteracting = interacting;
 			stateTime = 0f;

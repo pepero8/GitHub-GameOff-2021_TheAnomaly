@@ -14,7 +14,7 @@ public class World {
 	public static final float PLAYER_SPEED = 200f;
 	public static final int PLAYER_WIDTH = 32;
 	public static final int PLAYER_HEIGHT = 32;
-	public static final int ROBOT_ATTACK_RANGE = 25;
+	public static final int ROBOT_ATTACK_RANGE = 15;
 	public static final int PROJECTILE_DISTANCE = 320; //maximum distance the projectile travels
 	public static final int PROJECTILE_CAST_TIME = 500; //arrives to the target location in 0.5 seconds
 
@@ -36,15 +36,15 @@ public class World {
 	public World() {
 		map = new Map();
 
-		robot = new Player(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
-		robot.setMovableSpace(map.spaceMainWest);
+		robot = new Player(784, 1088, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
+		robot.setMovableSpace(map.spaceMiddleArea);
 		robot.setArea(map.mainArea);
 		// robot = new Player();
 		// robot.setPosition(0, 0);
 		// robot.setSpeed(ROBOT_SPEED);
 		// robot.setState(Player.NORMAL_STATE);
-		player1 = new Player(95, 95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
-		player1.setMovableSpace(map.spaceMainWest);
+		player1 = new Player(784+95, 1088+95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
+		player1.setMovableSpace(map.spaceMiddleArea);
 		player1.setArea(map.mainArea);
 		// player1 = new Player();
 		// player1.setPosition(100, 100);

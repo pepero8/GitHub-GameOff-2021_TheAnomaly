@@ -2,7 +2,7 @@ package game;
 
 public class GateObject implements Interactable {
 	static final int GATEOBJECT_WIDTH = 256;
-	static final int GATEOBJECT_HEIGHT = 32;
+	static final int GATEOBJECT_HEIGHT = 64;
 	static final long GATEOBJECT_REQUIRE_TIME = 50; // required time to finish interaction in milliseconds
 													// minimum must be 17
 	// static int TOTAL_DOOR_OBJECTS = 0;
@@ -19,6 +19,7 @@ public class GateObject implements Interactable {
 	private int objectNum;
 
 	private boolean interacted;
+	private boolean interacting;
 	private boolean open;
 
 	GateObject(float x, float y, int width, int height, String name) {
@@ -134,5 +135,17 @@ public class GateObject implements Interactable {
 	public long getRequireTime() {
 		// TODO Auto-generated method stub
 		return GATEOBJECT_REQUIRE_TIME;
+	}
+
+	@Override
+	public boolean interacting() {
+		// TODO Auto-generated method stub
+		return interacting;
+	}
+
+	@Override
+	public void setInteracting(boolean bool) {
+		// TODO Auto-generated method stub
+		interacting = bool;
 	}
 }

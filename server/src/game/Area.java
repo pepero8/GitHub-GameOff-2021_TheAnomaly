@@ -10,8 +10,8 @@ public abstract class Area {
 
 	private int areaNum;
 
-	private float x;
-	private float y;
+	protected float x;
+	protected float y;
 	private int width;
 	private int height;
 

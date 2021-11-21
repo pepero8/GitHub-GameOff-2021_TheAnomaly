@@ -1,65 +1,53 @@
 package game;
 
-public class CardKeyObject implements Interactable {
-	static final int CARDKEYOBJECT_WIDTH = 16;
-	static final int CARDKEYOBJECT_HEIGHT = 16;
-	static final long CARDKEYOBJECT_REQUIRE_TIME = 1;
+public class WallObject implements Interactable {
 
 	private float x;
 	private float y;
 	private int width;
 	private int height;
-	private String name; // needed?
 	private int objectNum;
-	private Area area;
 
-	private boolean interacted;
-	private boolean interacting;
-
-	CardKeyObject(Area area, float x, float y, int width, int height, String name) {
-		this.area = area;
+	WallObject(float x, float y, int width, int height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.name = name;
 	}
 
 	@Override
 	public boolean isContact(Player player, int range) {
 		// TODO Auto-generated method stub
-		//for interaction
-		if (range > 0)
-			return (x < (player.x + player.width + range)) && ((x + width) > (player.x - range))
-				&& (y < (player.y + player.height + range)) && ((y + height) > (player.y - range));
+		if (range == 0)
+			return (x < (player.x + player.width)) &&
+			   	   ((x + width) > (player.x)) &&
+			   	   (y < (player.y + player.height)) &&
+			   	   ((y + height) > (player.y));
 		return false;
 	}
 
 	@Override
 	public boolean isContact(float x, float y) {
 		// TODO Auto-generated method stub
-		return false;
+		return x > this.x && x < this.x + width && y > this.y && y < this.y + height;
 	}
 
 	@Override
 	public boolean isInteractable(int playerNum) {
 		// TODO Auto-generated method stub
-		return playerNum != 0;
+		return false;
 	}
 
 	@Override
 	public boolean interacted() {
 		// TODO Auto-generated method stub
-		return interacted;
+		return false;
 	}
 
 	@Override
 	public boolean interact(Player player) {
 		// TODO Auto-generated method stub
-		//player.curArea.removeObject(objectNum);
-		area.removeObject(objectNum);
-		player.haveKey = true;
-		return true;
+		return false;
 	}
 
 	@Override
@@ -70,7 +58,7 @@ public class CardKeyObject implements Interactable {
 
 	@Override
 	public float getY() {
-		// TODO Au to-generated method stub
+		// TODO Auto-generated method stub
 		return y;
 	}
 
@@ -89,17 +77,13 @@ public class CardKeyObject implements Interactable {
 	@Override
 	public long getRequireTime() {
 		// TODO Auto-generated method stub
-		return CARDKEYOBJECT_REQUIRE_TIME;
-	}
-
-	public Area getArea() {
-		return area;
+		return 0;
 	}
 
 	@Override
 	public void setNum(int num) {
 		// TODO Auto-generated method stub
-		this.objectNum = num;
+		objectNum = num;
 	}
 
 	@Override
@@ -111,13 +95,13 @@ public class CardKeyObject implements Interactable {
 	@Override
 	public boolean interacting() {
 		// TODO Auto-generated method stub
-		return interacting;
+		return false;
 	}
 
 	@Override
 	public void setInteracting(boolean bool) {
 		// TODO Auto-generated method stub
-		interacting = bool;
+		
 	}
 	
 }

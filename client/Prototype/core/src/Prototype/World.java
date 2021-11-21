@@ -9,7 +9,24 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class World extends Actor implements Disposable {
+	/*adding new area
+	  1. add AREA_NAME_NUM
+	  2. add area global variable
+	  3. increase size of areas by 1
+	  4. instantiate the area & add/update objects
+	  5. insert area into areas
+	  6. update determineArea() of all areas
+	  7. if any determineArea() changed, apply to the server
+	*/
 	private static final int MAIN_AREA_NUM = 0;
+	private static final int PATHTOENTRANCE_AREA_NUM = 1;
+	private static final int WESTPASSAGE_AREA_NUM = 2;
+	private static final int WESTHALLWAY_AREA_NUM = 3;
+	private static final int SOUTHPASSAGE_AREA_NUM = 4;
+	private static final int SOUTHHALLWAY_AREA_NUM = 5;
+	private static final int TESTROOM_AREA_NUM = 6;
+	private static final int DEVELOPMENTROOM_AREA_NUM = 7;
+	private static final int DIRECTOROFFICE_AREA_NUM = 8;
 
 	private Assets assets;
 
@@ -23,7 +40,14 @@ public class World extends Actor implements Disposable {
 	public Player[] players;
 
 	public Area mainArea;
-	//public Area area2;
+	public Area pathToEntranceArea;
+	public Area westPassageArea;
+	public Area westHallwayArea;
+	public Area southPassageArea;
+	public Area southHallwayArea;
+	public Area testRoomArea;
+	public Area developmentRoomArea;
+	public Area directorOfficeArea;
 	//public Area area3;
 
 	public Area[] areas;
@@ -37,30 +61,214 @@ public class World extends Actor implements Disposable {
 		assets = new Assets();
 
 		players = new Player[2];
-		areas = new Area[1];
-		
+		areas = new Area[9];
+
+		//create doors/gates
+		GateObject mainGate1 = new GateObject(784+0, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate1", assets.gateAnimation);
+		GateObject mainGate2 = new GateObject(784+256*3, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate2", assets.gateAnimation);
+		DoorObject testRoomDoor = new DoorObject(1168, 512, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test room entrance", assets.doorAnimation);
+		DoorObject developmentRoomEntrance = new DoorObject(2048, 640, 16, 128, "development room entrance", assets.doorAnimationRotated);
+		DoorObject directorOfficeDoor = new DoorObject(256+16+64, 512+1600, 128, 64, "director's office door", assets.doorAnimation);
+		WallObject directorOfficeWall1 = new WallObject(256+16, 512+1600, 64, 64);
+		WallObject directorOfficeWall2 = new WallObject(256+16+256-64, 512+1600, 64, 64);
+		WallObject entranceWall = new WallObject(784 + 256, 1088 + 1536 - 5, 512, 256 + 5);
+		WallObject testRoomWall = new WallObject(1168+128, 512, 512-128, 64+1);
+		WallObject developmentRoomWall1 = new WallObject(2048+1, 768, 16, 64);
+		WallObject developmentRoomWall2 = new WallObject(2048+1, 576, 16, 64);
+
 		//create areas
-		mainArea = new Area(MAIN_AREA_NUM, 4, assets.mainAreaTexture) {
+		mainArea = new Area(MAIN_AREA_NUM, 12, 16, 16, assets.mainAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
-				//entry line to area2
-				// if (x == Prototype.MAP_WIDTH*3/8 - Prototype.CHAR_WIDTH && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
-				// 	return area2;
-				// }
-				// else
-				// 	return this;
-				return this;
+				//float originX = getX();
+				//float originY = getY();
+
+				//entry line to pathToEntranceArea
+				if (y >= getY() + 1536) {
+					return pathToEntranceArea;
+				}
+				else if (x <= getX() - 16) {
+					return westPassageArea;
+				}
+				else if (y <= getY() - 16) {
+					return southPassageArea;
+				}
+				else
+					return this;
 			}
 		};
-		//add objects to the area
-		mainArea.addObject(new BoxObject(572, 128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1", assets.boxTexture));
-		mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", assets.doorAnimation));
-		mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", assets.doorAnimationRotated));
-
-		mainArea.setBounds(0, 0, 1144, 1336);
+		mainArea.setBounds(784, 1088, 1024, 1536);
 		mainArea.setName("main zone");
-
+		//add objects to the area
+		// the object which two areas are sharing must be added at the same index of
+		// each object array(object's num is determined by its index number).
+		mainArea.addObject(entranceWall);
+		mainArea.addObject(mainGate1);
+		mainArea.addObject(mainGate2);
+		mainArea.addObject(new WallObject(784+256, 1088+1024, 16, 256));
+		mainArea.addObject(new WallObject(784+256+16, 1088+1024+64*3, 512-32, 64));
+		mainArea.addObject(new WallObject(784+256*3-16, 1088+1024, 16, 256));
+		mainArea.addObject(new WallObject(784+256, 1088+512+128, 16, 256));
+		mainArea.addObject(new WallObject(784+256+16, 1088+512+128, 512-32, 64));
+		mainArea.addObject(new WallObject(784+256*3-16, 1088+512+128, 16, 256));
+		mainArea.addObject(new WallObject(784+256, 256, 1088+512, 384));
+		mainArea.addObject(new BoxObject(784+572, 1088+128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "main area box1", assets.boxTexture));
+		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", assets.doorAnimation));
+		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", assets.doorAnimationRotated));
 		areas[MAIN_AREA_NUM] = mainArea;
+
+		pathToEntranceArea = new Area(PATHTOENTRANCE_AREA_NUM, 4, 16, 0, assets.pathToEntranceAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				//entry line to main area
+				if (y <= getY() - 5) {
+					return mainArea;
+				}
+				else
+					return this;
+			}
+		};
+		pathToEntranceArea.setBounds(784, 1088+1536, 1024, 512);
+		pathToEntranceArea.setName("passage to entrance");
+		//add objects to the area
+		pathToEntranceArea.addObject(entranceWall);
+		pathToEntranceArea.addObject(mainGate1);
+		pathToEntranceArea.addObject(mainGate2);
+		areas[PATHTOENTRANCE_AREA_NUM] = pathToEntranceArea;
+
+		westPassageArea = new Area(WESTPASSAGE_AREA_NUM, 1, 0, 16, assets.westPassageAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				// entry line to main area
+				if (x >= getX() + 256) {
+					return mainArea;
+				}
+				else if (x <= getX()) {
+					return westHallwayArea;
+				} else
+					return this;
+			}
+		};
+		westPassageArea.setBounds(784-256, 1088+512, 256, 256);
+		westPassageArea.setName("west passage");
+		areas[WESTPASSAGE_AREA_NUM] = westPassageArea;
+
+		westHallwayArea = new Area(WESTHALLWAY_AREA_NUM, 7, 16, 0, assets.westHallwayAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				// entry line to west passage
+				if (x >= getX() + 256 + 16 && y >= 1088+512 && y <= 1088+512+256)
+					return westPassageArea;
+				else if (x >= 528+16 && y >= 576 && y <= 576+256)
+					return southHallwayArea;
+				else if (y >= 2176-16)
+					return directorOfficeArea;
+				else
+					return this;
+			}
+		};
+		westHallwayArea.setBounds(256+16, 512, 256, 1664);
+		westHallwayArea.setName("west hallway");
+		westHallwayArea.addObject(directorOfficeDoor);
+		westHallwayArea.addObject(new DoorObject(256+16+64, 512, 128, 64, "server room door", assets.doorAnimation));
+		westHallwayArea.addObject(directorOfficeWall1);
+		westHallwayArea.addObject(directorOfficeWall2);
+		westHallwayArea.addObject(new WallObject(256+16, 512, 64, 64));
+		westHallwayArea.addObject(new WallObject(256+16+256-64, 512, 64, 64));
+		areas[WESTHALLWAY_AREA_NUM] = westHallwayArea;
+
+		southPassageArea = new Area(SOUTHPASSAGE_AREA_NUM, 1, 16, 0, assets.southPassageAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				// entry line to main area
+				if (y >= getY() + 256) {
+					return mainArea;
+				}
+				else if (y <= getY()) {
+					return southHallwayArea;
+				} else
+					return this;
+			}
+		};
+		southPassageArea.setBounds(1168, 832, 256, 256);
+		southPassageArea.setName("south passage");
+		areas[SOUTHPASSAGE_AREA_NUM] = southPassageArea;
+
+		southHallwayArea = new Area(SOUTHHALLWAY_AREA_NUM, 6, 0, 16, assets.southHallwayAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				// entry line to south passage
+				if (y >= 576+256+16) {
+					return southPassageArea;
+				}
+				else if (x <= 528)
+					return westHallwayArea;
+				else if (y <= 560)
+					return testRoomArea;
+				else if (x >= 2064)
+					return developmentRoomArea;
+				else
+					return this;
+			}
+		};
+		southHallwayArea.setBounds(528, 576, 1536, 256);
+		southHallwayArea.setName("south hallway");
+		southHallwayArea.addObject(testRoomWall);
+		southHallwayArea.addObject(testRoomDoor);
+		southHallwayArea.addObject(developmentRoomEntrance);
+		southHallwayArea.addObject(developmentRoomWall1);
+		southHallwayArea.addObject(developmentRoomWall2);
+		areas[SOUTHHALLWAY_AREA_NUM] = southHallwayArea;
+
+		testRoomArea = new Area(TESTROOM_AREA_NUM, 3, 16, 16, assets.testRoomAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				if (y >= 576)
+					return southHallwayArea;
+				else
+					return this;
+			}
+		};
+		testRoomArea.setBounds(1168, 0, 512, 576);
+		testRoomArea.setName("test room");
+		testRoomArea.addObject(testRoomWall);
+		testRoomArea.addObject(testRoomDoor);
+		areas[TESTROOM_AREA_NUM] = testRoomArea;
+
+		developmentRoomArea = new Area(DEVELOPMENTROOM_AREA_NUM, 6, 16, 0, assets.developmentRoomAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				if (x <= 2064-16)
+					return southHallwayArea;
+				else
+					return this;
+			}
+		};
+		developmentRoomArea.setBounds(2064, 320, 512, 768);
+		developmentRoomArea.setName("development room");
+		developmentRoomArea.addObject(new BoxObject(2064+256, 320+256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "development room box1", assets.boxTexture));
+		developmentRoomArea.addObject(new BoxObject(2064+256, 320+256+256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "development room box2", assets.boxTexture));
+		developmentRoomArea.addObject(developmentRoomEntrance);
+		developmentRoomArea.addObject(developmentRoomWall1);
+		developmentRoomArea.addObject(developmentRoomWall2);
+		areas[DEVELOPMENTROOM_AREA_NUM] = developmentRoomArea;
+
+		directorOfficeArea = new Area(DIRECTOROFFICE_AREA_NUM, 5, 16, 0, assets.directorOfficeAreaTexture) {
+			@Override
+			public Area determineArea(float x, float y) {
+				if (y <= 2176-48)
+					return westHallwayArea;
+				else
+					return this;
+			}
+		};
+		directorOfficeArea.setBounds(272, 2176, 256, 256);
+		directorOfficeArea.setName("director's office");
+		directorOfficeArea.addObject(directorOfficeDoor);
+		directorOfficeArea.addObject(new BoxObject(272, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box1", assets.boxTexture));
+		directorOfficeArea.addObject(directorOfficeWall1);
+		directorOfficeArea.addObject(directorOfficeWall2);
+		areas[DIRECTOROFFICE_AREA_NUM] = directorOfficeArea;
 		// area1.setBounds(0, 0, Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT-Prototype.CHAR_HEIGHT);
 		// area1.setName("area1");
 		// area2 = new Area() {
@@ -160,6 +368,9 @@ public class World extends Actor implements Disposable {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		for (Area area : areas) {
+			//Gdx.app.log("World", "area: (" + area.getWidth() + ", " + area.getHeight() + ")");
+			assets.baseTexture.setRegion(0, 0, (int)area.getWidth(), (int)area.getHeight());
+			batch.draw(assets.baseTexture, area.getX(), area.getY());
 			area.draw(batch, parentAlpha);
 		}
 		for (Player player : players) {

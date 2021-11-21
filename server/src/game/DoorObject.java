@@ -1,8 +1,8 @@
 package game;
 
 public class DoorObject implements Interactable {
-	static final int DOOROBJECT_WIDTH = 256;
-	static final int DOOROBJECT_HEIGHT = 32;
+	static final int DOOROBJECT_WIDTH = 128;
+	static final int DOOROBJECT_HEIGHT = 64;
 	static final long DOOROBJECT_REQUIRE_TIME = 50; // required time to finish interaction in milliseconds
 													//minimum must be 17
 	//static int TOTAL_DOOR_OBJECTS = 0;
@@ -19,6 +19,7 @@ public class DoorObject implements Interactable {
 	private int objectNum;
 
 	private boolean interacted;
+	private boolean interacting;
 	private boolean open;
 
 	DoorObject(float x, float y, int width, int height, String name) {
@@ -63,10 +64,12 @@ public class DoorObject implements Interactable {
 	public boolean isContact(Player player, int range) {
 		//for interaction
 		if (range > 0)
-			return (x < (player.x + player.width + range)) && ((x + width) > (player.x - range))
-				&& (y < (player.y + player.height + range)) && ((y + height) > (player.y - range));
+			return ((x > (player.x + player.width)) || ((x + width) < (player.x))
+				|| (y > (player.y + player.height)) || ((y + height) < (player.y)))
+				&& (x <= (player.x + player.width + range)) && ((x + width) >= (player.x - range))
+				&& (y <= (player.y + player.height + range)) && ((y + height) >= (player.y - range));
 		//for collision with player
-		else if (!open) {
+		else if (!open && !interacting) {
 			return (x < (player.x + player.width)) && ((x + width) > (player.x))
 				&& (y < (player.y + player.height)) && ((y + height) > (player.y));
 		}
@@ -131,5 +134,17 @@ public class DoorObject implements Interactable {
 	public long getRequireTime() {
 		// TODO Auto-generated method stub
 		return DOOROBJECT_REQUIRE_TIME;
+	}
+
+	@Override
+	public boolean interacting() {
+		// TODO Auto-generated method stub
+		return interacting;
+	}
+
+	@Override
+	public void setInteracting(boolean bool) {
+		// TODO Auto-generated method stub
+		interacting = bool;
 	}
 }
