@@ -65,6 +65,7 @@ public class Player extends Actor implements Disposable {
 				//setY(MathUtils.clamp(getY(), curArea.getY(), curArea.getY()+curArea.getHeight()));
 
 				curArea = curArea.determineArea(getX(), getY()); //determine player's area according to player's location.
+				//System.out.println("Player area: " + curArea.getName());
 				nearbyObject = curArea.checkCollision((Player)getActor()); //check if the player is adjacent to any object in the area
 				//bound.setPosition(getX(), getY()); //update the rectangle
 

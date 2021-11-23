@@ -34,6 +34,8 @@ public class TestScreen implements Screen {
 
 	private float[][] playerPositions;
 
+	private float elapsed = 0;
+
 	//constructor
 	public TestScreen(Prototype prototype) {
 		game = prototype;
@@ -49,7 +51,7 @@ public class TestScreen implements Screen {
 		//register actors to stage
 		stage = new Stage(viewport);
 
-		stage.addActor(game.world);
+		//stage.addActor(game.world);
 		//is changing the order of adding actors also changes the act/drawing order?
 		//stage.addActor(game.world.mainArea);
 		// stage.addActor(game.world.area1);
@@ -152,6 +154,7 @@ public class TestScreen implements Screen {
 
 	@Override
 	public void show() {
+		stage.addActor(game.world);
 		Gdx.input.setInputProcessor(stage);
 	}
 
@@ -201,6 +204,16 @@ public class TestScreen implements Screen {
 
 		// sets the camera's position equal to player's position
 		//playerCamera.position.set(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, 0);
+		//if player survived
+		if (game.world.players[game.playerNum].accessState("get", '0') == MsgCodes.Game.EXIT_STATE) {
+			//play animation
+			// if (elapsed < 2)
+			// 	elapsed += delta;
+			// else {
+				//change screen
+				game.setScreen(game.observerScreen);
+				//updateCamera(nextPlayer);
+		}
 		playerCamera.position.set(playerPositions[game.playerNum][0] + Prototype.CHAR_WIDTH/2, playerPositions[game.playerNum][1] + Prototype.CHAR_HEIGHT/2, 0);
 		playerCamera.update(); // update the camera
 
@@ -279,7 +292,7 @@ public class TestScreen implements Screen {
 			shapeRenderer.circle(robotPosition[0] + Prototype.CHAR_WIDTH/2, robotPosition[1] + Prototype.CHAR_HEIGHT/2, Prototype.PROJECTILE_DISTANCE);
 		shapeRenderer.end();
 		
-		//if robot's current state is grabbing, render robot's projectile
+		//if robot's current state is grabbing, render robot's projectile -> move to Player
 		if (robotState == MsgCodes.Game.GRABBING_STATE || robotState == MsgCodes.Game.ATTACK_GRABBING_STATE) {
 			//Gdx.app.log("Projectile", "(" + projectilePos[0] + ", " + projectilePos[1] + ")");
 			shapeRenderer.begin(ShapeType.Filled);

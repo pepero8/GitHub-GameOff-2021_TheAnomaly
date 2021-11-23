@@ -130,8 +130,10 @@ public class Client extends Thread implements Disposable {
 				Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
 				game.start = false;
 			}
-			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER) {
-				Gdx.app.log("Client", "Session terminate[GAMEOVER]");
+			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_ROBOT_WIN ||
+					 msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN) {
+				Gdx.app.log("Client", "Session terminate[GAMEOVER]: " + msgCode);
+				game.gameEndCode = msgCode;
 				game.start = false;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER0) {

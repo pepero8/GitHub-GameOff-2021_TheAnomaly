@@ -30,6 +30,9 @@ public class Assets implements Disposable {
 	final Texture testRoomAreaTexture;
 	final Texture developmentRoomAreaTexture;
 	final Texture directorOfficeAreaTexture;
+	final Texture serverRoomAreaTexture;
+	final Texture officeAreaTexture;
+	final Texture pathToExitAreaTexture;
 
 	final Texture boxTexture;
 	final Texture cardKeyTexture;
@@ -68,6 +71,9 @@ public class Assets implements Disposable {
 		testRoomAreaTexture = new Texture(Gdx.files.internal("area_test_room.png"));
 		developmentRoomAreaTexture = new Texture(Gdx.files.internal("area_development_room.png"));
 		directorOfficeAreaTexture = new Texture(Gdx.files.internal("area_director_office.png"));
+		serverRoomAreaTexture = new Texture(Gdx.files.internal("area_server_room.png"));
+		officeAreaTexture = new Texture(Gdx.files.internal("area_office.png"));
+		pathToExitAreaTexture = new Texture(Gdx.files.internal("area_passage_to_exit.png"));
 		//box texture
 		boxTexture = new Texture(Gdx.files.internal("box_sample.png"));
 		//card key texture

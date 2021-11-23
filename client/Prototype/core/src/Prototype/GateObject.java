@@ -141,7 +141,8 @@ public class GateObject extends Actor implements Interactable {
 
 	private void updateAnimation(float delta) {
 		//it starts the animation when interacted changes to true
-		if (interacting && interacted) {
+		if (!opened && interacted) {
+			opened = true;
 			stateTime = 0f;
 			animation.setPlayMode(PlayMode.REVERSED);
 		}

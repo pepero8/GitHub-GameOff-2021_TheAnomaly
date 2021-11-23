@@ -37,7 +37,7 @@ public class BoxObject implements Interactable {
 		//if (!interacted) {
 			interacted = true;
 			int trial = (int)(Math.random() * REMAINING_BOX_OBJECTS);
-			System.out.println("trial: " + trial);
+			System.out.println("trial: " + trial + ", HIT: " + HIT);
 			if (trial == HIT) {
 				//player.setPossession(new CardKey());
 				player.haveKey = true;

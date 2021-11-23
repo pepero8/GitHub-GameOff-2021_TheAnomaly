@@ -13,7 +13,8 @@ public class MsgCodes {
 		public static final char SESSION_START_PLAYER3 = '3';
 		public static final char SESSION_START_PLAYER4 = '4';
 		public static final char SESSION_TERMINATE_OD = 't'; // opponent player disconnected
-		public static final char SESSION_TERMINATE_GAMEOVER = 'g';
+		public static final char SESSION_TERMINATE_GAMEOVER_ROBOT_WIN = 'r';
+		public static final char SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN = 's';
 	}
 
 	// client message code
@@ -50,6 +51,7 @@ public class MsgCodes {
 		public static final char INTERACT_STATE = 'i';
 		public static final char INTERACT_SUCCESS_STATE = 's';
 		public static final char INTERACT_FAILED_STATE = 'f';
+		public static final char EXIT_STATE = 'e';
 
 		//player's direction
 		public static final char DIRECTION_NORTH = '0';

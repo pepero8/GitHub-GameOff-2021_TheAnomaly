@@ -90,5 +90,6 @@ public abstract class Area {
 		return false;
 	}
 
-	abstract Area determineArea(float x, float y);
+	//abstract Area determineArea(float x, float y);
+	abstract Area determineArea(Player player);
 }

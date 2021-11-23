@@ -88,14 +88,14 @@ public class Session extends WorkerThread {
 
 	@Override
 	protected void update(long progressTime) {
-		if (!world.gameover)
+		if (!world.gameEnd)
 			world.update(progressTime);
 		else {
-			robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
-			player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
-			//player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
-			//player3.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
-			//player4.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_GAMEOVER);
+			robot.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+			player1.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+			//player2.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+			//player3.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+			//player4.send(MsgCodes.MESSAGECODE, world.gameEndCode);
 			terminate();
 		}
 		//====================================FOR DEBUG==========================================

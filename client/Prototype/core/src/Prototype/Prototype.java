@@ -22,12 +22,14 @@ public class Prototype extends Game {
 
 	TestScreen testScreen;
 	LoadingScreen loadingScreen;
+	ObserverScreen observerScreen;
 
 	public World world;
 
 	Client client;
 
 	public volatile boolean start;
+	public volatile char gameEndCode; //used at game end screen
 
 	@Override
 	public void create() {
@@ -38,6 +40,7 @@ public class Prototype extends Game {
 
 		testScreen = new TestScreen(this);
 		loadingScreen = new LoadingScreen(this);
+		observerScreen = new ObserverScreen(this);
 
 		//this.setScreen(testScreen);
 		this.setScreen(loadingScreen);

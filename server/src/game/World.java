@@ -18,6 +18,15 @@ public class World {
 	public static final int PROJECTILE_DISTANCE = 320; //maximum distance the projectile travels
 	public static final int PROJECTILE_CAST_TIME = 500; //arrives to the target location in 0.5 seconds
 
+	public static final int ROBOT_NUM = 0;
+	public static final int PLAYER1_NUM = 1;
+	public static final int PLAYER2_NUM = 2;
+	public static final int PLAYER3_NUM = 3;
+	public static final int PLAYER4_NUM = 4;
+
+	public static int REMAINING_SURVIVORS = NUM_PLAYERS - 1; //number of survivors that didn't make to escape
+	public static int DEAD_SURVIVORS = 0;
+	
 	private Player robot;
 	private Player player1;
 	//private Player player2;
@@ -31,19 +40,21 @@ public class World {
 	Player[] players;
 
 	private long elapsed;
-	public boolean gameover;
+
+	public boolean gameEnd;
+	public char gameEndCode;
 
 	public World() {
 		map = new Map();
 
-		robot = new Player(784, 1088, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
+		robot = new Player(ROBOT_NUM, 784+10, 1088+10, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		robot.setMovableSpace(map.spaceMiddleArea);
 		robot.setArea(map.mainArea);
 		// robot = new Player();
 		// robot.setPosition(0, 0);
 		// robot.setSpeed(ROBOT_SPEED);
 		// robot.setState(Player.NORMAL_STATE);
-		player1 = new Player(784+95, 1088+95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
+		player1 = new Player(PLAYER1_NUM, 784+95, 1088+95, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		player1.setMovableSpace(map.spaceMiddleArea);
 		player1.setArea(map.mainArea);
 		// player1 = new Player();
@@ -124,8 +135,13 @@ public class World {
 			player.update(progressTime);
 		}
 
-		if (elapsed >= TIME_LIMIT) {
-			gameover = true;
+		if (elapsed >= TIME_LIMIT || DEAD_SURVIVORS == NUM_PLAYERS - 1) {
+			gameEndCode = MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_ROBOT_WIN;
+			gameEnd = true;
+		}
+		else if (REMAINING_SURVIVORS == 0) {
+			gameEndCode = MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN;
+			gameEnd = true;
 		}
 		//System.out.println(" robot.x + ", " + robot.y + ")");
 	}

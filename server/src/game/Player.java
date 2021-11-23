@@ -3,6 +3,7 @@ package game;
 import framework.MsgCodes;
 
 public class Player {
+	int playerNum;
 	//private World world;
 	// ===============================CAPRICIOUS===============================
 	char curDirection; //direction the player's looking at
@@ -40,6 +41,8 @@ public class Player {
 	RushState rushState; //initialized by world(needs player[])
 	InteractState interactState;
 
+	private ExitState exitState;
+
 	//constructor
 	// public Player() {
 	// 	normalState = new NormalState(this);
@@ -47,7 +50,8 @@ public class Player {
 	// }
 
 	//constructor
-	public Player(float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
+	public Player(int playerNum, float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
+		this.playerNum = playerNum;
 		//this.world = world;
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
 		x = initX;
@@ -61,6 +65,7 @@ public class Player {
 		deadState = new DeadState();
 		draggedState = new DraggedState();
 		interactState = new InteractState();
+		exitState = new ExitState();
 
 		//duplicate. replace with setState()
 		switch (initState) {
@@ -175,6 +180,7 @@ public class Player {
 		// 	dodgeState.reset();
 		// }
 		//dead = true;
+		World.DEAD_SURVIVORS++;
 		curState = deadState;
 	}
 
@@ -250,17 +256,34 @@ public class Player {
 			curState = normalState;
 		}
 
-		curSpace = curSpace.determineSpace(x, y);
-		curArea = curArea.determineArea(x, y);
-
-		//if player overlaps with any object
+		// if player overlaps with any object
 		if (curArea.hitObject(this)) {
+			//System.out.println("Player hit an object");
 			x = prevX;
 			y = prevY;
 		}
 
-		x = curSpace.clampPosX(x);
-		y = curSpace.clampPosY(y);
+		curSpace = curSpace.determineSpace(x, y);
+		curArea = curArea.determineArea(this);
+
+		if (curArea.getNumber() == Map.EXIT_AREA_NUM) {
+			curState = exitState;
+			World.REMAINING_SURVIVORS--;
+			x = 0;
+			y = 0;
+		}
+		else {
+			x = curSpace.clampPosX(x);
+			y = curSpace.clampPosY(y);
+		}
+
+		// //if player overlaps with any object
+		// if (curArea.hitObject(this)) {
+		// 	x = prevX;
+		// 	y = prevY;
+		// }
+
+		
 
 		// MovableSpace newSpace = curSpace.determineSpace(x, y);
 		// if (newSpace != curSpace) {
