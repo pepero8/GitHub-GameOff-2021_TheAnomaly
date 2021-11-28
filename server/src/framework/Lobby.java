@@ -5,6 +5,8 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 class Lobby extends WorkerThread {
+	public static final int NUM_PLAYERS_PER_SESSION = 3;
+	public static final int MAX_SESSIONS = 2; // limit session numbers
 	
 	Queue<ClientHandler> clientQueue;
 
@@ -31,6 +33,11 @@ class Lobby extends WorkerThread {
 				ch.unbind();
 			}
 		}
+		if (msgType == MsgCodes.DATA) {
+			byte[] playerNameBytes = new byte[24];
+			msg.get(playerNameBytes);
+			ch.playerName = playerNameBytes.clone();
+		}
 		// ===============================CAPRICIOUS===============================
 	}
 
@@ -41,21 +48,50 @@ class Lobby extends WorkerThread {
 		//====================================FOR DEBUG==========================================
 
 		// ===============================CAPRICIOUS===============================
-		if (clientQueue.size() >= 2) {
+		if (clientQueue.size() >= NUM_PLAYERS_PER_SESSION) {
 			ClientHandler robot = clientQueue.poll();
 			ClientHandler player1 = clientQueue.poll();
+			ClientHandler player2 = clientQueue.poll();
+			// ClientHandler player3 = clientQueue.poll();
+			// ClientHandler player4 = clientQueue.poll();
 
+			// send each client player names
+			byte[] packet = new byte[ClientHandler.PACKET_SIZE];
+			ByteBuffer packetBuffer = ByteBuffer.wrap(packet);
+			packetBuffer.putChar(MsgCodes.DATA);
+			packetBuffer.put(robot.playerName);
+			packetBuffer.put(player1.playerName);
+			packetBuffer.put(player2.playerName);
+			// packetBuffer.put(player3.playerName);
+			// packetBuffer.put(player4.playerName);
+
+			robot.send(packet);
+			player1.send(packet);
+			player2.send(packet);
+			// player3.send(packet);
+			// player4.send(packet);
+
+			//send each client session start message
 			robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_START_PLAYER0);
 			player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_START_PLAYER1);
+			player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_START_PLAYER2);
+			// player3.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_START_PLAYER3);
+			// player4.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_START_PLAYER4);
 			
 			robot.unbind();
 			player1.unbind();
+			player2.unbind();
+			// player3.unbind();
+			// player4.unbind();
 
 			Session newSession = new Session();
-			newSession.init(robot, player1);
+			newSession.init(robot, player1, player2);
 
 			robot.bind(newSession);
 			player1.bind(newSession);
+			player2.bind(newSession);
+			// player3.bind(newSession);
+			// player4.bind(newSession);
 
 			newSession.start();
 

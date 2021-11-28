@@ -6,44 +6,69 @@ import com.badlogic.gdx.Gdx;
 import net.Client;
 
 public class Prototype extends Game {
-	public static final int NUM_PLAYERS = 2; //number of players in each session
+	/**
+	 * HOW TO ADD A PLAYER
+	 * - change NUM_PLAYERS
+	 * 
+	 * World
+	 * - add new player variable
+	 * - add initialization of player variable in constructor
+	 * - add player variable to players[] in constructor
+	 * 
+	 * Client
+	 * - increase PACKET_SIZE
+	 * - add code block for handling player input
+	 */
+	public static final int NUM_PLAYERS = 3; //number of players in each session
+	public static final int PLAYER_ROBOT_NUM = 0;
+	public static final int PLAYER1_NUM = 1;
+	public static final int PLAYER2_NUM = 2;
+	public static final int PLAYER3_NUM = 3;
+	public static final int PLAYER4_NUM = 4;
 	public static final int MAP_WIDTH = 3840; // map width
 	public static final int MAP_HEIGHT = 2160; // map height
-	public static int VP_WIDTH; // viewport width. equals to monitor's width
-	public static int VP_HEIGHT; // viewport height. equals to monitor's height
+	public static int VP_WIDTH = 600; // viewport width. equals to monitor's width
+	public static int VP_HEIGHT = 600; // viewport height. equals to monitor's height
 	public static final int CHAR_WIDTH = 32; // all character's width
 	public static final int CHAR_HEIGHT = 32; // all character's height
 	public static final int ATTACK_RANGE = 15; // robot's attack range
 	public static final int PROJECTILE_WIDTH = 25;
 	public static final int PROJECTILE_HEIGHT = 25;
-	public static final int PROJECTILE_DISTANCE = 320;
+	public static final int PROJECTILE_DISTANCE = 300;
 
 	public int playerNum = -1; //initialized by client
+	public String playerName = "player";
 
 	TestScreen testScreen;
-	LoadingScreen loadingScreen;
+	//SessionWaitScreen waitScreen;
 	ObserverScreen observerScreen;
+	ResultScreen resultScreen;
+	IntroScreen introScreen;
+	MainMenuScreen mainMenuScreen;
 
 	public World world;
 
 	Client client;
 
-	public volatile boolean start;
+	public volatile boolean sessionStart; //true: session started, false: session terminated
+	public volatile boolean gameStart;
 	public volatile char gameEndCode; //used at game end screen
 
 	@Override
 	public void create() {
-		VP_WIDTH = Gdx.graphics.getWidth();
-		VP_HEIGHT = Gdx.graphics.getHeight();
-
 		world = new World();
 
 		testScreen = new TestScreen(this);
-		loadingScreen = new LoadingScreen(this);
+		//waitScreen = new SessionWaitScreen(this);
 		observerScreen = new ObserverScreen(this);
-
+		resultScreen = new ResultScreen(this);
+		introScreen = new IntroScreen(this);
+		mainMenuScreen = new MainMenuScreen(this);
 		//this.setScreen(testScreen);
-		this.setScreen(loadingScreen);
+		//this.setScreen(waitScreen);
+		this.setScreen(resultScreen);
+		//this.setScreen(introScreen);
+		//this.setScreen(mainMenuScreen);
 	}
 
 	@Override
@@ -55,7 +80,12 @@ public class Prototype extends Game {
 	public void dispose() {
 		super.dispose();
 		testScreen.dispose();
-		loadingScreen.dispose();
+		//waitScreen.dispose();
+		observerScreen.dispose();
+		resultScreen.dispose();
+		introScreen.dispose();
+		mainMenuScreen.dispose();
+
 		world.dispose();
 		if (client != null) {
 			client.dispose();
@@ -69,10 +99,10 @@ public class Prototype extends Game {
 	}
 
 	public void disconnect() {
-		// if (client != null) {
-		// 	client.dispose();
-		// 	client = null;
-		// }
-		dispose(); //temp
+		if (client != null) {
+			client.dispose();
+			client = null;
+		}
+		//dispose(); //temp
 	}
 }

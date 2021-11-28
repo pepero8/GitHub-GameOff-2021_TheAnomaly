@@ -1,6 +1,8 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -11,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
 
 import net.MsgCodes;
@@ -23,19 +26,35 @@ public class Player extends Actor implements Disposable {
 	private Animation<TextureRegion>[] animations;
 	private Animation<TextureRegion> curAnimation;
 	private TextureRegion curFrame;
+	private TextureRegionDrawable portrait;
+	private Sound[] sounds;
+	private float soundDurationRunning = Assets.SOUND_INTERVAL_RUNNING;
+	private float soundDurationDodge = Assets.SOUND_INTERVAL_DODGE;
+	private float soundDurationAttack = Assets.SOUND_INTERVAL_ATTACK;
+	private float soundDurationRush = Assets.SOUND_INTERVAL_RUSH;
+	//private float soundInterval;
+	private float soundVolume;
 
 	private Area curArea; //area where the player is located
 
+	//private char prevState;
 	private char curState; //current state of this character
-	private char curDirection; //current direction of this character
+	private char curDirection; //the direction this character is heading at
 
-	private float projectileX;
-	private float projectileY;
+	private float projectileX; //used by robot
+	private float projectileY; //used by robot
 
 	private Interactable nearbyObject;
 	private boolean hasKey;
 	//private boolean moving;
 	private float stateTime; //for tracking elapsed time for the animation
+
+	private boolean dragged; //used in playSound()
+	private boolean grabbing; //used in playSound()
+	private boolean interacted; //used in playSound()
+	private boolean dead;
+
+	//private boolean playSound;
 
 	//private Rectangle bound; //bounding rectangle of this player
 	Rectangle attackBound; //bounding rectangle of the robot bounding its attack range
@@ -43,7 +62,8 @@ public class Player extends Actor implements Disposable {
 	//private boolean killed;
 
 	//constructor
-	public Player(Animation<TextureRegion>[] animations) {
+	public Player(String name, Animation<TextureRegion>[] animations) {
+		setName(name);
 		this.animations = animations;
 
 		setSize(Prototype.CHAR_WIDTH, Prototype.CHAR_HEIGHT);
@@ -63,13 +83,16 @@ public class Player extends Actor implements Disposable {
 				//setX(MathUtils.clamp(getX(), curArea.getX(), curArea.getX()+curArea.getWidth()));
 				//setY(MathUtils.clamp(getY(), minY, maxY));
 				//setY(MathUtils.clamp(getY(), curArea.getY(), curArea.getY()+curArea.getHeight()));
-
+				// Area prevArea = curArea;
 				curArea = curArea.determineArea(getX(), getY()); //determine player's area according to player's location.
+				// if (prevArea != curArea) {
+				// 	System.out.println(getName() + ": area changed: " + prevArea.getName() + "->" + curArea.getName());
+				// }
 				//System.out.println("Player area: " + curArea.getName());
 				nearbyObject = curArea.checkCollision((Player)getActor()); //check if the player is adjacent to any object in the area
 				//bound.setPosition(getX(), getY()); //update the rectangle
 
-				//if currently interacting with nearbyObject
+				//if player is currently interacting with nearbyObject
 				if (nearbyObject != null) {
 					if (curState == MsgCodes.Game.INTERACT_STATE) {
 						//Gdx.app.log("Player", "check");
@@ -83,13 +106,18 @@ public class Player extends Actor implements Disposable {
 						nearbyObject.setInteracted(true, false);
 						nearbyObject.setInteracting(false);
 					}
-					// else {
-					// 	// nearbyObject.setInteracting(false);
+					// else if (!nearbyObject.isInteracting()) {
+					//  	nearbyObject.setInteracting(false);
 					// }
 				}
 
 				updateAttackBound(getX(), getY());
 				updateAnimation(delta);
+
+				//if (playSound) {
+					//System.out.println("play sound");
+					playSound(delta);
+				//}
 
 				return true;
 			}
@@ -97,6 +125,16 @@ public class Player extends Actor implements Disposable {
 		});
 
 		addAction(loop);
+	}
+
+	public void setSounds(Sound[] sounds) {
+		this.sounds = sounds;
+		this.sounds[0].loop();
+		this.sounds[0].pause();
+	}
+
+	public Sound[] getSounds() {
+		return sounds;
 	}
 
 	public void setCurrentArea(Area curArea) {
@@ -191,8 +229,17 @@ public class Player extends Actor implements Disposable {
 	public synchronized char accessState(String operation, char state) {
 		if (operation.contentEquals("set")) {
 			//Gdx.app.log("Player", "state: " + state);
-			if (curState != state)
+			if (curState != state) {
 				stateTime = 0;
+				if (state == MsgCodes.Game.DRAGGED_STATE)
+					dragged = true;
+				if (state == MsgCodes.Game.GRABBING_STATE)
+					grabbing = true;
+				if (state == MsgCodes.Game.INTERACT_STATE)
+					interacted = true;
+				//playSound = true;
+			}
+			//prevState = curState;
 			curState = state;
 		}
 		else if (operation.contentEquals("get")) {
@@ -230,6 +277,14 @@ public class Player extends Actor implements Disposable {
 		return null;
 	}
 
+	public void setPortraitDrawable(TextureRegionDrawable texture) {
+		portrait = texture;
+	}
+
+	public TextureRegionDrawable getPortraitDrawable() {
+		return portrait;
+	}
+
 	private void updateAnimation(float delta) {
 		stateTime += delta;
 		//Gdx.app.log("Player", "moving: " + moving);
@@ -265,6 +320,104 @@ public class Player extends Actor implements Disposable {
 			curFrame = curAnimation.getKeyFrame(stateTime, loop);
 	}
 
+	public void setSoundVolume(float volume) {
+		soundVolume = volume;
+	}
+
+	private void playSound(float delta) {
+		soundDurationRunning += delta;
+		soundDurationDodge += delta;
+		soundDurationAttack += delta;
+		soundDurationRush += delta;
+		if (sounds != null) {
+			if (curState == MsgCodes.Game.NORMAL_STATE_MOVING) {
+				if (soundDurationRunning >= Assets.SOUND_INTERVAL_RUNNING) {
+					soundDurationRunning = 0;
+					//sounds[0].resume();
+					//System.out.println("sound volume: " + soundVolume);
+					sounds[0].play(soundVolume);
+				}
+			}
+			else if (curState == MsgCodes.Game.DODGE_STATE) {
+				if (soundDurationDodge >= Assets.SOUND_INTERVAL_DODGE) {
+					soundDurationDodge = 0;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[1].play(soundVolume);
+				}
+			}
+			else if (curState == MsgCodes.Game.DRAGGED_STATE) {
+				if (dragged) {
+					dragged = false;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[2].play(soundVolume * 0.8f);
+				}
+			}
+			else if (curState == MsgCodes.Game.DEAD_STATE) {
+				if (!dead) {
+					dead = true;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[3].play(soundVolume);
+					sounds[4].play(soundVolume);
+				}
+			}
+			else if (curState == MsgCodes.Game.INTERACT_STATE) {
+				if (interacted) {
+					interacted = false;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[5].play(soundVolume * 0.5f);
+				}
+			}
+			else if (curState == MsgCodes.Game.ATTACK_STATE || curState == MsgCodes.Game.ATTACK_GRABBING_STATE) {
+				if (soundDurationAttack >= Assets.SOUND_INTERVAL_ATTACK) {
+					soundDurationAttack = 0;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[1].stop();
+					sounds[2].stop();
+					sounds[1].play(soundVolume * 0.4f);
+					sounds[2].play(soundVolume);
+				}
+			}
+			else if (curState == MsgCodes.Game.RUSH_STATE) {
+				if (soundDurationRush >= Assets.SOUND_INTERVAL_RUSH && stateTime <= 2) {
+					soundDurationRush = 0;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[1].stop();
+					sounds[2].stop();
+					sounds[3].stop();
+					sounds[1].play(soundVolume * 0.4f);
+					sounds[2].play(soundVolume);
+					sounds[3].play(soundVolume * 0.8f);
+				}
+			}
+			else if (curState == MsgCodes.Game.GRABBING_STATE) {
+				if (grabbing) {
+					grabbing = false;
+					// sounds[0].resume();
+					// System.out.println("sound volume: " + soundVolume);
+					sounds[4].play(soundVolume);
+				}
+			}
+			else {
+			//else if (curState == MsgCodes.Game.NORMAL_STATE_STANDING) {
+				//System.out.println("pausing sound");
+				for (Sound sound : sounds) {
+					sound.stop();
+				}
+				// sounds[0].stop();
+				// sounds[3].stop();
+				// sounds[5].stop();
+			}
+		}
+
+		//playSound = false;
+	}
+
 	/**
 	 * Limits the range of x and y
 	 * @param minX min value of x
@@ -287,6 +440,11 @@ public class Player extends Actor implements Disposable {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		if (sounds != null) {
+			for (Sound sound : sounds) {
+				sound.dispose();
+			}
+		}
 		Gdx.app.log("Player", "disposed");
 	}
 }

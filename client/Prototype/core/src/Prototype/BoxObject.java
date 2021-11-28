@@ -1,6 +1,8 @@
 package Prototype;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class BoxObject extends Image implements Interactable {
@@ -122,5 +124,19 @@ public class BoxObject extends Image implements Interactable {
 	public boolean interacted() {
 		// TODO Auto-generated method stub
 		return interacted;
+	}
+
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		// if (nearby) {
+		// 	System.out.println("draw the fucking object");
+		// 	//setColor(Color.YELLOW);
+		// 	//batch.setColor(Color.YELLOW);
+		// 	//batch.setColor(1, 1, 0, 1);
+		// 	nearby = false;
+		// }
+		super.draw(batch, parentAlpha);
+		//setColor(Color.WHITE);
+		//batch.setColor(1, 1, 1, 1);
 	}
 }

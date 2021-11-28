@@ -1,6 +1,7 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -67,9 +68,12 @@ public class DoorObject extends Actor implements Interactable {
 
 	@Override
 	public boolean isContact(Player player, int range) {
+		//for interaction
 		float x = getX();
 		float y = getY();
-		return (x < (player.getX() + player.getWidth() + range)) && ((x + getWidth()) > (player.getX() - range))
+		return ((x > (player.getX() + player.getWidth())) || ((x + getWidth()) < (player.getX()))
+				|| (y > (player.getY() + player.getHeight())) || ((y + getHeight()) < (player.getY())))
+				&& (x < (player.getX() + player.getWidth() + range)) && ((x + getWidth()) > (player.getX() - range))
 				&& (y < (player.getY() + player.getHeight() + range))
 				&& ((y + getHeight()) > (player.getY() - range));
 	}
@@ -124,7 +128,7 @@ public class DoorObject extends Actor implements Interactable {
 	@Override
 	public void setInteracted(boolean interacted, boolean success) {
 		// TODO Auto-generated method stub
-		this.interacted = interacted;
+		//this.interacted = interacted;
 	}
 
 	@Override
@@ -158,6 +162,16 @@ public class DoorObject extends Actor implements Interactable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
+		// if (nearby) {
+		// 	//setColor(Color.YELLOW);
+		// 	//batch.setColor(Color.YELLOW);
+		// 	nearby = false;
+		// }
 		batch.draw(curFrame, getX(), getY());
+		//setColor(Color.WHITE);
+		//batch.setColor(Color.CLEAR);
+		//batch.setColor(1, 1, 1, 1);
 	}
+
+	
 }

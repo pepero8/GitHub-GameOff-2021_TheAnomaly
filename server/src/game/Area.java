@@ -24,7 +24,7 @@ public abstract class Area {
 	 * @param areaNum
 	 * @param numObjects number of objects in this area. It should have an empty room for the card key
 	 */
-	Area(Map map, float x, float y, int width, int height, int areaNum, int numObjects) {
+	Area(Map map, float x, float y, int width, int height, int areaNum, int numObjects/*needed?*/) {
 		this.map = map;
 		this.x = x;
 		this.y = y;
@@ -90,6 +90,9 @@ public abstract class Area {
 		return false;
 	}
 
-	//abstract Area determineArea(float x, float y);
-	abstract Area determineArea(Player player);
+	abstract Area determineArea(float x, float y);
+	
+	public Area determineArea(Player player) {
+		return determineArea(player.x, player.y);
+	}
 }

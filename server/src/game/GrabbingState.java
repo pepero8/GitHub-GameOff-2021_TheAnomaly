@@ -14,6 +14,8 @@ public class GrabbingState extends PlayerState {
 
 	float projectileX; //projectile's center point's x
 	float projectileY; //projectile's center point's y
+	private Area projectileArea;
+	//private MovableSpace projectileSpace;
 
 	//float signX; //increase or decrease of projectileX
 	//float signY; //increase or decrease of projectileY
@@ -42,6 +44,9 @@ public class GrabbingState extends PlayerState {
 
 		projectileX = robot.x + robot.width/2;
 		projectileY = robot.y + robot.height/2;
+
+		projectileArea = robot.curArea;
+		//projectileSpace = robot.curSpace;
 
 		startX = projectileX;
 		startY = projectileY;
@@ -73,6 +78,8 @@ public class GrabbingState extends PlayerState {
 
 	@Override
 	boolean update(long progressTime) {
+		projectileArea = projectileArea.determineArea(projectileX, projectileY);
+		//projectileSpace = projectileSpace.determineSpace(projectileX, projectileY);
 
 		//there are duplicate codes here
 
@@ -115,7 +122,11 @@ public class GrabbingState extends PlayerState {
 
 		if (elapsed <= 500) {
 			//if projectile hits the area's wall or hits any object in the area
-			if (robot.curArea.hitWall(projectileX, projectileY) || robot.curArea.hitObject(projectileX, projectileY)) {
+			// if (projectileSpace.clampPosX(projectileX) != projectileX ||
+			// 	projectileSpace.clampPosY(projectileY) != projectileY ||
+			// 	projectileArea.hitObject(projectileX, projectileY)) {
+			if (projectileArea.hitWall(projectileX, projectileY) || projectileArea.hitObject(projectileX, projectileY)) {
+			// if (robot.curArea.hitWall(projectileX, projectileY) || robot.curArea.hitObject(projectileX, projectileY)) {
 				retrieve = true;
 				projectileElapsed = elapsed;
 				endX = projectileX;

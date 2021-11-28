@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ClientHandler extends Thread {
 	// ===============================CAPRICIOUS===============================
-	public static final int PACKET_SIZE = 60;
+	public static final int PACKET_SIZE = 76;
 	// ===============================CAPRICIOUS===============================
 	private Socket connectionSocket;
 	private InetAddress ip_client;
@@ -25,6 +25,8 @@ public class ClientHandler extends Thread {
 
 	private Server server;
 	private WorkerThread curWorkerThread; //current bound worker thread
+
+	byte[] playerName;
 
 	void init(Socket connectionSocket, Server server) {
 		this.connectionSocket = connectionSocket;

@@ -9,7 +9,7 @@ public class Player {
 	char curDirection; //direction the player's looking at
 
 	Area curArea;
-	private MovableSpace curSpace;
+	MovableSpace curSpace;
 
 	//private Interactable possession;
 	boolean haveKey;
@@ -42,6 +42,7 @@ public class Player {
 	InteractState interactState;
 
 	private ExitState exitState;
+	boolean exit;
 
 	//constructor
 	// public Player() {
@@ -63,7 +64,7 @@ public class Player {
 		normalState = new NormalState(this);
 		dodgeState = new DodgeState(this);
 		deadState = new DeadState();
-		draggedState = new DraggedState();
+		draggedState = new DraggedState(this);
 		interactState = new InteractState();
 		exitState = new ExitState();
 
@@ -181,6 +182,7 @@ public class Player {
 		// }
 		//dead = true;
 		World.DEAD_SURVIVORS++;
+		World.REMAINING_SURVIVORS--;
 		curState = deadState;
 	}
 
@@ -266,9 +268,13 @@ public class Player {
 		curSpace = curSpace.determineSpace(x, y);
 		curArea = curArea.determineArea(this);
 
+
 		if (curArea.getNumber() == Map.EXIT_AREA_NUM) {
 			curState = exitState;
-			World.REMAINING_SURVIVORS--;
+			if (!exit) {
+				World.REMAINING_SURVIVORS--;
+				exit = true;
+			}
 			x = 0;
 			y = 0;
 		}

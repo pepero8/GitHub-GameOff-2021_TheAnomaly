@@ -3,6 +3,7 @@ package net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -19,7 +20,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 60;
+	private static final int PACKET_SIZE = 76;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -42,6 +43,8 @@ public class Client extends Thread implements Disposable {
 			socket = Gdx.net.newClientSocket(Protocol.TCP, SERVER_IP, SERVER_PORT, null);
 			in = socket.getInputStream();
 			out = socket.getOutputStream();
+
+			sendPlayerName();
 			
 			while(true) {
 				read_ch = in.read(netResponse);
@@ -70,11 +73,11 @@ public class Client extends Thread implements Disposable {
 		char msgType = packetBuffer.getChar();
 
 		//lot of duplicate codes here
-		if (msgType == MsgCodes.DATA) {
+		if (msgType == MsgCodes.INPUT) {
 			char character = packetBuffer.getChar();
 
 			//robot
-			if (character == 'r') {
+			//if (character == 'r') {
 				float x = packetBuffer.getFloat();
 				float y = packetBuffer.getFloat();
 				float projectileX = 0;
@@ -92,16 +95,16 @@ public class Client extends Thread implements Disposable {
 				//if (state == MsgCodes.Game.GRABBING_STATE || state == MsgCodes.Game.ATTACK_GRABBING_STATE)
 				game.world.robot.accessProjectilePos("set", projectileX, projectileY);
 				game.world.robot.accessDirection("set", direction);
-			}
+			//}
 
 			character = packetBuffer.getChar();
 			//player1
-			if (character == '1') {
-				float x = packetBuffer.getFloat();
-				float y = packetBuffer.getFloat();
-				char state = packetBuffer.getChar();
+			//if (character == '1') {
+				x = packetBuffer.getFloat();
+				y = packetBuffer.getFloat();
+				state = packetBuffer.getChar();
 				char hasKey = packetBuffer.getChar();
-				char direction = packetBuffer.getChar();
+				direction = packetBuffer.getChar();
 
 				//Gdx.app.log("Client", "" + hasKey);
 
@@ -109,7 +112,24 @@ public class Client extends Thread implements Disposable {
 				game.world.player1.accessState("set", state);
 				game.world.player1.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
 				game.world.player1.accessDirection("set", direction);
-			}
+			//}
+
+			character = packetBuffer.getChar();
+			// player2
+			// if (character == '2') {
+			x = packetBuffer.getFloat();
+			y = packetBuffer.getFloat();
+			state = packetBuffer.getChar();
+			hasKey = packetBuffer.getChar();
+			direction = packetBuffer.getChar();
+
+			// Gdx.app.log("Client", "" + hasKey);
+
+			game.world.player2.accessPosition("set", x, y); // using this function to achieve synchronization
+			game.world.player2.accessState("set", state);
+			game.world.player2.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
+			game.world.player2.accessDirection("set", direction);
+			// }
 
 			//card key
 			float cardKeyX = packetBuffer.getFloat();
@@ -128,34 +148,75 @@ public class Client extends Thread implements Disposable {
 			char msgCode = packetBuffer.getChar();
 			if (msgCode == MsgCodes.Server.SESSION_TERMINATE_OD) {
 				Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
-				game.start = false;
+				game.sessionStart = false;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_ROBOT_WIN ||
 					 msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN) {
 				Gdx.app.log("Client", "Session terminate[GAMEOVER]: " + msgCode);
 				game.gameEndCode = msgCode;
-				game.start = false;
+				game.sessionStart = false;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER0) {
-				game.start = true;
+				game.sessionStart = true;
 				game.playerNum = 0;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER1) {
-				game.start = true;
+				game.sessionStart = true;
 				game.playerNum = 1;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER2) {
-				game.start = true;
+				game.sessionStart = true;
 				game.playerNum = 2;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER3) {
-				game.start = true;
+				game.sessionStart = true;
 				game.playerNum = 3;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_START_PLAYER4) {
-				game.start = true;
+				game.sessionStart = true;
 				game.playerNum = 4;
 			}
+			else if (msgCode == MsgCodes.Server.START_GAME) {
+				game.gameStart = true;
+				//game.setScreen(game.testScreen);
+			}
+		}
+		else if (msgType == MsgCodes.DATA) {
+			byte[] nextPlayerName = new byte[24];
+
+			try {
+				packetBuffer.get(nextPlayerName);
+				game.world.robot.setName(new String(nextPlayerName, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				game.world.robot.setName(new String(nextPlayerName));
+			}
+			
+			try {
+				packetBuffer.get(nextPlayerName);
+				game.world.player1.setName(new String(nextPlayerName, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				game.world.player1.setName(new String(nextPlayerName));
+			}
+
+			try {
+				packetBuffer.get(nextPlayerName);
+				game.world.player2.setName(new String(nextPlayerName, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				game.world.player2.setName(new String(nextPlayerName));
+			}
+			
+
+			// packetBuffer.get(nextPlayerName);
+			// game.world.player3.setName(new String(nextPlayerName, "UTF-8"));
+
+			// packetBuffer.get(nextPlayerName);
+			// game.world.player4.setName(new String(nextPlayerName, "UTF-8"));
 		}
 	}
 
@@ -200,7 +261,7 @@ public class Client extends Thread implements Disposable {
 
 	public void sendInput(char key, char downOrUp) {
 		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
-		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.putChar(MsgCodes.INPUT);
 		packetBuffer.putChar(key);
 		packetBuffer.putChar(downOrUp);
 
@@ -220,7 +281,7 @@ public class Client extends Thread implements Disposable {
 	//called when grab attack input is received
 	public void sendInput(char key, float x, float y, char downOrUp) {
 		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
-		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.putChar(MsgCodes.INPUT);
 		packetBuffer.putChar(key);
 		packetBuffer.putChar(downOrUp);
 		packetBuffer.putFloat(x);
@@ -242,13 +303,32 @@ public class Client extends Thread implements Disposable {
 	//called when interact input is received
 	public void sendInput(char key, int areaNum, int objectNum, char downOrUp) {
 		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
-		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.putChar(MsgCodes.INPUT);
 		packetBuffer.putChar(key);
 		packetBuffer.putChar(downOrUp);
 		packetBuffer.putInt(areaNum);
 		packetBuffer.putInt(objectNum);
 
 		//System.out.println("(Client)sent(" + packetBuffer.asCharBuffer() + ")");
+
+		byte[] packet = packetBuffer.array();
+
+		try {
+			out.write(packet);
+			out.flush();
+			//====================================FOR DEBUG==========================================
+			System.out.println("(Client)sent(" + packet.length + "bytes)");
+			// System.out.println("(Client)sent(" + packetBuffer.asCharBuffer() + ")");
+			//====================================FOR DEBUG==========================================
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sendPlayerName() {
+		ByteBuffer packetBuffer = ByteBuffer.allocate(PACKET_SIZE);
+		packetBuffer.putChar(MsgCodes.DATA);
+		packetBuffer.put(game.playerName.getBytes());
 
 		byte[] packet = packetBuffer.array();
 

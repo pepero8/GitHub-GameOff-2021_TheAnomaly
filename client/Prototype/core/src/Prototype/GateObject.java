@@ -1,5 +1,6 @@
 package Prototype;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,6 +34,7 @@ public class GateObject extends Actor implements Interactable {
 	private boolean opened;
 
 	private float stateTime;
+
 
 	GateObject(float x, float y, int width, int height, int offsetX, int offsetY, String name, Animation<TextureRegion> anim) {
 		setBounds(x, y, width, height);
@@ -155,6 +157,14 @@ public class GateObject extends Actor implements Interactable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
+		// if (nearby) {
+		// 	//batch.setColor(Color.YELLOW);
+		// 	nearby = false;
+		// }
 		batch.draw(curFrame, getX() + offsetX, getY() + offsetY);
+		//batch.setColor(Color.CLEAR);
+		//batch.setColor(1, 1, 1, 1);
 	}
+
+	
 }

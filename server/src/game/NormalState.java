@@ -46,8 +46,8 @@ public class NormalState extends PlayerState {
 	@Override
 	public boolean update(long progressTime) {
 		// TODO Auto-generated method stub
-		float prevX = player.x;
-		float prevY = player.y;
+		// float prevX = player.x;
+		// float prevY = player.y;
 
 		//System.out.println(player.moveUp + ", " + player.moveDown + ", " + player.moveLeft + ", " + player.moveRight);
 		//System.out.println(player.moveSpeed * progressTime / 1000);

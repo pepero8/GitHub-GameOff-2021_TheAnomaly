@@ -2,6 +2,7 @@ package framework;
 
 public class MsgCodes {
 	public static final char MESSAGECODE = 'm';
+	public static final char INPUT = 'i';
 	public static final char DATA = 'd';
 
 	// server message code
@@ -15,11 +16,13 @@ public class MsgCodes {
 		public static final char SESSION_TERMINATE_OD = 't'; // opponent player disconnected
 		public static final char SESSION_TERMINATE_GAMEOVER_ROBOT_WIN = 'r';
 		public static final char SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN = 's';
+		public static final char START_GAME = 'g';
 	}
 
 	// client message code
 	public class Client {
 		public static final char CLOSE_CONNECTION = 'c';
+		public static final char READY = 'r';
 	}
 
 	public class Game {

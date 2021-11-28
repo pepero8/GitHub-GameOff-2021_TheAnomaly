@@ -4,11 +4,30 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 class Server {
+	/**
+	 * HOW TO ADD A PLAYER
+	 * Lobby
+	 * - increase NUM_PLAYERS_PER_SESSION
+	 * - add new player handling code in update()
+	 * 
+	 * Session
+	 * - add player variable
+	 * - change constructor's parameters
+	 * - add code blocks handling extra player
+	 * 
+	 * World
+	 * - increase NUM_PLAYERS value
+	 * - add new player variable
+	 * - initialize the player in constructor
+	 * - add new player to players[]
+	 * 
+	 * ClientHandler
+	 * - increase PACKET_SIZE
+	 */
 	private static final int PORT = 8014;
 
 	// ===============================CAPRICIOUS===============================
 	private static final int MAX_CLIENTS = 5; // limit client numbers
-	public static final int MAX_SESSIONS = 2; // limit session numbers
 	// ===============================CAPRICIOUS===============================
 
 	private ServerSocket welcomeSocket;
@@ -51,7 +70,7 @@ class Server {
 				
 				connectionSocket = welcomeSocket.accept();
 
-				if (activeHandlerNum == MAX_CLIENTS) connectionSocket.close();
+				if (activeHandlerNum == MAX_CLIENTS) connectionSocket.close(); //need testing
 				else {
 					ClientHandler newHandler = new ClientHandler();
 					newHandler.init(connectionSocket, this);

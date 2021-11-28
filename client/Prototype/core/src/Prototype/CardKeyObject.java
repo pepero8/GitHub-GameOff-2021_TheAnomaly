@@ -1,6 +1,8 @@
 package Prototype;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class CardKeyObject extends Image implements Interactable {
@@ -79,7 +81,7 @@ public class CardKeyObject extends Image implements Interactable {
 	@Override
 	public void setInteracted(boolean interacted, boolean success) {
 		// TODO Auto-generated method stub
-		this.interacted = interacted;
+		//this.interacted = interacted;
 	}
 
 	@Override
@@ -136,4 +138,14 @@ public class CardKeyObject extends Image implements Interactable {
 		return objectNum;
 	}
 	
+	@Override
+	public void draw(Batch batch, float parentAlpha) {
+		// if (nearby) {
+		// 	//batch.setColor(Color.YELLOW);
+		// 	nearby = false;
+		// }
+		super.draw(batch, parentAlpha);
+		//batch.setColor(Color.CLEAR);
+		//batch.setColor(1, 1, 1, 1);
+	}
 }
