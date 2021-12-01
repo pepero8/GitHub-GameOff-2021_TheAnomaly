@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		DisplayMode primaryMode = Lwjgl3ApplicationConfiguration.getDisplayMode();
 		//config.setFullscreenMode(primaryMode);
+		config.setTitle("The Anomaly");
 		config.setWindowedMode(600, 600);
 		new Lwjgl3Application(new Prototype(), config);
 	}

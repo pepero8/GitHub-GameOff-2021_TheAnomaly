@@ -54,56 +54,57 @@ public class MainMenuScreen implements Screen {
 
 		shapeRenderer = new ShapeRenderer();
 
-		mainMenuBackground = new Image(game.world.assets.mainMenuBackgroundTexture);
+		mainMenuBackground = new Image(game.assets.mainMenuBackgroundTexture);
 		mainMenuBackground.setPosition(0, 0);
 
-		title = new Label("The Anomaly", game.world.assets.skin, "title");
+		title = new Label("The Anomaly", game.assets.skin, "title");
 		title.setAlignment(Align.center);
 		title.setWidth(600);
 		title.setWrap(true);
 		title.setPosition(Gdx.graphics.getWidth()/2-title.getWidth()/2, 472-title.getHeight());
 
-		playButton = new TextButton("Play", game.world.assets.skin, "default");
+		playButton = new TextButton("Play", game.assets.skin, "default");
 		playButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				game.world.assets.click.play();
+				game.assets.click.play();
 				inputPrompt.setVisible(true);
 			}
 		});
 		playButton.setWidth(100);
 		playButton.setPosition(Gdx.graphics.getWidth()/2-playButton.getWidth()/2, title.getHeight() + 100);
 
-		inputPrompt = new Window("Enter your name", game.world.assets.skin, "default");
+		inputPrompt = new Window("Enter your name", game.assets.skin, "default");
 		inputPrompt.setSize(568, 100);
 		inputPrompt.setPosition(Gdx.graphics.getWidth() / 2 - inputPrompt.getWidth() / 2, 0);
 		inputPrompt.getTitleLabel().setWrap(true);
 		inputPrompt.setVisible(false);
 
-		inputField = new TextField("", game.world.assets.skin, "default");
+		inputField = new TextField("", game.assets.skin, "default");
 		inputField.setSize(250, 80);
 		inputField.setMaxLength(12);
 
-		okButton = new TextButton("OK", game.world.assets.skin, "default");
+		okButton = new TextButton("OK", game.assets.skin, "default");
 		okButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				game.world.assets.click.play();
+				game.assets.click.play();
 				String name = inputField.getText();
 				if (name.length() != 0)
 					game.playerName = name;
 				//game.setScreen(game.waitScreen);
+				game.world = new World(game);
 				game.connect();
 				inputPrompt.setVisible(false);
 				sessionWaitWindow.setVisible(true);
 			}
 		});
 
-		cancelButton = new TextButton("Cancel", game.world.assets.skin, "default");
+		cancelButton = new TextButton("Cancel", game.assets.skin, "default");
 		cancelButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				game.world.assets.click.play();
+				game.assets.click.play();
 				inputPrompt.setVisible(false);
 			}
 		});
@@ -113,12 +114,12 @@ public class MainMenuScreen implements Screen {
 		inputPrompt.add(cancelButton).width(150).padLeft(10);
 		//inputPrompt.addActor(inputField);
 
-		sessionWaitWindow = new Window("", game.world.assets.skin, "default");
+		sessionWaitWindow = new Window("", game.assets.skin, "default");
 		sessionWaitWindow.setSize(568, 100);
 		sessionWaitWindow.setPosition(Gdx.graphics.getWidth() / 2 - inputPrompt.getWidth() / 2, 0);
 		sessionWaitWindow.setVisible(false);
 
-		sessionWaitLabel = new Label("searching for players.", game.world.assets.skin, "default");
+		sessionWaitLabel = new Label("searching for players.", game.assets.skin, "default");
 		RepeatAction loop = new RepeatAction();
 		loop.setCount(RepeatAction.FOREVER);
 		loop.setAction(new Action() {
@@ -142,11 +143,11 @@ public class MainMenuScreen implements Screen {
 		sessionWaitLabel.setFontScale(0.7f);
 		sessionWaitLabel.setWrap(true);
 
-		cancelWaitButton = new TextButton("Cancel", game.world.assets.skin, "default");
+		cancelWaitButton = new TextButton("Cancel", game.assets.skin, "default");
 		cancelWaitButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				game.world.assets.click.play();
+				game.assets.click.play();
 				game.disconnect();
 				sessionWaitWindow.setVisible(false);
 			}
@@ -166,16 +167,16 @@ public class MainMenuScreen implements Screen {
 	public void show() {
 		// TODO Auto-generated method stub
 		Gdx.input.setInputProcessor(stage);
-		game.world.assets.mainMenuMusic.play();
+		game.assets.mainMenuMusic.play();
 	}
 
 	@Override
 	public void render(float delta) {
 		// TODO Auto-generated method stub
 		stage.act();
-		game.world.assets.baseTexture.setRegion(0, 0, 568, 472);
+		game.assets.baseTexture.setRegion(0, 0, 568, 472);
 		stage.getBatch().begin();
-		stage.getBatch().draw(game.world.assets.baseTexture, 16, 64);
+		stage.getBatch().draw(game.assets.baseTexture, 16, 64);
 		stage.getBatch().end();
 		stage.draw();
 
@@ -194,8 +195,9 @@ public class MainMenuScreen implements Screen {
 			}
 			Gdx.app.log("MainMenuScreen", "session starting...");
 			// game.setScreen(game.testScreen);
-			game.introScreen.init();
-			game.setScreen(game.introScreen);
+			//game.introScreen.init();
+			//game.setScreen(game.introScreen);
+			game.setScreen(new IntroScreen(game));
 		}
 	}
 
@@ -221,7 +223,8 @@ public class MainMenuScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		game.world.assets.mainMenuMusic.stop();
+		game.assets.mainMenuMusic.stop();
+		dispose();
 	}
 
 	@Override

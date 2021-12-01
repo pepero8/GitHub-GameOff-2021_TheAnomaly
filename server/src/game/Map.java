@@ -29,6 +29,10 @@ public class Map {
 
 	public static final int EXIT_AREA_NUM = 14;
 
+	//int TOTAL_BOX_OBJECTS = 0;
+	int REMAINING_BOX_OBJECTS = 0;
+	int HIT = 0;
+
 	// MovableSpace spaceMainNorth;
 	// MovableSpace spaceMainEast;
 	// MovableSpace spaceMainWest;
@@ -354,9 +358,9 @@ public class Map {
 		mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176, 32, 160)); // chair5
 		//mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176 + 64, 32, 32)); // chair6
 		//mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176 + 160 - 32, 32, 32)); // chair7
-		mainArea.addObject(new BoxObject(1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1"));
-		mainArea.addObject(new BoxObject(1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2"));
-		mainArea.addObject(new BoxObject(1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3"));
+		mainArea.addObject(new BoxObject(this, 1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1"));
+		mainArea.addObject(new BoxObject(this, 1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2"));
+		mainArea.addObject(new BoxObject(this, 1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3"));
 		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door"));
 		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate"));
 		//mainArea.addObject(new CardKeyObject(mainArea, mainArea.x+512, mainArea.y+896, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key"));
@@ -480,7 +484,7 @@ public class Map {
 		southHallwayArea.addObject(developmentRoomWall2);
 		areas[SOUTHHALLWAY_AREA_NUM] = southHallwayArea;
 	
-		testRoomArea = new Area(this, 1168, 0, 512, 576, TESTROOM_AREA_NUM, 7) {
+		testRoomArea = new Area(this, 1168, 0, 512, 576, TESTROOM_AREA_NUM, 10) {
 			@Override
 			public Area determineArea(float x, float y) {
 			// public Area determineArea(Player player) {
@@ -494,8 +498,11 @@ public class Map {
 		testRoomArea.addObject(testRoomDoor);
 		testRoomArea.addObject(new WallObject(1168, 256, 192, 64));
 		testRoomArea.addObject(new WallObject(1168+512-192, 256, 192, 64));
-		testRoomArea.addObject(new BoxObject(1168+512-32, 576-64-32, 32, 32, "test room box1")); //box1
-		testRoomArea.addObject(new BoxObject(1168, 256-32, 32, 32, "test room box2")); //box2
+		testRoomArea.addObject(new BoxObject(this, 1168+128, 576-64-32, 32, 32, "test room box2")); //box2
+		testRoomArea.addObject(new BoxObject(this, 1168+512-32-32, 576-64-32, 32, 32, "test room box3"));
+		testRoomArea.addObject(new BoxObject(this, 1168, 256-32-32, 32, 32, "test room box4"));
+		testRoomArea.addObject(new BoxObject(this, 1168+512-32, 256-32, 32, 32, "test room box5"));
+		testRoomArea.addObject(new BoxObject(this, 1168+512-32, 576-64-32, 32, 32, "test room box1")); //box1
 		areas[TESTROOM_AREA_NUM] = testRoomArea;
 
 		developmentRoomArea = new Area(this, 2064, 320, 512, 768, DEVELOPMENTROOM_AREA_NUM, 13) {
@@ -517,12 +524,12 @@ public class Map {
 		developmentRoomArea.addObject(new WallObject(2064+128+64+48, 320+352-32, 64, 128)); //super computer
 		developmentRoomArea.addObject(new WallObject(2064, 512, 384, 64)); //south wall
 		developmentRoomArea.addObject(new WallObject(2064+64, 320+48, 256, 96)); //south table
-		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320, 32, 32, "development room box1")); //box1
-		developmentRoomArea.addObject(new BoxObject(2064+128+64+48+64, 320+352+16, 32, 32, "development room box2")); //box2
-		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320+768-32, 32, 32, "development room box3")); //box3
+		developmentRoomArea.addObject(new BoxObject(this, 2064+512-32, 320, 32, 32, "development room box1")); //box1
+		developmentRoomArea.addObject(new BoxObject(this, 2064+128+64+48+64, 320+352+16, 32, 32, "development room box2")); //box2
+		developmentRoomArea.addObject(new BoxObject(this, 2064+512-32, 320+768-32, 32, 32, "development room box3")); //box3
 		areas[DEVELOPMENTROOM_AREA_NUM] = developmentRoomArea;
 	
-		directorOfficeArea = new Area(this, 272, 2176, 256, 256, DIRECTOROFFICE_AREA_NUM, 8) {
+		directorOfficeArea = new Area(this, 272, 2176, 256, 256, DIRECTOROFFICE_AREA_NUM, 10) {
 			@Override
 			public Area determineArea(float x, float y) {
 			// public Area determineArea(Player player) {
@@ -533,12 +540,14 @@ public class Map {
 			}
 		};
 		directorOfficeArea.addObject(directorOfficeDoor);
-		directorOfficeArea.addObject(new BoxObject(272, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box1"));
+		directorOfficeArea.addObject(new BoxObject(this, 272+256-BoxObject.BOXOBJECT_WIDTH, 2176, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box2"));
 		directorOfficeArea.addObject(directorOfficeWall1);
 		directorOfficeArea.addObject(directorOfficeWall2);
 		directorOfficeArea.addObject(new WallObject(272 + 256 - 32, 2176 + 256 - 32, 32, 32)); // chair
 		directorOfficeArea.addObject(new WallObject(272 + 256 - 96, 2176 + 256 - 32 - 48, 96, 48)); // desk
 		directorOfficeArea.addObject(new WallObject(272 + 64, 2176 + 64, 128, 64)); // table
+		directorOfficeArea.addObject(new BoxObject(this, 272+BoxObject.BOXOBJECT_WIDTH*2, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box3"));
+		directorOfficeArea.addObject(new BoxObject(this, 272, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box1"));
 		areas[DIRECTOROFFICE_AREA_NUM] = directorOfficeArea;
 	
 		serverRoomArea = new Area(this, 272, 256, 256, 256, SERVERROOM_AREA_NUM, 7) {
@@ -551,15 +560,15 @@ public class Map {
 					return this;
 			}
 		};
-		serverRoomArea.addObject(new BoxObject(272, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box1"));
+		serverRoomArea.addObject(new BoxObject(this, 272, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box1"));
 		serverRoomArea.addObject(serverRoomDoor);
-		serverRoomArea.addObject(new BoxObject(272+256-32, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box2"));
+		serverRoomArea.addObject(new BoxObject(this, 272+256-32, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box2"));
 		serverRoomArea.addObject(new WallObject(272 + 64, 256 + 96, 128, 96)); // server rack
 		serverRoomArea.addObject(serverRoomWall1);
 		serverRoomArea.addObject(serverRoomWall2);
 		areas[SERVERROOM_AREA_NUM] = serverRoomArea;
 	
-		office1Area = new Area(this, 0, 1088+512, 256+16, 256, OFFICE1_AREA_NUM, 9) {
+		office1Area = new Area(this, 0, 1088+512, 256+16, 256, OFFICE1_AREA_NUM, 12) {
 			@Override
 			public Area determineArea(float x, float y) {
 			// public Area determineArea(Player player) {
@@ -577,6 +586,9 @@ public class Map {
 		office1Area.addObject(new WallObject(146, office1Area.y, 32, 64)); // cabinet
 		office1Area.addObject(office1Wall);
 		office1Area.addObject(office1Door);
+		office1Area.addObject(new BoxObject(this, 0, office1Area.y+64+BoxObject.BOXOBJECT_HEIGHT, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box2"));
+		office1Area.addObject(new BoxObject(this, 256-BoxObject.BOXOBJECT_WIDTH, office1Area.y+256-32-BoxObject.BOXOBJECT_HEIGHT, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box3"));
+		office1Area.addObject(new BoxObject(this, 0, office1Area.y+64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box1"));
 		areas[OFFICE1_AREA_NUM] = office1Area;
 	
 		office2Area = new Area(this, 0, 1088+128, 256+16, 256, OFFICE2_AREA_NUM, 11) {
@@ -595,8 +607,8 @@ public class Map {
 		office2Area.addObject(new WallObject(224, office2Area.y + 224, 32, 32)); // planter
 		office2Area.addObject(new WallObject(0, office2Area.y, 113, 64)); // shelf
 		office2Area.addObject(new WallObject(146, office2Area.y, 32, 64)); // cabinet
-		office2Area.addObject(new BoxObject(0, office2Area.y + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box1"));
-		office2Area.addObject(new BoxObject(224, office2Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box2"));
+		office2Area.addObject(new BoxObject(this, 0, office2Area.y + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box1"));
+		office2Area.addObject(new BoxObject(this, 224, office2Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box2"));
 		office2Area.addObject(office2Wall);
 		office2Area.addObject(office2Door);
 		areas[OFFICE2_AREA_NUM] = office2Area;
@@ -617,10 +629,10 @@ public class Map {
 		office3Area.addObject(new WallObject(224, office3Area.y + 224, 32, 32)); // planter
 		office3Area.addObject(new WallObject(0, office3Area.y, 113, 64)); // shelf
 		office3Area.addObject(new WallObject(146, office3Area.y, 32, 64)); // cabinet
-		office3Area.addObject(new BoxObject(0, office3Area.y + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box1"));
-		office3Area.addObject(new BoxObject(224, office3Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box2"));
-		office3Area.addObject(new BoxObject(0, office3Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box3"));
-		office3Area.addObject(new BoxObject(80, office3Area.y + 256-128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box4"));
+		office3Area.addObject(new BoxObject(this, 0, office3Area.y + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box1"));
+		office3Area.addObject(new BoxObject(this, 224, office3Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box2"));
+		office3Area.addObject(new BoxObject(this, 0, office3Area.y + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box3"));
+		office3Area.addObject(new BoxObject(this, 80, office3Area.y + 256-128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box4"));
 		office3Area.addObject(office3Wall);
 		office3Area.addObject(office3Door);
 		areas[OFFICE3_AREA_NUM] = office3Area;
@@ -646,7 +658,7 @@ public class Map {
 		};
 		areas[PATHTOEXIT_AREA_NUM] = pathToExitArea;
 
-		System.out.println("total box number: " + BoxObject.REMAINING_BOX_OBJECTS);
+		System.out.println("total box number: " + REMAINING_BOX_OBJECTS);
 	
 		exitArea = new Area(this, 0, 0, 0, 0, EXIT_AREA_NUM, 0) {
 			@Override

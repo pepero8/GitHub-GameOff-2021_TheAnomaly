@@ -2,6 +2,7 @@ package Prototype;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -23,10 +24,17 @@ import net.MsgCodes;
  * can move around within the map
  */
 public class Player extends Actor implements Disposable {
+	int playerNum;
+
+	public boolean disconnected = false;
+
 	private Animation<TextureRegion>[] animations;
 	private Animation<TextureRegion> curAnimation;
 	private TextureRegion curFrame;
 	private TextureRegionDrawable portrait;
+
+	//private Color charColor;
+
 	private Sound[] sounds;
 	private float soundDurationRunning = Assets.SOUND_INTERVAL_RUNNING;
 	private float soundDurationDodge = Assets.SOUND_INTERVAL_DODGE;
@@ -62,7 +70,8 @@ public class Player extends Actor implements Disposable {
 	//private boolean killed;
 
 	//constructor
-	public Player(String name, Animation<TextureRegion>[] animations) {
+	public Player(int playerNum, String name, Animation<TextureRegion>[] animations) {
+		this.playerNum = playerNum;
 		setName(name);
 		this.animations = animations;
 
@@ -126,6 +135,10 @@ public class Player extends Actor implements Disposable {
 
 		addAction(loop);
 	}
+
+	// public void setCharColor(Color color) {
+	// 	charColor = color;
+	// }
 
 	public void setSounds(Sound[] sounds) {
 		this.sounds = sounds;
@@ -229,7 +242,8 @@ public class Player extends Actor implements Disposable {
 	public synchronized char accessState(String operation, char state) {
 		if (operation.contentEquals("set")) {
 			//Gdx.app.log("Player", "state: " + state);
-			if (curState != state) {
+			if (curState != state && curState != MsgCodes.Game.ATTACK_GRABBING_STATE) {
+				//System.out.println("changed state: " + curState + " -> " + state);
 				stateTime = 0;
 				if (state == MsgCodes.Game.DRAGGED_STATE)
 					dragged = true;
@@ -286,6 +300,7 @@ public class Player extends Actor implements Disposable {
 	}
 
 	private void updateAnimation(float delta) {
+		//System.out.println("curstate: " + curState);
 		stateTime += delta;
 		//Gdx.app.log("Player", "moving: " + moving);
 		boolean loop = false;
@@ -307,17 +322,39 @@ public class Player extends Actor implements Disposable {
 		else if (curState == MsgCodes.Game.DODGE_STATE) {
 			curAnimation = animations[Integer.parseInt(String.valueOf(curDirection)) + 8];
 		}
+		else if (curState == MsgCodes.Game.INTERACT_STATE) {
+			if (playerNum == Prototype.PLAYER_ROBOT_NUM) {
+				curAnimation = animations[Assets.ANIMATION_INTERACT_ROBOT];
+			}
+			else
+				curAnimation = animations[Assets.ANIMATION_INTERACT];
+			loop = true;
+		}
 		else if (curState == MsgCodes.Game.DRAGGED_STATE) {
 			curAnimation = animations[Assets.ANIMATION_DRAGGED];
 		}
 		else if (curState == MsgCodes.Game.DEAD_STATE) {
 			curAnimation = animations[Assets.ANIMATION_DIE];
 		}
-		else
+		else if (curState == MsgCodes.Game.ATTACK_STATE) {
+			curAnimation = animations[Assets.ANIMATION_ATTACK];
+		}
+		else if (curState == MsgCodes.Game.ATTACK_GRABBING_STATE) {
+			curAnimation = animations[Assets.ANIMATION_ATTACK_GRABBING];
+		}
+		else if (curState == MsgCodes.Game.GRABBING_STATE) {
+			curAnimation = animations[Assets.ANIMATION_GRAB];
+		}
+		else if (curState == MsgCodes.Game.RUSH_STATE) {
+			curAnimation = animations[Assets.ANIMATION_RUSH];
+		}
+		else {
 			curAnimation = animations[Assets.ANIMATION_STILL];
+			loop = true;
+		}
 
 		//if (curAnimation != null)
-			curFrame = curAnimation.getKeyFrame(stateTime, loop);
+		curFrame = curAnimation.getKeyFrame(stateTime, loop);
 	}
 
 	public void setSoundVolume(float volume) {
@@ -363,7 +400,7 @@ public class Player extends Actor implements Disposable {
 					sounds[4].play(soundVolume);
 				}
 			}
-			else if (curState == MsgCodes.Game.INTERACT_STATE) {
+			else if (curState == MsgCodes.Game.INTERACT_STATE && playerNum != Prototype.PLAYER_ROBOT_NUM) {
 				if (interacted) {
 					interacted = false;
 					// sounds[0].resume();
@@ -378,8 +415,10 @@ public class Player extends Actor implements Disposable {
 					// System.out.println("sound volume: " + soundVolume);
 					sounds[1].stop();
 					sounds[2].stop();
-					sounds[1].play(soundVolume * 0.4f);
+					sounds[1].play(soundVolume * 0.3f);
 					sounds[2].play(soundVolume);
+
+					//System.out.println("[Robot]: playing attack sound");
 				}
 			}
 			else if (curState == MsgCodes.Game.RUSH_STATE) {
@@ -406,9 +445,15 @@ public class Player extends Actor implements Disposable {
 			else {
 			//else if (curState == MsgCodes.Game.NORMAL_STATE_STANDING) {
 				//System.out.println("pausing sound");
-				for (Sound sound : sounds) {
-					sound.stop();
-				}
+				sounds[0].stop();
+				sounds[1].stop();
+				sounds[2].stop();
+				sounds[3].stop();
+				if (playerNum != Prototype.PLAYER_ROBOT_NUM)
+					sounds[5].stop();
+				// for (Sound sound : sounds) {
+				// 	sound.stop();
+				// }
 				// sounds[0].stop();
 				// sounds[3].stop();
 				// sounds[5].stop();
@@ -434,7 +479,9 @@ public class Player extends Actor implements Disposable {
 	public void draw (Batch batch, float parentAlpha) {
 		//Gdx.app.log("Player", "drawing...");
 		//if (curFrame != null);
-			batch.draw(curFrame, getX(), getY());
+		//batch.setColor(getColor());
+			batch.draw(curFrame, getX()-Prototype.ATTACK_RANGE, getY()-Prototype.ATTACK_RANGE);
+		//batch.setColor(Color.WHITE);
 	}
 
 	@Override

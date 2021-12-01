@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ClientHandler extends Thread {
 	// ===============================CAPRICIOUS===============================
-	public static final int PACKET_SIZE = 76;
+	public static final int PACKET_SIZE = 108;
 	// ===============================CAPRICIOUS===============================
 	private Socket connectionSocket;
 	private InetAddress ip_client;
@@ -31,6 +31,8 @@ public class ClientHandler extends Thread {
 	void init(Socket connectionSocket, Server server) {
 		this.connectionSocket = connectionSocket;
 		this.server = server;
+
+		playerName = "player".getBytes(); //default name
 
 		try {
 			//====================================FOR DEBUG==========================================
@@ -124,7 +126,7 @@ public class ClientHandler extends Thread {
 			System.out.println("sent msg(" + ip_client + ":" + port_client + "): [" + packetBuffer.asCharBuffer() + "]");
 			// ====================================FOR DEBUG==========================================
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -136,7 +138,7 @@ public class ClientHandler extends Thread {
 			//System.out.println("sent msg(" + ip_client + ":" + port_client + "): [" + ByteBuffer.wrap(packet).asCharBuffer() + "]");
 			// ====================================FOR DEBUG==========================================
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 

@@ -29,7 +29,8 @@ public class NormalState extends PlayerState {
 
 	@Override
 	void rush() {
-		player.curState = player.rushState;
+		if (player.elapsedFromLastRush >= World.RUSH_COOL_DOWN)
+			player.curState = player.rushState;
 	}
 
 	@Override

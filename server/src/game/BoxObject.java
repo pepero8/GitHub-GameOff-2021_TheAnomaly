@@ -4,10 +4,11 @@ public class BoxObject implements Interactable {
 	static final int BOXOBJECT_WIDTH = 32;
 	static final int BOXOBJECT_HEIGHT = 32;
 	static final long BOXOBJECT_REQUIRE_TIME = 2000; //required time to finish interaction in milliseconds
-	static int TOTAL_BOX_OBJECTS = 0;
-	static int REMAINING_BOX_OBJECTS = 0;
-	static int HIT = 0;
+	// static int TOTAL_BOX_OBJECTS = 0;
+	// static int REMAINING_BOX_OBJECTS = 0;
+	// static int HIT = 0;
 	//static float SUCCESS_RATE;
+	Map map;
 	
 	//private Interactable content;
 	// private BoxObjectModel model;
@@ -21,31 +22,32 @@ public class BoxObject implements Interactable {
 	private boolean interacted;
 	private boolean interacting;
 
-	BoxObject(float x, float y, int width, int height, String name) {
+	BoxObject(Map map, float x, float y, int width, int height, String name) {
+		this.map = map;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.name = name;
 		// model = boxModel;
-		TOTAL_BOX_OBJECTS++;
-		REMAINING_BOX_OBJECTS++;
+		//map.TOTAL_BOX_OBJECTS++;
+		map.REMAINING_BOX_OBJECTS++;
 	}
 
 	@Override
 	public boolean interact(Player player) {
 		//if (!interacted) {
 			interacted = true;
-			int trial = (int)(Math.random() * REMAINING_BOX_OBJECTS);
-			System.out.println("trial: " + trial + ", HIT: " + HIT);
-			if (trial == HIT) {
+			int trial = (int)(Math.random() * map.REMAINING_BOX_OBJECTS);
+			System.out.println("trial: " + trial + ", HIT: " + map.HIT);
+			if (trial == map.HIT) {
 				//player.setPossession(new CardKey());
 				player.haveKey = true;
-				HIT = -1; //no more keys
+				map.HIT = -1; //no more keys
 				//REMAINING_BOX_OBJECTS--;
 				return true;
 			}
-			REMAINING_BOX_OBJECTS--;
+			map.REMAINING_BOX_OBJECTS--;
 		//}
 		return false;
 	}

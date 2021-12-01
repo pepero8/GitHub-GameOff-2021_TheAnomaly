@@ -1,6 +1,7 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -35,13 +36,14 @@ public class World extends Actor implements Disposable {
 	private static final int OFFICE3_AREA_NUM = 12;
 	private static final int PATHTOEXIT_AREA_NUM = 13;
 
-	Assets assets;
+	//game.Assets game.assets;
+	Prototype game;
 
 	public Player robot;
 	public Player player1;
 	public Player player2;
-	//public Player player3;
-	//public Player player4;
+	public Player player3;
+	public Player player4;
 	//public Array<Player> activePlayers; // array containing alive players(not including robot)
 
 	public Player[] players;
@@ -66,46 +68,47 @@ public class World extends Actor implements Disposable {
 
 	public CardKeyObject cardKey;
 
-	public long remainTime = 300000;
+	public long remainTime = 300000; //5 minutes
 
 	//constructor
-	public World() {
-		assets = new Assets();
+	public World(Prototype game) {
+		this.game = game;
+		//game.assets = new game.Assets();
 
 		players = new Player[Prototype.NUM_PLAYERS];
 		areas = new Area[NUM_AREAS];
 
 		//create shared doors/gates/walls
-		GateObject mainGate1 = new GateObject(784+0, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate1", assets.gateAnimation);
-		GateObject mainGate2 = new GateObject(784+256*3, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate2", assets.gateAnimation);
+		GateObject mainGate1 = new GateObject(784+0, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate1", game.assets.gateAnimation);
+		GateObject mainGate2 = new GateObject(784+256*3, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, 0, 5, "entrance gate2", game.assets.gateAnimation);
 		WallObject entranceWall = new WallObject(784 + 256, 1088 + 1536 - 5, 512, 256 + 5);
 
-		DoorObject developmentRoomEntrance = new DoorObject(2048, 640, 16, 128, "development room entrance", assets.doorAnimationRotated);
+		DoorObject developmentRoomEntrance = new DoorObject(2048, 640, 16, 128, "development room entrance", game.assets.doorAnimationRotated);
 		WallObject developmentRoomWall1 = new WallObject(2048 + 1, 768, 16, 64);
 		WallObject developmentRoomWall2 = new WallObject(2048 + 1, 576, 16, 64);
 
-		DoorObject directorOfficeDoor = new DoorObject(256+16+64, 512+1600, 128, 64, "director's office door", assets.doorAnimation);
+		DoorObject directorOfficeDoor = new DoorObject(256+16+64, 512+1600, 128, 64, "director's office door", game.assets.doorAnimation);
 		WallObject directorOfficeWall1 = new WallObject(256+16, 512+1600, 64, 64);
 		WallObject directorOfficeWall2 = new WallObject(256+16+256-64, 512+1600, 64, 64);
 		
-		DoorObject testRoomDoor = new DoorObject(1168, 512, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test room entrance", assets.doorAnimation);
+		DoorObject testRoomDoor = new DoorObject(1168, 512, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test room entrance", game.assets.doorAnimation);
 		WallObject testRoomWall = new WallObject(1168+128, 512, 512-128, 64+1);
 		
-		DoorObject serverRoomDoor = new DoorObject(256+16+64, 512, 128, 64, "server room door", assets.doorAnimation);
+		DoorObject serverRoomDoor = new DoorObject(256+16+64, 512, 128, 64, "server room door", game.assets.doorAnimation);
 		WallObject serverRoomWall1 = new WallObject(256+16, 512, 64, 64);
 		WallObject serverRoomWall2 = new WallObject(256+16+256-64, 512, 64, 64);
 
-		DoorObject office1Door = new DoorObject(256, 1088+512, 16, 128, "office 1 door", assets.doorAnimationRotated);
+		DoorObject office1Door = new DoorObject(256, 1088+512, 16, 128, "office 1 door", game.assets.doorAnimationRotated);
 		WallObject office1Wall = new WallObject(256, 1088+512+128, 16,128);
 		
-		DoorObject office2Door = new DoorObject(256, 1088 + 128, 16, 128, "office 2 door", assets.doorAnimationRotated);
+		DoorObject office2Door = new DoorObject(256, 1088 + 128, 16, 128, "office 2 door", game.assets.doorAnimationRotated);
 		WallObject office2Wall = new WallObject(256, 1088 + 128 + 128, 16, 128);
 		
-		DoorObject office3Door = new DoorObject(256, 1088 - 256, 16, 128, "office 3 door", assets.doorAnimationRotated);
+		DoorObject office3Door = new DoorObject(256, 1088 - 256, 16, 128, "office 3 door", game.assets.doorAnimationRotated);
 		WallObject office3Wall = new WallObject(256, 1088 - 256 + 128, 16, 128);
 		
 		//create areas
-		mainArea = new Area(MAIN_AREA_NUM, 18, 16, 16, assets.mainAreaTexture) {
+		mainArea = new Area(MAIN_AREA_NUM, 18, 16, 16, game.assets.mainAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				//System.out.println("Main area determine");
@@ -151,14 +154,14 @@ public class World extends Actor implements Disposable {
 		mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176, 32, 160)); // chair5
 		//mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176+64, 32, 32)); // chair6
 		//mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176 + 160 - 32, 32, 32)); // chair7
-		mainArea.addObject(new BoxObject(1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1", assets.boxTexture));
-		mainArea.addObject(new BoxObject(1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2", assets.boxTexture));
-		mainArea.addObject(new BoxObject(1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3", assets.boxTexture));
-		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", assets.doorAnimation));
-		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", assets.doorAnimationRotated));
+		mainArea.addObject(new BoxObject(1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		mainArea.addObject(new BoxObject(1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		mainArea.addObject(new BoxObject(1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", game.assets.doorAnimation));
+		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", game.assets.doorAnimationRotated));
 		areas[MAIN_AREA_NUM] = mainArea;
 
-		pathToEntranceArea = new Area(PATHTOENTRANCE_AREA_NUM, 4, 16, 0, assets.pathToEntranceAreaTexture) {
+		pathToEntranceArea = new Area(PATHTOENTRANCE_AREA_NUM, 4, 16, 0, game.assets.pathToEntranceAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				//entry line to main area
@@ -181,7 +184,7 @@ public class World extends Actor implements Disposable {
 		pathToEntranceArea.addObject(mainGate2);
 		areas[PATHTOENTRANCE_AREA_NUM] = pathToEntranceArea;
 
-		westPassageArea = new Area(WESTPASSAGE_AREA_NUM, 1, 0, 16, assets.westPassageAreaTexture) {
+		westPassageArea = new Area(WESTPASSAGE_AREA_NUM, 1, 0, 16, game.assets.westPassageAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				// entry line to main area
@@ -198,7 +201,7 @@ public class World extends Actor implements Disposable {
 		westPassageArea.setName("west passage");
 		areas[WESTPASSAGE_AREA_NUM] = westPassageArea;
 
-		westHallwayArea = new Area(WESTHALLWAY_AREA_NUM, 13, 16, 0, assets.westHallwayAreaTexture) {
+		westHallwayArea = new Area(WESTHALLWAY_AREA_NUM, 13, 16, 0, game.assets.westHallwayAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				// entry line to west passage
@@ -238,7 +241,7 @@ public class World extends Actor implements Disposable {
 		westHallwayArea.addObject(office3Door);
 		areas[WESTHALLWAY_AREA_NUM] = westHallwayArea;
 
-		southPassageArea = new Area(SOUTHPASSAGE_AREA_NUM, 1, 16, 0, assets.southPassageAreaTexture) {
+		southPassageArea = new Area(SOUTHPASSAGE_AREA_NUM, 1, 16, 0, game.assets.southPassageAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				// entry line to main area
@@ -255,7 +258,7 @@ public class World extends Actor implements Disposable {
 		southPassageArea.setName("south passage");
 		areas[SOUTHPASSAGE_AREA_NUM] = southPassageArea;
 
-		southHallwayArea = new Area(SOUTHHALLWAY_AREA_NUM, 6, 0, 16, assets.southHallwayAreaTexture) {
+		southHallwayArea = new Area(SOUTHHALLWAY_AREA_NUM, 6, 0, 16, game.assets.southHallwayAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				// entry line to south passage
@@ -281,7 +284,7 @@ public class World extends Actor implements Disposable {
 		southHallwayArea.addObject(developmentRoomWall2);
 		areas[SOUTHHALLWAY_AREA_NUM] = southHallwayArea;
 
-		testRoomArea = new Area(TESTROOM_AREA_NUM, 7, 16, 16, assets.testRoomAreaTexture) {
+		testRoomArea = new Area(TESTROOM_AREA_NUM, 10, 16, 16, game.assets.testRoomAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (y >= 576)
@@ -296,11 +299,14 @@ public class World extends Actor implements Disposable {
 		testRoomArea.addObject(testRoomDoor);
 		testRoomArea.addObject(new WallObject(1168, 256, 192, 64));
 		testRoomArea.addObject(new WallObject(1168+512-192, 256, 192, 64));
-		testRoomArea.addObject(new BoxObject(1168+512-32, 576-64-32, 32, 32, "test room box1", assets.boxTexture)); //box1
-		testRoomArea.addObject(new BoxObject(1168, 256-32, 32, 32, "test room box2", assets.boxTexture)); //box2
+		testRoomArea.addObject(new BoxObject(1168+128, 576-64-32, 32, 32, "test room box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture)); //box2
+		testRoomArea.addObject(new BoxObject(1168+512-32-32, 576-64-32, 32, 32, "test room box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		testRoomArea.addObject(new BoxObject(1168, 256-32-32, 32, 32, "test room box4", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		testRoomArea.addObject(new BoxObject(1168+512-32, 256-32, 32, 32, "test room box5", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		testRoomArea.addObject(new BoxObject(1168+512-32, 576-64-32, 32, 32, "test room box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture)); //box1
 		areas[TESTROOM_AREA_NUM] = testRoomArea;
 
-		developmentRoomArea = new Area(DEVELOPMENTROOM_AREA_NUM, 13, 16, 0, assets.developmentRoomAreaTexture) {
+		developmentRoomArea = new Area(DEVELOPMENTROOM_AREA_NUM, 13, 16, 16, game.assets.developmentRoomAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (x <= 2064 && y >= 576 && y <= 576+256)
@@ -320,12 +326,12 @@ public class World extends Actor implements Disposable {
 		developmentRoomArea.addObject(new WallObject(2064+128+64+48, 320+352-32, 64, 128)); //super computer
 		developmentRoomArea.addObject(new WallObject(2064, 512, 384, 64)); //south wall
 		developmentRoomArea.addObject(new WallObject(2064+64, 320+48, 256, 96)); //south table
-		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320, 32, 32, "development room box1", assets.boxTexture)); //box1
-		developmentRoomArea.addObject(new BoxObject(2064+128+64+48+64, 320+352+16, 32, 32, "development room box2", assets.boxTexture)); //box2
-		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320+768-32, 32, 32, "development room box3", assets.boxTexture)); //box3
+		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320, 32, 32, "development room box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture)); //box1
+		developmentRoomArea.addObject(new BoxObject(2064+128+64+48+64, 320+352+16, 32, 32, "development room box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture)); //box2
+		developmentRoomArea.addObject(new BoxObject(2064+512-32, 320+768-32, 32, 32, "development room box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture)); //box3
 		areas[DEVELOPMENTROOM_AREA_NUM] = developmentRoomArea;
 
-		directorOfficeArea = new Area(DIRECTOROFFICE_AREA_NUM, 8, 16, 0, assets.directorOfficeAreaTexture) {
+		directorOfficeArea = new Area(DIRECTOROFFICE_AREA_NUM, 10, 16, 0, game.assets.directorOfficeAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (y <= 2176)
@@ -337,15 +343,17 @@ public class World extends Actor implements Disposable {
 		directorOfficeArea.setBounds(272, 2176, 256, 256);
 		directorOfficeArea.setName("director's office");
 		directorOfficeArea.addObject(directorOfficeDoor);
-		directorOfficeArea.addObject(new BoxObject(272, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box1", assets.boxTexture));
+		directorOfficeArea.addObject(new BoxObject(272+256-BoxObject.BOXOBJECT_WIDTH, 2176, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		directorOfficeArea.addObject(directorOfficeWall1);
 		directorOfficeArea.addObject(directorOfficeWall2);
 		directorOfficeArea.addObject(new WallObject(272+256-32, 2176+256-32, 32, 32)); //chair
 		directorOfficeArea.addObject(new WallObject(272+256-96, 2176+256-32-48, 96, 48)); //desk
 		directorOfficeArea.addObject(new WallObject(272+64, 2176+64, 128, 64)); //table
+		directorOfficeArea.addObject(new BoxObject(272+BoxObject.BOXOBJECT_WIDTH*2, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		directorOfficeArea.addObject(new BoxObject(272, 2176+224, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "director's office box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		areas[DIRECTOROFFICE_AREA_NUM] = directorOfficeArea;
 
-		serverRoomArea = new Area(SERVERROOM_AREA_NUM, 7, 16, 16, assets.serverRoomAreaTexture) {
+		serverRoomArea = new Area(SERVERROOM_AREA_NUM, 7, 16, 16, game.assets.serverRoomAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (y >= 512)
@@ -356,15 +364,15 @@ public class World extends Actor implements Disposable {
 		};
 		serverRoomArea.setBounds(272, 256, 256, 256);
 		serverRoomArea.setName("server room");
-		serverRoomArea.addObject(new BoxObject(272, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box1", assets.boxTexture));
+		serverRoomArea.addObject(new BoxObject(272, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		serverRoomArea.addObject(serverRoomDoor);
-		serverRoomArea.addObject(new BoxObject(272+256-32, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box2", assets.boxTexture));
+		serverRoomArea.addObject(new BoxObject(272+256-32, 256, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "server room box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		serverRoomArea.addObject(new WallObject(272+64, 256+96, 128, 96)); //server rack
 		serverRoomArea.addObject(serverRoomWall1);
 		serverRoomArea.addObject(serverRoomWall2);
 		areas[SERVERROOM_AREA_NUM] = serverRoomArea;
 
-		office1Area = new Area(OFFICE1_AREA_NUM, 9, 16, 16, assets.officeAreaTexture) {
+		office1Area = new Area(OFFICE1_AREA_NUM, 12, 16, 16, game.assets.officeAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (x >= 256 + 16)
@@ -383,9 +391,12 @@ public class World extends Actor implements Disposable {
 		office1Area.addObject(new WallObject(146, office1Area.getY(), 32, 64));			//cabinet
 		office1Area.addObject(office1Wall);
 		office1Area.addObject(office1Door);
+		office1Area.addObject(new BoxObject(0, office1Area.getY()+64+BoxObject.BOXOBJECT_HEIGHT, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office1Area.addObject(new BoxObject(256-BoxObject.BOXOBJECT_WIDTH, office1Area.getY()+256-32-BoxObject.BOXOBJECT_HEIGHT, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office1Area.addObject(new BoxObject(0, office1Area.getY()+64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office1 box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		areas[OFFICE1_AREA_NUM] = office1Area;
 
-		office2Area = new Area(OFFICE2_AREA_NUM, 11, 16, 16, assets.officeAreaTexture) {
+		office2Area = new Area(OFFICE2_AREA_NUM, 11, 16, 16, game.assets.officeAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (x >= 256 + 16)
@@ -402,13 +413,13 @@ public class World extends Actor implements Disposable {
 		office2Area.addObject(new WallObject(224, office2Area.getY() + 224, 32, 32)); // planter
 		office2Area.addObject(new WallObject(0, office2Area.getY(), 113, 64)); // shelf
 		office2Area.addObject(new WallObject(146, office2Area.getY(), 32, 64)); // cabinet
-		office2Area.addObject(new BoxObject(0, office2Area.getY() + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box1", assets.boxTexture));
-		office2Area.addObject(new BoxObject(224, office2Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box2", assets.boxTexture));
+		office2Area.addObject(new BoxObject(0, office2Area.getY() + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office2Area.addObject(new BoxObject(224, office2Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 2 box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		office2Area.addObject(office2Wall);
 		office2Area.addObject(office2Door);
 		areas[OFFICE2_AREA_NUM] = office2Area;
 
-		office3Area = new Area(OFFICE3_AREA_NUM, 13, 16, 16, assets.officeAreaTexture) {
+		office3Area = new Area(OFFICE3_AREA_NUM, 13, 16, 16, game.assets.officeAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (x >= 256 + 16)
@@ -425,15 +436,15 @@ public class World extends Actor implements Disposable {
 		office3Area.addObject(new WallObject(224, office3Area.getY() + 224, 32, 32)); // planter
 		office3Area.addObject(new WallObject(0, office3Area.getY(), 113, 64)); // shelf
 		office3Area.addObject(new WallObject(146, office3Area.getY(), 32, 64)); // cabinet
-		office3Area.addObject(new BoxObject(0, office3Area.getY() + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box1", assets.boxTexture));
-		office3Area.addObject(new BoxObject(224, office3Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box2", assets.boxTexture));
-		office3Area.addObject(new BoxObject(0, office3Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box3", assets.boxTexture));
-		office3Area.addObject(new BoxObject(80, office3Area.getY() + 256-128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box4", assets.boxTexture));
+		office3Area.addObject(new BoxObject(0, office3Area.getY() + 64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office3Area.addObject(new BoxObject(224, office3Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office3Area.addObject(new BoxObject(0, office3Area.getY() + 256-64, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
+		office3Area.addObject(new BoxObject(80, office3Area.getY() + 256-128, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "office 3 box4", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		office3Area.addObject(office3Wall);
 		office3Area.addObject(office3Door);
 		areas[OFFICE3_AREA_NUM] = office3Area;
 
-		pathToExitArea = new Area(PATHTOEXIT_AREA_NUM, 1, 16, 0, assets.pathToExitAreaTexture) {
+		pathToExitArea = new Area(PATHTOEXIT_AREA_NUM, 1, 16, 0, game.assets.pathToExitAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				if (y <= 3136)
@@ -479,36 +490,42 @@ public class World extends Actor implements Disposable {
 		// area3.setName("area3");
 		
 		//create characters
-		robot = new Player("robot", assets.robotAnimations);
-		robot.setSounds(assets.getRobotSounds());
+		robot = new Player(Prototype.PLAYER_ROBOT_NUM, "robot", game.assets.robotAnimations);
+		robot.setSounds(game.assets.getRobotSounds());
 		// robot.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//robot.setPos(0, 0); // sets the robot's initial position to the middle
-		robot.setCurrentArea(mainArea);
-		robot.setPosition(784 + 10, 1088 + 10);
+		robot.setCurrentArea(developmentRoomArea);
+		robot.setPosition(2064 + 32, 320 + 320);
 
-		player1 = new Player("player1", assets.playerAnimations);
-		player1.setSounds(assets.getHumanSounds());
+		player1 = new Player(Prototype.PLAYER1_NUM, "player1", game.assets.player1Animations);
+		player1.setSounds(game.assets.getHumanSounds());
 		//player1.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		//player1.setPos(50, 200); //sets the player1's position on the upper left quarter of the map
 		player1.setCurrentArea(mainArea);
-		player1.setPosition(784 + 95, 1088 + 95);
+		player1.setPosition(1056+160, 2165);
+		//player1.setColor(Color.YELLOW);
 
-		player2 = new Player("player2", assets.playerAnimations);
-		//player2.setSounds(assets.humanSounds);
+		player2 = new Player(Prototype.PLAYER2_NUM, "player2", game.assets.player2Animations);
+		player2.setSounds(game.assets.getHumanSounds());
 		// //player2.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		// player2.setPos(Prototype.MAP_WIDTH/2 - Prototype.CHAR_WIDTH/2, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player2's position on the bottom left quarter of the map
 		player2.setCurrentArea(mainArea);
-		player2.setPosition(player1.getX() + 95, player1.getY());
+		player2.setPosition(player1.getX() + 32, player1.getY());
+		//player2.setColor(Color.BROWN);
 
-		// player3 = new Player();
+		player3 = new Player(Prototype.PLAYER3_NUM, "player3", game.assets.player3Animations);
+		player3.setSounds(game.assets.getHumanSounds());
 		// //player3.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		// player3.setPos(player2.getX()+70, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player3's position on the upper right quarter of the map
-		// player3.setCurrentArea(area2);
+		player3.setCurrentArea(mainArea);
+		player3.setPosition(player2.getX() + 32, player1.getY());
 		
-		// player4 = new Player();
+		player4 = new Player(Prototype.PLAYER4_NUM, "player4", game.assets.player4Animations);
+		player4.setSounds(game.assets.getHumanSounds());
 		// //player4.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
 		// player4.setPos(Prototype.MAP_WIDTH*5/8+100, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player4's position on the bottom right quarter of the map
-		// player4.setCurrentArea(area3);
+		player4.setCurrentArea(mainArea);
+		player4.setPosition(player3.getX() + 32, player1.getY());
 		
 		//activePlayers = new Array<Player>();
 		//activePlayers.add(player1);
@@ -517,10 +534,12 @@ public class World extends Actor implements Disposable {
 		players[0] = robot;
 		players[1] = player1;
 		players[2] = player2;
+		players[3] = player3;
+		players[4] = player4;
 
 		//create card key object
-		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", assets.cardKeyTexture);
-		//cardKey = new CardKeyObject(this, mainArea, mainArea.getX()+512, mainArea.getY()+896, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", assets.cardKeyTexture);
+		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", game.assets.cardKeyTexture);
+		//cardKey = new CardKeyObject(this, mainArea, mainArea.getX()+512, mainArea.getY()+896, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", game.assets.cardKeyTexture);
 		//mainArea.addObject(cardKey);
 
 		//configure action
@@ -544,6 +563,10 @@ public class World extends Actor implements Disposable {
 		addAction(loop);
 	}
 
+	public void init() {
+
+	}
+
 	public void setRemainTime(long remain) {
 		remainTime = remain;
 	}
@@ -553,8 +576,8 @@ public class World extends Actor implements Disposable {
 		//System.out.println("init color: " + batch.getColor().r + ", " + batch.getColor().g + ", " + batch.getColor().b + ", " + batch.getColor().a);
 		for (Area area : areas) {
 			//Gdx.app.log("World", "area: (" + area.getWidth() + ", " + area.getHeight() + ")");
-			assets.baseTexture.setRegion(0, 0, (int)area.getWidth(), (int)area.getHeight());
-			batch.draw(assets.baseTexture, area.getX(), area.getY());
+			game.assets.baseTexture.setRegion(0, 0, (int)area.getWidth(), (int)area.getHeight());
+			batch.draw(game.assets.baseTexture, area.getX(), area.getY());
 			area.draw(batch, parentAlpha);
 		}
 		//to draw robot at the last(projectile should be drawn on the very top)
@@ -570,9 +593,9 @@ public class World extends Actor implements Disposable {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		assets.dispose(); //unnecessary
-		robot.dispose(); //unnecessary
-		player1.dispose(); //unnecessary
+		//game.assets.dispose(); //unnecessary
+		robot.dispose();
+		player1.dispose();
 		// player2.dispose();
 		// player3.dispose();
 		// player4.dispose();

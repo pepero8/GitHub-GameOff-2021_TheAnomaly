@@ -51,6 +51,7 @@ public class RushState extends PlayerState {
 	@Override
 	void reset() {
 		// TODO Auto-generated method stub
+		robot.elapsedFromLastRush = 0;
 		elapsed = 0;
 	}
 	

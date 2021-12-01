@@ -5,11 +5,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,8 +47,8 @@ public class ResultScreen implements Screen {
 	//private boolean playPop = false;
 	//private boolean playMessage = true;
 
-	ResultScreen(Prototype game) {
-		this.game = game;
+	ResultScreen(Prototype prototype) {
+		this.game = prototype;
 		playerStates = new char[Prototype.NUM_PLAYERS - 1];
 		// for (int i = 1; i != Prototype.NUM_PLAYERS; i++) {
 		// 	playerStates[i - 1] = game.world.players[i].accessState("get", '0');
@@ -57,18 +60,18 @@ public class ResultScreen implements Screen {
 
 		stage = new Stage(viewport);
 
-		resultWindow = new Image(game.world.assets.resultWindowTexture);
+		resultWindow = new Image(game.assets.resultWindowTexture);
 		resultWindow.setPosition(64, 600);
 		resultWindow.addAction(Actions.moveTo(64, 64, 1, Interpolation.exp5Out));
 
-		resultTitle = new Label("RESULT", game.world.assets.skin, "bold");
+		resultTitle = new Label("RESULT", game.assets.skin, "bold");
 		resultTitle.setColor(0.2f, 0.24f, 0.34f, 1);
 		resultTitle.setPosition(resultWindow.getX()+12, 64+470-resultTitle.getHeight()-12);
 		resultTitle.setWidth(470);
 		resultTitle.setAlignment(Align.center);
 		resultTitle.setWrap(true);
 
-		resultMessage = new Label("You failed to eliminate all the survivors", game.world.assets.skin, "xp");
+		resultMessage = new Label("You failed to eliminate all the survivors", game.assets.skin, "xp");
 		// resultMessage.setText(getResultMessage(playerStates[game.playerNum - 1]));
 		resultMessage.setHeight(resultTitle.getHeight() + 16);
 		resultMessage.setPosition(resultTitle.getX(), resultTitle.getY() - resultMessage.getHeight());
@@ -77,10 +80,10 @@ public class ResultScreen implements Screen {
 		resultMessage.setFontScale(0.7f, 0.7f);
 		resultMessage.setWrap(true);
 
-		player1Name = new Label("player1", game.world.assets.skin, "default");
-		player2Name = new Label("player2", game.world.assets.skin, "default");
-		player3Name = new Label("player3", game.world.assets.skin, "default");
-		player4Name = new Label("player4", game.world.assets.skin, "default");
+		player1Name = new Label("player1", game.assets.skin, "default");
+		player2Name = new Label("player2", game.assets.skin, "default");
+		player3Name = new Label("player3", game.assets.skin, "default");
+		player4Name = new Label("player4", game.assets.skin, "default");
 		// player1Name.setText(game.world.player1.getName());
 		// player2Name.setText(game.world.player1.getName());
 		// player3Name.setText(game.world.player1.getName());
@@ -98,10 +101,10 @@ public class ResultScreen implements Screen {
 		player3Name.setWrap(true);
 		player4Name.setWrap(true);
 
-		player1State = new Label("ESCAPED", game.world.assets.skin, "default");
-		player2State = new Label("ESCAPED", game.world.assets.skin, "default");
-		player3State = new Label("ESCAPED", game.world.assets.skin, "default");
-		player4State = new Label("ESCAPED", game.world.assets.skin, "default");
+		player1State = new Label("ESCAPED", game.assets.skin, "default");
+		player2State = new Label("ESCAPED", game.assets.skin, "default");
+		player3State = new Label("ESCAPED", game.assets.skin, "default");
+		player4State = new Label("ESCAPED", game.assets.skin, "default");
 		// player1State.setText(getStateText(playerStates[0]));
 		// player2State.setText(getStateText(playerStates[1]));
 		// player3State.setText(getStateText(playerStates[2]));
@@ -123,7 +126,18 @@ public class ResultScreen implements Screen {
 		player3State.setAlignment(Align.right);
 		player4State.setAlignment(Align.right);
 
-		okButton = new TextButton("OK", game.world.assets.skin, "default");
+		okButton = new TextButton("OK", game.assets.skin, "default");
+		okButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				//game.testScreen.init();
+				//world dispose
+				game.world.dispose();
+				//game.setScreen(game.mainMenuScreen);
+				game.init();
+				game.setScreen(new MainMenuScreen(game));
+			}
+		});
 		okButton.setWidth(65);
 		okButton.setPosition(resultWindow.getX()+resultWindow.getWidth()/2 - okButton.getWidth()/2, 64 + 16);
 		//System.out.println("(" + okButton.getX() + ", " + okButton.getY() + ")");
@@ -154,6 +168,8 @@ public class ResultScreen implements Screen {
 		player3State.setVisible(false);
 		player4State.setVisible(false);
 		okButton.setVisible(false);
+
+		init();
 	}
 
 	public void init() {
@@ -165,17 +181,18 @@ public class ResultScreen implements Screen {
 
 		player1Name.setText(game.world.player1.getName());
 		player2Name.setText(game.world.player2.getName());
-		// player3Name.setText(game.world.player3.getName());
-		// player4Name.setText(game.world.player4.getName());
+		player3Name.setText(game.world.player3.getName());
+		player4Name.setText(game.world.player4.getName());
 
 		player1State.setText(getStateText(playerStates[0]));
 		player2State.setText(getStateText(playerStates[1]));
-		// player3State.setText(getStateText(playerStates[2]));
-		// player4State.setText(getStateText(playerStates[3]));
+		player3State.setText(getStateText(playerStates[2]));
+		player4State.setText(getStateText(playerStates[3]));
+
 		player1State.setColor(getStateColor(playerStates[0]));
 		player2State.setColor(getStateColor(playerStates[1]));
-		// player3State.setColor(getStateColor(playerStates[2]));
-		// player4State.setColor(getStateColor(playerStates[3]));
+		player3State.setColor(getStateColor(playerStates[2]));
+		player4State.setColor(getStateColor(playerStates[3]));
 
 		elapsed = 0;
 	}
@@ -201,10 +218,12 @@ public class ResultScreen implements Screen {
 					resultMessage.setColor(Color.BLACK);
 					return "You failed to eliminate all the survivors";
 				default:
-					return null;
+					return "";
 			}
 		}
 		else {
+			if (game.world.robot.disconnected)
+				return "Robot disconnected from the server";
 			char stateCode = player.accessState("get", '0');
 			switch (stateCode) {
 				case MsgCodes.Game.EXIT_STATE:
@@ -260,7 +279,7 @@ public class ResultScreen implements Screen {
 			resultWindow.act(delta);
 			if (playResultWindow) {
 				playResultWindow = false;
-				game.world.assets.resultWindowDown.play();
+				game.assets.resultWindowDown.play();
 			}
 		}
 		else {
@@ -273,30 +292,30 @@ public class ResultScreen implements Screen {
 				player1Name.setVisible(true);
 				player1State.setVisible(true);
 				//playPop = true;
-				game.world.assets.resultPop.play();
+				game.assets.resultPop.play();
 			}
 			if (elapsed >= 3.0f && !player2Name.isVisible() && !player2State.isVisible()) {
 				player2Name.setVisible(true);
 				player2State.setVisible(true);
 				// playPop = true;
-				game.world.assets.resultPop.play();
+				game.assets.resultPop.play();
 			}
 			if (elapsed >= 3.5f && !player3Name.isVisible() && !player3State.isVisible()) {
 				player3Name.setVisible(true);
 				player3State.setVisible(true);
 				// playPop = true;
-				game.world.assets.resultPop.play();
+				game.assets.resultPop.play();
 			}
 			if (elapsed >= 4.0f && !player4Name.isVisible() && !player4State.isVisible()) {
 				player4Name.setVisible(true);
 				player4State.setVisible(true);
 				// playPop = true;
-				game.world.assets.resultPop.play();
+				game.assets.resultPop.play();
 			}
 			if (elapsed >= 4.5f && !resultMessage.isVisible() && !okButton.isVisible()) {
 				// if (playMessage) {
 				// 	playMessage = false;
-					game.world.assets.resultMessage.play();
+					game.assets.resultMessage.play();
 				// }
 				resultMessage.setVisible(true);
 				okButton.setVisible(true);
@@ -307,7 +326,7 @@ public class ResultScreen implements Screen {
 
 		// if (playPop) {
 		// 	playPop = false;
-		// 	game.world.assets.resultPop.play();
+		// 	game.assets.resultPop.play();
 		// }
 
 		//stage.act();
@@ -336,11 +355,12 @@ public class ResultScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		
+		dispose();
 	}
 
 	@Override
 	public void dispose() {
+		stage.dispose();
 		// TODO Auto-generated method stub
 		Gdx.app.log("ResultScreen", "disposed");
 	}

@@ -20,7 +20,7 @@ public class Client extends Thread implements Disposable {
 	//private static final String SERVER_IP = "3.38.115.16";
 	private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
-	private static final int PACKET_SIZE = 76;
+	private static final int PACKET_SIZE = 108;
 
 	public byte[] netResponse;
 	public Socket socket;
@@ -131,6 +131,38 @@ public class Client extends Thread implements Disposable {
 			game.world.player2.accessDirection("set", direction);
 			// }
 
+			character = packetBuffer.getChar();
+			// player3
+			// if (character == '2') {
+			x = packetBuffer.getFloat();
+			y = packetBuffer.getFloat();
+			state = packetBuffer.getChar();
+			hasKey = packetBuffer.getChar();
+			direction = packetBuffer.getChar();
+
+			// Gdx.app.log("Client", "" + hasKey);
+
+			game.world.player3.accessPosition("set", x, y); // using this function to achieve synchronization
+			game.world.player3.accessState("set", state);
+			game.world.player3.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
+			game.world.player3.accessDirection("set", direction);
+
+			character = packetBuffer.getChar();
+			// player4
+			// if (character == '2') {
+			x = packetBuffer.getFloat();
+			y = packetBuffer.getFloat();
+			state = packetBuffer.getChar();
+			hasKey = packetBuffer.getChar();
+			direction = packetBuffer.getChar();
+
+			// Gdx.app.log("Client", "" + hasKey);
+
+			game.world.player4.accessPosition("set", x, y); // using this function to achieve synchronization
+			game.world.player4.accessState("set", state);
+			game.world.player4.accessHasKey("set", hasKey == MsgCodes.Game.HAS_KEY);
+			game.world.player4.accessDirection("set", direction);
+
 			//card key
 			float cardKeyX = packetBuffer.getFloat();
 			float cardKeyY = packetBuffer.getFloat();
@@ -149,6 +181,22 @@ public class Client extends Thread implements Disposable {
 			if (msgCode == MsgCodes.Server.SESSION_TERMINATE_OD) {
 				Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
 				game.sessionStart = false;
+			}
+			else if (msgCode == MsgCodes.Server.DISCONNECT_ROBOT) {
+				game.world.robot.disconnected = true;
+				game.sessionStart = false;
+			}
+			else if (msgCode == MsgCodes.Server.DISCONNECT_PLAYER1) {
+				game.world.player1.disconnected = true;
+			}
+			else if (msgCode == MsgCodes.Server.DISCONNECT_PLAYER2) {
+				game.world.player2.disconnected = true;
+			}
+			else if (msgCode == MsgCodes.Server.DISCONNECT_PLAYER3) {
+				game.world.player3.disconnected = true;
+			}
+			else if (msgCode == MsgCodes.Server.DISCONNECT_PLAYER4) {
+				game.world.player4.disconnected = true;
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_ROBOT_WIN ||
 					 msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN) {
@@ -209,6 +257,24 @@ public class Client extends Thread implements Disposable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				game.world.player2.setName(new String(nextPlayerName));
+			}
+
+			try {
+				packetBuffer.get(nextPlayerName);
+				game.world.player3.setName(new String(nextPlayerName, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				game.world.player3.setName(new String(nextPlayerName));
+			}
+
+			try {
+				packetBuffer.get(nextPlayerName);
+				game.world.player4.setName(new String(nextPlayerName, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				game.world.player4.setName(new String(nextPlayerName));
 			}
 			
 

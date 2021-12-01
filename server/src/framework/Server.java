@@ -27,7 +27,7 @@ class Server {
 	private static final int PORT = 8014;
 
 	// ===============================CAPRICIOUS===============================
-	private static final int MAX_CLIENTS = 5; // limit client numbers
+	private static final int MAX_CLIENTS = 100; // limit client numbers
 	// ===============================CAPRICIOUS===============================
 
 	private ServerSocket welcomeSocket;

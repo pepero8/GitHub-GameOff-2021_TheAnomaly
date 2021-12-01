@@ -17,6 +17,11 @@ public class MsgCodes {
 		public static final char SESSION_TERMINATE_GAMEOVER_ROBOT_WIN = 'r';
 		public static final char SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN = 's';
 		public static final char START_GAME = 'g';
+		public static final char DISCONNECT_ROBOT = 'd';
+		public static final char DISCONNECT_PLAYER1 = 'i';
+		public static final char DISCONNECT_PLAYER2 = 'c';
+		public static final char DISCONNECT_PLAYER3 = 'o';
+		public static final char DISCONNECT_PLAYER4 = 'n';
 	}
 
 	// client message code
@@ -57,14 +62,14 @@ public class MsgCodes {
 		public static final char EXIT_STATE = 'e';
 
 		//player's direction
-		public static final char DIRECTION_NORTH = '0';
-		public static final char DIRECTION_NORTH_EAST = '1';
-		public static final char DIRECTION_EAST = '2';
-		public static final char DIRECTION_SOUTH_EAST = '3';
-		public static final char DIRECTION_SOUTH = '4';
-		public static final char DIRECTION_SOUTH_WEST = '5';
-		public static final char DIRECTION_WEST = '6';
-		public static final char DIRECTION_NORTH_WEST = '7';
+		public static final char DIRECTION_NORTH = '1';
+		public static final char DIRECTION_NORTH_EAST = '2';
+		public static final char DIRECTION_EAST = '3';
+		public static final char DIRECTION_SOUTH_EAST = '4';
+		public static final char DIRECTION_SOUTH = '5';
+		public static final char DIRECTION_SOUTH_WEST = '6';
+		public static final char DIRECTION_WEST = '7';
+		public static final char DIRECTION_NORTH_WEST = '8';
 
 		public static final char HAS_KEY = 'y';
 		public static final char NO_KEY = 'n';

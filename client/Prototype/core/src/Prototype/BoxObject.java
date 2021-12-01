@@ -4,10 +4,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class BoxObject extends Image implements Interactable {
 	static final int BOXOBJECT_WIDTH = 32;
 	static final int BOXOBJECT_HEIGHT = 32;
+
+	private TextureRegionDrawable boxClosedTexture;
+	private TextureRegionDrawable boxOpenedTexture;
 
 	//private Interactable content;
 	//private BoxObjectModel model;
@@ -21,8 +25,10 @@ public class BoxObject extends Image implements Interactable {
 	private boolean interacting;
 	private boolean interacted;
 
-	BoxObject(float x, float y, int width, int height, String name, Texture image) {
-		super(image);
+	BoxObject(float x, float y, int width, int height, String name, Texture imageClosed, Texture imageOpened) {
+		super(imageClosed);
+		boxClosedTexture = new TextureRegionDrawable(imageClosed);
+		boxOpenedTexture = new TextureRegionDrawable(imageOpened);
 		setBounds(x, y, width, height);
 		setName(name);
 		// this.x = x;
@@ -53,6 +59,9 @@ public class BoxObject extends Image implements Interactable {
 
 	@Override
 	public boolean isContact(Player player, int range) {
+		if (player.playerNum == Prototype.PLAYER_ROBOT_NUM) {
+			return false;
+		}
 		float x = getX();
 		float y = getY();
 		return (x < (player.getX() + player.getWidth() + range)) &&
@@ -112,6 +121,10 @@ public class BoxObject extends Image implements Interactable {
 	public void setInteracted(boolean interacted, boolean success) {
 		// TODO Auto-generated method stub
 		this.interacted = interacted;
+		if (interacted)
+			setDrawable(boxOpenedTexture);
+		else
+			setDrawable(boxClosedTexture);
 	}
 
 	@Override

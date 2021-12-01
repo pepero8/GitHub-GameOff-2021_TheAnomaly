@@ -15,15 +15,23 @@ import com.badlogic.gdx.utils.Disposable;
 
 public class Assets implements Disposable {
 	private static final int FRAME_COLS_PLAYER = 4;
+	private static final int FRAME_ROWS_PLAYER = 20;
 	private static final int FRAME_COLS_OBJECT = 3;
-	private static final int FRAME_ROWS_PLAYER = 19;
-	private static final int FRAME_ROWS_ROBOT = 19;
+	private static final int FRAME_COLS_ROBOT = 15;
+	private static final int FRAME_ROWS_ROBOT = 13;
 
-	public static final int ANIMATION_STILL = 16;
+
+	public static final int ANIMATION_STILL = 0;
+	public static final int ANIMATION_INTERACT = 19;
+	public static final int ANIMATION_INTERACT_ROBOT = 0;
 	public static final int ANIMATION_DRAGGED = 17;
 	public static final int ANIMATION_DIE = 18;
+	public static final int ANIMATION_ATTACK = 9;
+	public static final int ANIMATION_ATTACK_GRABBING = 10;
+	public static final int ANIMATION_GRAB = 11;
+	public static final int ANIMATION_RUSH = 12;
 
-	public static final float SOUND_INTERVAL_RUNNING = 0.250f;
+	public static final float SOUND_INTERVAL_RUNNING = 0.5f;
 	public static final float SOUND_INTERVAL_DODGE = 1f;
 	public static final float SOUND_INTERVAL_ATTACK = 0.6f;
 	public static final float SOUND_INTERVAL_RUSH = 0.2f;
@@ -44,32 +52,45 @@ public class Assets implements Disposable {
 	final Texture officeAreaTexture;
 	final Texture pathToExitAreaTexture;
 
-	final Texture boxTexture;
+	final Texture boxClosedTexture;
+	final Texture boxOpenedTexture;
 	final Texture cardKeyTexture;
+	final Texture projectileTexture;
 
 	final Texture robotSpriteSheet;
-	final Texture playerSpriteSheet;
+	final Texture player1SpriteSheet;
+	final Texture player2SpriteSheet;
+	final Texture player3SpriteSheet;
+	final Texture player4SpriteSheet;
 	final Texture gateObjectSpriteSheet;
 	final Texture doorObjectSpriteSheet;
 	final Texture doorObjectRotatedSpriteSheet;
 	//final Texture gateObjectRotatedSpriteSheet;
 
 	final Animation<TextureRegion>[] robotAnimations;
-	final Animation<TextureRegion>[] playerAnimations;
+	final Animation<TextureRegion>[] player1Animations;
+	final Animation<TextureRegion>[] player2Animations;
+	final Animation<TextureRegion>[] player3Animations;
+	final Animation<TextureRegion>[] player4Animations;
 
 	final Animation<TextureRegion> gateAnimation;
 	final Animation<TextureRegion> doorAnimation;
 	final Animation<TextureRegion> doorAnimationRotated;
 	//final Animation<TextureRegion> gateAnimationRotated;
 
-	//final Texture remainTimeBoxTexture;
+	//final Texture remainTimeBoxClosedTexture;
 	final Texture interactableMark;
 	final Texture portraitNormalTexture;
 	final Texture portraitKeyTexture;
 	final Texture portraitKilledTexture;
+	final Texture portraitDisconnectedTexture;
+	final Texture portraitEscapedTexture;
+	final Texture portraitsTexture;
 	final TextureRegionDrawable portraitNormalDrawable;
 	final TextureRegionDrawable portraitKeyDrawable;
 	final TextureRegionDrawable portraitKilledDrawable;
+	final TextureRegionDrawable portraitDisconnectedDrawable;
+	final TextureRegionDrawable portraitEscapedDrawable;
 	Skin skin;
 
 	final Texture resultWindowTexture;
@@ -98,7 +119,10 @@ public class Assets implements Disposable {
 	Assets() {
 		//robotAnimations = (Animation<TextureRegion>[]) Array.newInstance(Animation.class, FRAME_ROWS_ROBOT);
 		robotAnimations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_ROBOT];
-		playerAnimations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
+		player1Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
+		player2Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
+		player3Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
+		player4Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
 
 		//base texture
 		Texture baseTileTexture = new Texture(Gdx.files.internal("tile_base.png"));
@@ -118,43 +142,98 @@ public class Assets implements Disposable {
 		officeAreaTexture = new Texture(Gdx.files.internal("area_office.png"));
 		pathToExitAreaTexture = new Texture(Gdx.files.internal("area_passage_to_exit.png"));
 		//box texture
-		boxTexture = new Texture(Gdx.files.internal("box_sample.png"));
+		boxClosedTexture = new Texture(Gdx.files.internal("box.png"));
+		boxOpenedTexture = new Texture(Gdx.files.internal("box_opened.png"));
 		//card key texture
-		cardKeyTexture = new Texture(Gdx.files.internal("cardKey_sample.png"));
+		cardKeyTexture = new Texture(Gdx.files.internal("card_key.png"));
+		//projectile texture
+		projectileTexture = new Texture(Gdx.files.internal("projectile.png"));
 
 		//sprite sheets
-		robotSpriteSheet = new Texture(Gdx.files.internal("player_spritesheet_test.png"));
-		playerSpriteSheet = new Texture(Gdx.files.internal("player_spritesheet_test.png"));
-		gateObjectSpriteSheet = new Texture(Gdx.files.internal("gate_sample_spritesheet.png"));
-		doorObjectSpriteSheet = new Texture(Gdx.files.internal("door_sample_spritesheet.png"));
-		doorObjectRotatedSpriteSheet = new Texture(Gdx.files.internal("door_sample_rotated_spritesheet.png"));
+		robotSpriteSheet = new Texture(Gdx.files.internal("robot_spritesheet.png"));
+		player1SpriteSheet = new Texture(Gdx.files.internal("survivor1_spritesheet.png"));
+		player2SpriteSheet = new Texture(Gdx.files.internal("survivor2_spritesheet.png"));
+		player3SpriteSheet = new Texture(Gdx.files.internal("survivor3_spritesheet.png"));
+		player4SpriteSheet = new Texture(Gdx.files.internal("survivor4_spritesheet.png"));
+		gateObjectSpriteSheet = new Texture(Gdx.files.internal("gate_spritesheet.png"));
+		doorObjectSpriteSheet = new Texture(Gdx.files.internal("door_spritesheet.png"));
+		doorObjectRotatedSpriteSheet = new Texture(Gdx.files.internal("door_rotated_spritesheet.png"));
 		//gateObjectRotatedSpriteSheet = new Texture(Gdx.files.internal("door_sample_rotated_spritesheet.png"));
 	
 		//robot animations
-		TextureRegion[][] tmp = TextureRegion.split(robotSpriteSheet, robotSpriteSheet.getWidth() / FRAME_COLS_PLAYER, robotSpriteSheet.getHeight() / FRAME_ROWS_ROBOT);
-		
-		for (int i = 0; i < FRAME_ROWS_ROBOT; i++) {
-			TextureRegion[] frames = new TextureRegion[FRAME_COLS_PLAYER];
-			for (int j = 0; j < FRAME_COLS_PLAYER; j++) {
-				frames[j] = tmp[i][j];
+		TextureRegion[][] tmp = TextureRegion.split(robotSpriteSheet, robotSpriteSheet.getWidth() / FRAME_COLS_ROBOT, robotSpriteSheet.getHeight() / FRAME_ROWS_ROBOT);
+		int k = 0;
+		TextureRegion[] frames;
+		//robot_standing - walk_north_west
+		for (; k < 9; k++) {
+			frames = new TextureRegion[4];
+			for (int j = 0; j < 4; j++) {
+				frames[j] = tmp[k][j];
 			}
-			robotAnimations[i] = new Animation<TextureRegion>(0.5f, frames);
+			robotAnimations[k] = new Animation<TextureRegion>(0.5f, frames);
 		}
+		//robot attack - robot attack_grabbing
+		for (; k < 11; k++) {
+			frames = new TextureRegion[6];
+			for (int j = 0; j < 6; j++) {
+				frames[j] = tmp[k][j];
+			}
+			robotAnimations[k] = new Animation<TextureRegion>(0.1f, frames);
+		}
+		//robot grab
+		frames = new TextureRegion[4];
+		for (int j = 0; j < 4; j++) {
+			frames[j] = tmp[k][j];
+		}
+		robotAnimations[k] = new Animation<TextureRegion>(0.2f, frames);
+		k++;
+		//robot rush attack
+		frames = new TextureRegion[FRAME_COLS_ROBOT];
+		for (int j = 0; j < FRAME_COLS_ROBOT; j++) {
+			frames[j] = tmp[k][j];
+		}
+		robotAnimations[k] = new Animation<TextureRegion>(0.2f, frames);
 
-		//player animations
-		tmp = TextureRegion.split(playerSpriteSheet, playerSpriteSheet.getWidth() / FRAME_COLS_PLAYER, playerSpriteSheet.getHeight() / FRAME_ROWS_PLAYER);
-		
+		//player1 animations
+		tmp = TextureRegion.split(player1SpriteSheet, player1SpriteSheet.getWidth() / FRAME_COLS_PLAYER, player1SpriteSheet.getHeight() / FRAME_ROWS_PLAYER);
 		for (int i = 0; i < FRAME_ROWS_PLAYER; i++) {
-			TextureRegion[] frames = new TextureRegion[FRAME_COLS_PLAYER];
+			frames = new TextureRegion[FRAME_COLS_PLAYER];
 			for (int j = 0; j < FRAME_COLS_PLAYER; j++) {
 				frames[j] = tmp[i][j];
 			}
-			playerAnimations[i] = new Animation<TextureRegion>(0.5f, frames);
+			player1Animations[i] = new Animation<TextureRegion>(0.25f, frames);
+		}
+		//player2 animations
+		tmp = TextureRegion.split(player2SpriteSheet, player2SpriteSheet.getWidth() / FRAME_COLS_PLAYER, player2SpriteSheet.getHeight() / FRAME_ROWS_PLAYER);
+		for (int i = 0; i < FRAME_ROWS_PLAYER; i++) {
+			frames = new TextureRegion[FRAME_COLS_PLAYER];
+			for (int j = 0; j < FRAME_COLS_PLAYER; j++) {
+				frames[j] = tmp[i][j];
+			}
+			player2Animations[i] = new Animation<TextureRegion>(0.25f, frames);
+		}
+		//player3 animations
+		tmp = TextureRegion.split(player3SpriteSheet, player3SpriteSheet.getWidth() / FRAME_COLS_PLAYER, player3SpriteSheet.getHeight() / FRAME_ROWS_PLAYER);
+		for (int i = 0; i < FRAME_ROWS_PLAYER; i++) {
+			frames = new TextureRegion[FRAME_COLS_PLAYER];
+			for (int j = 0; j < FRAME_COLS_PLAYER; j++) {
+				frames[j] = tmp[i][j];
+			}
+			player3Animations[i] = new Animation<TextureRegion>(0.25f, frames);
+		}
+		//player4 animations
+		tmp = TextureRegion.split(player4SpriteSheet, player4SpriteSheet.getWidth() / FRAME_COLS_PLAYER, player4SpriteSheet.getHeight() / FRAME_ROWS_PLAYER);
+		for (int i = 0; i < FRAME_ROWS_PLAYER; i++) {
+			frames = new TextureRegion[FRAME_COLS_PLAYER];
+			for (int j = 0; j < FRAME_COLS_PLAYER; j++) {
+				frames[j] = tmp[i][j];
+			}
+			player4Animations[i] = new Animation<TextureRegion>(0.25f, frames);
 		}
 
 		//gate object animation
 		tmp = TextureRegion.split(gateObjectSpriteSheet, gateObjectSpriteSheet.getWidth() / FRAME_COLS_OBJECT, gateObjectSpriteSheet.getHeight() / 1);
-		TextureRegion[] frames = new TextureRegion[FRAME_COLS_OBJECT];
+		frames = new TextureRegion[FRAME_COLS_OBJECT];
 		for (int i = 0; i < FRAME_COLS_OBJECT; i++) {
 			frames[i] = tmp[0][i];
 		}
@@ -176,15 +255,20 @@ public class Assets implements Disposable {
 		}
 		doorAnimationRotated = new Animation<TextureRegion>(DoorObject.DOOROBJECT_FRAME_DURATION, frames); //3 frames in 0.5sec
 
-		//remainTimeBoxTexture = new Texture(Gdx.files.internal("remain_time_box_texture.png"));
+		//remainTimeBoxClosedTexture = new Texture(Gdx.files.internal("remain_time_box_texture.png"));
 		//Gdx.app.log("Assets", "" + (robotAnimations[16] == null));
 		interactableMark = new Texture(Gdx.files.internal("interactable_mark.png"));
 		portraitNormalTexture = new Texture(Gdx.files.internal("portrait_normal.png"));
 		portraitKeyTexture = new Texture(Gdx.files.internal("portrait_cardkey.png"));
 		portraitKilledTexture = new Texture(Gdx.files.internal("portrait_killed.png"));
+		portraitDisconnectedTexture = new Texture(Gdx.files.internal("portrait_disconnected.png"));
+		portraitEscapedTexture = new Texture(Gdx.files.internal("portrait_escaped.png"));
+		portraitsTexture = new Texture(Gdx.files.internal("survivor_portraits.png"));
 		portraitNormalDrawable = new TextureRegionDrawable(portraitNormalTexture);
 		portraitKeyDrawable = new TextureRegionDrawable(portraitKeyTexture);
 		portraitKilledDrawable = new TextureRegionDrawable(portraitKilledTexture);
+		portraitDisconnectedDrawable = new TextureRegionDrawable(portraitDisconnectedTexture);
+		portraitEscapedDrawable = new TextureRegionDrawable(portraitEscapedTexture);
 		//portraitNormalTexture = new Texture(Gdx.files.internal("portrait_normal.png"));
 		//portraitKeyTexture = new Texture(Gdx.files.internal("portrait_cardkey.png"));
 		skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
@@ -194,12 +278,12 @@ public class Assets implements Disposable {
 		introMatchInfoTexture = new Texture(Gdx.files.internal("intro_match_info.png"));
 		introBackgroundTexture = new Texture(Gdx.files.internal("intro_development_room.png"));
 		introRobotSpriteSheet = new Texture(Gdx.files.internal("intro_robot_spritesheet.png"));
-		tmp = TextureRegion.split(introRobotSpriteSheet, introRobotSpriteSheet.getWidth() / 20, introRobotSpriteSheet.getHeight() / 1);
-		frames = new TextureRegion[20];
-		for (int i = 0; i < 20; i++) {
+		tmp = TextureRegion.split(introRobotSpriteSheet, introRobotSpriteSheet.getWidth() / 26, introRobotSpriteSheet.getHeight() / 1);
+		frames = new TextureRegion[26];
+		for (int i = 0; i < 26; i++) {
 			frames[i] = tmp[0][i];
 		}
-		introRobotAnimation = new Animation<TextureRegion>(0.25f, frames);
+		introRobotAnimation = new Animation<TextureRegion>(0.5f, frames);
 
 		introRobotMalfunction = Gdx.audio.newSound(Gdx.files.internal("sound/intro_computer_break.wav"));
 		introRobotVoice = Gdx.audio.newSound(Gdx.files.internal("sound/intro_robot_voice.wav"));
@@ -260,11 +344,14 @@ public class Assets implements Disposable {
 		officeAreaTexture.dispose();
 		pathToExitAreaTexture.dispose();
 
-		boxTexture.dispose();
+		boxClosedTexture.dispose();
 		cardKeyTexture.dispose();
 
 		robotSpriteSheet.dispose();
-		playerSpriteSheet.dispose();
+		player1SpriteSheet.dispose();
+		player2SpriteSheet.dispose();
+		player3SpriteSheet.dispose();
+		player4SpriteSheet.dispose();
 		gateObjectSpriteSheet.dispose();
 		doorObjectSpriteSheet.dispose();
 		doorObjectRotatedSpriteSheet.dispose();
@@ -296,6 +383,6 @@ public class Assets implements Disposable {
 		resultPop.dispose();
 		resultMessage.dispose();
 		//gateObjectRotatedSpriteSheet.dispose();
-		Gdx.app.log("Textures", "disposed");
+		Gdx.app.log("Assets", "disposed");
 	}
 }

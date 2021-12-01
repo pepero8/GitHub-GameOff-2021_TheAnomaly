@@ -3,7 +3,7 @@ package game;
 import framework.MsgCodes;
 
 public class DodgeState extends PlayerState {
-	private static final int DODGE_SPEED = 500;
+	private static final int DODGE_SPEED = 270;
 
 	private char direction;
 	private Player player;

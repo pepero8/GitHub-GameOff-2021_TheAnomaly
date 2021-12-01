@@ -3,6 +3,8 @@ package game;
 import framework.MsgCodes;
 
 public class Player {
+	World world;
+
 	int playerNum;
 	//private World world;
 	// ===============================CAPRICIOUS===============================
@@ -44,6 +46,7 @@ public class Player {
 	private ExitState exitState;
 	boolean exit;
 
+	long elapsedFromLastRush = World.RUSH_COOL_DOWN; //used by robot
 	//constructor
 	// public Player() {
 	// 	normalState = new NormalState(this);
@@ -51,7 +54,8 @@ public class Player {
 	// }
 
 	//constructor
-	public Player(int playerNum, float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
+	public Player(World world, int playerNum, float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
+		this.world = world;
 		this.playerNum = playerNum;
 		//this.world = world;
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
@@ -175,14 +179,15 @@ public class Player {
 	// }
 
 	public void kill() {
+		if (curState == deadState) return;
 		curState.reset();
 		dropKey();
 		// if (curState == dodgeState) {
 		// 	dodgeState.reset();
 		// }
 		//dead = true;
-		World.DEAD_SURVIVORS++;
-		World.REMAINING_SURVIVORS--;
+		world.DEAD_SURVIVORS++;
+		world.REMAINING_SURVIVORS--;
 		curState = deadState;
 	}
 
@@ -252,6 +257,11 @@ public class Player {
 	}
 
 	public void update(long progressTime) {
+		if (playerNum == World.ROBOT_NUM) {
+			elapsedFromLastRush += progressTime;
+			//System.out.println("elapsedRush: " + elapsedFromLastRush);
+		}
+
 		float prevX = x;
 		float prevY = y;
 		if (!curState.update(progressTime)) {
@@ -272,7 +282,7 @@ public class Player {
 		if (curArea.getNumber() == Map.EXIT_AREA_NUM) {
 			curState = exitState;
 			if (!exit) {
-				World.REMAINING_SURVIVORS--;
+				world.REMAINING_SURVIVORS--;
 				exit = true;
 			}
 			x = 0;

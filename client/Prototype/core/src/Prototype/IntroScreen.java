@@ -69,7 +69,7 @@ public class IntroScreen implements Screen {
 		//batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 
-		matchInfo = new Image(game.world.assets.introMatchInfoTexture) {
+		matchInfo = new Image(game.assets.introMatchInfoTexture) {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -79,7 +79,7 @@ public class IntroScreen implements Screen {
 		};
 		matchInfo.setPosition(Gdx.graphics.getWidth()/2-matchInfo.getWidth()/2, Gdx.graphics.getHeight()/2-matchInfo.getHeight()/2);
 
-		player1Name = new Label("player1", game.world.assets.skin, "default") {
+		player1Name = new Label("player1", game.assets.skin, "default") {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -97,7 +97,7 @@ public class IntroScreen implements Screen {
 		player1Name.setWrap(true);
 		player1Name.setPosition(matchInfo.getX()+22, matchInfo.getY()+70-player1Name.getHeight());
 
-		player2Name = new Label("player2", game.world.assets.skin, "default") {
+		player2Name = new Label("player2", game.assets.skin, "default") {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -112,7 +112,7 @@ public class IntroScreen implements Screen {
 		player2Name.setWrap(true);
 		player2Name.setPosition(player1Name.getX() + 64+5, matchInfo.getY() + 70 - player2Name.getHeight());
 
-		player3Name = new Label("player3", game.world.assets.skin, "default") {
+		player3Name = new Label("player3", game.assets.skin, "default") {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -127,7 +127,7 @@ public class IntroScreen implements Screen {
 		player3Name.setWrap(true);
 		player3Name.setPosition(player2Name.getX() + 64+5, matchInfo.getY() + 70 - player3Name.getHeight());
 
-		player4Name = new Label("player4", game.world.assets.skin, "default") {
+		player4Name = new Label("player4", game.assets.skin, "default") {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -142,7 +142,7 @@ public class IntroScreen implements Screen {
 		player4Name.setWrap(true);
 		player4Name.setPosition(player3Name.getX() + 64+5, matchInfo.getY() + 70 - player4Name.getHeight());
 
-		robotName = new Label("robot", game.world.assets.skin, "default") {
+		robotName = new Label("robot", game.assets.skin, "default") {
 			@Override
 			public void draw(Batch batch, float parentAlpha) {
 				batch.setProjectionMatrix(matchInfoMatrix);
@@ -157,7 +157,7 @@ public class IntroScreen implements Screen {
 		robotName.setWrap(true);
 		robotName.setPosition(matchInfo.getX()+492-22-64, matchInfo.getY() + 70 - robotName.getHeight());
 		
-		background = new Image(game.world.assets.introBackgroundTexture);
+		background = new Image(game.assets.introBackgroundTexture);
 		background.setPosition(0, 0);
 
 		robot = new Actor() {
@@ -167,7 +167,7 @@ public class IntroScreen implements Screen {
 			@Override
 			public void act(float delta) {
 				stateTime += delta;
-				curFrame = game.world.assets.introRobotAnimation.getKeyFrame(stateTime);
+				curFrame = game.assets.introRobotAnimation.getKeyFrame(stateTime);
 				if (stateTime >= 11) {
 					setX(getX() - 50 * delta);
 					//game.world.robot.getSounds()[0].play();
@@ -180,7 +180,7 @@ public class IntroScreen implements Screen {
 			}
 		};
 		robot.setBounds(64+32-16, 32+32-16, 32, 32);
-		//introAnimation = game.world.assets.introAnimation;
+		//introAnimation = game.assets.introAnimation;
 
 		stage.addActor(background);
 		stage.addActor(robot);
@@ -192,20 +192,46 @@ public class IntroScreen implements Screen {
 		stage.addActor(robotName);
 	}
 
-	void init() {
-		robotName.setText(game.world.robot.getName());
-		player1Name.setText(game.world.player1.getName());
-		player2Name.setText(game.world.player2.getName());
-		// player3Name.setText(game.world.player3.getName());
-		// player4Name.setText(game.world.player4.getName());
+	// void init() {
+	// 	//matchInfoMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / (viewport.getWorldWidth()/viewport.getWorldHeight()));
+	// 	//matchInfo.setPosition(Gdx.graphics.getWidth()/2-matchInfo.getWidth()/2, Gdx.graphics.getHeight()/2-matchInfo.getHeight()/2);
+		
+	// 	robot = new Actor() {
+	// 		private TextureRegion curFrame;
+	// 		private float stateTime = 0;
 
-		System.out.println("[IntroScreen]" + "player names:");
-		System.out.println("- robot: " + robotName.getText());
-		System.out.println("- player1: " + player1Name.getText());
-		System.out.println("- player2: " + player2Name.getText());
-		System.out.println("- player3: " + player3Name.getText());
-		System.out.println("- player4: " + player4Name.getText());
-	}
+	// 		@Override
+	// 		public void act(float delta) {
+	// 			stateTime += delta;
+	// 			curFrame = game.assets.introRobotAnimation.getKeyFrame(stateTime);
+	// 			if (stateTime >= 11) {
+	// 				setX(getX() - 50 * delta);
+	// 				// game.world.robot.getSounds()[0].play();
+	// 			}
+	// 		}
+
+	// 		@Override
+	// 		public void draw(Batch batch, float parentAlpha) {
+	// 			batch.draw(curFrame, getX(), getY());
+	// 		}
+	// 	};
+	// 	robot.setBounds(64 + 32 - 16, 32 + 32 - 16, 32, 32);
+
+	// 	stage.addActor(robot);
+
+	// 	robotName.setText(game.world.robot.getName());
+	// 	player1Name.setText(game.world.player1.getName());
+	// 	player2Name.setText(game.world.player2.getName());
+	// 	// player3Name.setText(game.world.player3.getName());
+	// 	// player4Name.setText(game.world.player4.getName());
+
+	// 	// System.out.println("[IntroScreen]" + "player names:");
+	// 	// System.out.println("- robot: " + robotName.getText());
+	// 	// System.out.println("- player1: " + player1Name.getText());
+	// 	// System.out.println("- player2: " + player2Name.getText());
+	// 	// System.out.println("- player3: " + player3Name.getText());
+	// 	// System.out.println("- player4: " + player4Name.getText());
+	// }
 
 	@Override
 	public void show() {
@@ -213,7 +239,7 @@ public class IntroScreen implements Screen {
 		//stage.addActor(game.world);
 		elapsed = 0;
 		curtainY = 0;
-		game.world.assets.introBackground.play(0.3f);
+		game.assets.introBackground.play(0.3f);
 	}
 
 	@Override
@@ -230,21 +256,21 @@ public class IntroScreen implements Screen {
 		}
 		if (elapsed >= 5 && playRobotMalfunction) {
 			playRobotMalfunction = false;
-			game.world.assets.introRobotMalfunction.play();
+			game.assets.introRobotMalfunction.play();
 		}
 		if (elapsed >= 7 && playRobotVoice) {
 			playRobotVoice = false;
-			game.world.assets.introRobotVoice.play();
+			game.assets.introRobotVoice.play();
 		}
-		if (elapsed >= 9 && playRobotAttack) {
-			playRobotAttack = false;
-			game.world.robot.getSounds()[1].play(0.4f);
-			game.world.robot.getSounds()[2].play();
-			game.world.player1.getSounds()[4].play();
-		}
+		// if (elapsed >= 9 && playRobotAttack) {
+		// 	playRobotAttack = false;
+		// 	game.world.robot.getSounds()[1].play(0.4f);
+		// 	game.world.robot.getSounds()[2].play();
+		// 	game.world.player1.getSounds()[4].play();
+		// }
 		if (elapsed >= 10 && playAlarm) {
 			playAlarm = false;
-			game.world.assets.introAlarm.play(0.3f);
+			game.assets.introAlarm.play(0.2f);
 		}
 		if (elapsed >= 11 && playRobotMove) {
 			playRobotMove = false;
@@ -256,7 +282,9 @@ public class IntroScreen implements Screen {
 				ready = true;
 			}
 			if (game.gameStart) {
-				game.setScreen(game.testScreen);
+				//game.testScreen.init();
+				//game.setScreen(game.testScreen);
+				game.setScreen(new TestScreen(game));
 			}
 		}
 
@@ -267,9 +295,9 @@ public class IntroScreen implements Screen {
 
 		//elapsed += delta;
 		stage.act();
-		game.world.assets.baseTexture.setRegion(0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+		game.assets.baseTexture.setRegion(0, 0, (int)viewport.getWorldWidth(), (int)viewport.getWorldHeight());
 		stage.getBatch().begin();
-		stage.getBatch().draw(game.world.assets.baseTexture, 0, 0);
+		stage.getBatch().draw(game.assets.baseTexture, 0, 0);
 		stage.getBatch().end();
 		stage.draw();
 		// TODO Auto-generated method stub
@@ -312,8 +340,9 @@ public class IntroScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		//game.world.assets.introAlarm.stop();
-		game.world.assets.introBackground.stop();
+		//game.assets.introAlarm.stop();
+		game.assets.introBackground.stop();
+		dispose();
 	}
 
 	@Override

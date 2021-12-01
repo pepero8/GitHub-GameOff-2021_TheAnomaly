@@ -1,16 +1,17 @@
 package framework;
 
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 
 import game.World;
 
 public class Session extends WorkerThread {
 	// ===============================CAPRICIOUS===============================
-	ClientHandler robot; //로봇(0번 플레이어)
-	ClientHandler player1; //1번 플레이어
-	ClientHandler player2; //2번 플레이어
-	//ClientHandler player3; //3번 플레이어
-	//ClientHandler player4; //4번 플레이어
+	ClientHandler robot;
+	ClientHandler player1;
+	ClientHandler player2;
+	ClientHandler player3;
+	ClientHandler player4;
 	// ===============================CAPRICIOUS===============================
 
 	private World world;
@@ -27,13 +28,13 @@ public class Session extends WorkerThread {
 		// ===============================CAPRICIOUS===============================
 	}
 
-	public void init(ClientHandler robot, ClientHandler player1, ClientHandler player2/*, ClientHandler player3, ClientHandler player4 */) {
+	public void init(ClientHandler robot, ClientHandler player1, ClientHandler player2, ClientHandler player3, ClientHandler player4) {
 		// ===============================CAPRICIOUS===============================
 		this.robot = robot;
 		this.player1 = player1;
 		this.player2 = player2;
-		//this.player3 = player3;
-		//this.player4 = player4;
+		this.player3 = player3;
+		this.player4 = player4;
 
 		world = new World();
 
@@ -58,23 +59,45 @@ public class Session extends WorkerThread {
 		if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = msg.getChar();
 			if (msgCode == MsgCodes.Client.CLOSE_CONNECTION) {
-				if (robot != ch) {
-					robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
+				char msgcode = '0';
+				if (robot == ch) {
+					world.playerDisconnect(World.ROBOT_NUM);
+					msgcode = MsgCodes.Server.DISCONNECT_ROBOT;
+					//robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
+					terminate();
 				}
-				if (player1 != ch) {
-					player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
+				else if (player1 == ch) {
+					world.playerDisconnect(World.PLAYER1_NUM);
+					msgcode = MsgCodes.Server.DISCONNECT_PLAYER1;
+					//player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 				}
-				if (player2 != ch) {
-					player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
+				else if (player2 == ch) {
+					world.playerDisconnect(World.PLAYER2_NUM);
+					msgcode = MsgCodes.Server.DISCONNECT_PLAYER2;
+					//player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 					// player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.SESSION_TERMINATE_OD);
 				}
+				else if (player3 == ch) {
+					world.playerDisconnect(World.PLAYER3_NUM);
+					msgcode = MsgCodes.Server.DISCONNECT_PLAYER3;
+				}
+				else if (player4 == ch) {
+					world.playerDisconnect(World.PLAYER4_NUM);
+					msgcode = MsgCodes.Server.DISCONNECT_PLAYER4;
+				}
+
+				robot.send(MsgCodes.MESSAGECODE, msgcode);
+				player1.send(MsgCodes.MESSAGECODE, msgcode);
+				player2.send(MsgCodes.MESSAGECODE, msgcode);
+				player3.send(MsgCodes.MESSAGECODE, msgcode);
+				player4.send(MsgCodes.MESSAGECODE, msgcode);
 				
-				terminate();
+				//terminate();
 				// robot.unbind();
 				// player1.unbind();
 
@@ -90,8 +113,8 @@ public class Session extends WorkerThread {
 					robot.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
 					player1.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
 					player2.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
-					// player3.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
-					// player4.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
+					player3.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
+					player4.send(MsgCodes.MESSAGECODE, MsgCodes.Server.START_GAME);
 					gameStart = true;
 					System.out.println("[Session]starting game...");
 				}
@@ -100,13 +123,19 @@ public class Session extends WorkerThread {
 		//delegate handling of inputs to world
 		else if (msgType == MsgCodes.INPUT) {
 			if (robot == ch) {
-				world.processInput(msg, 0); //로봇의 입력을 반영
+				world.processInput(msg, World.ROBOT_NUM);
 			}
 			else if (player1 == ch) {
-				world.processInput(msg, 1); //1번 플레이어의 입력을 반영
+				world.processInput(msg, World.PLAYER1_NUM);
 			}
 			else if (player2 == ch) {
-				world.processInput(msg, 2); // 2번 플레이어의 입력을 반영
+				world.processInput(msg, World.PLAYER2_NUM);
+			}
+			else if (player3 == ch) {
+				world.processInput(msg, World.PLAYER3_NUM);
+			}
+			else if (player4 == ch) {
+				world.processInput(msg, World.PLAYER4_NUM);
 			}
 		}
 		// ===============================CAPRICIOUS===============================
@@ -121,8 +150,8 @@ public class Session extends WorkerThread {
 				robot.send(MsgCodes.MESSAGECODE, world.gameEndCode);
 				player1.send(MsgCodes.MESSAGECODE, world.gameEndCode);
 				player2.send(MsgCodes.MESSAGECODE, world.gameEndCode);
-				//player3.send(MsgCodes.MESSAGECODE, world.gameEndCode);
-				//player4.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+				player3.send(MsgCodes.MESSAGECODE, world.gameEndCode);
+				player4.send(MsgCodes.MESSAGECODE, world.gameEndCode);
 				terminate();
 			}
 		}
@@ -135,8 +164,8 @@ public class Session extends WorkerThread {
 		robot.unbind();
 		player1.unbind();
 		player2.unbind();
-		// player3.unbind();
-		// player4.unbind();
+		player3.unbind();
+		player4.unbind();
 
 		terminate = true;
 
@@ -153,12 +182,12 @@ public class Session extends WorkerThread {
 
 		// ===============================CAPRICIOUS===============================
 		if (gameStart) {
-			byte[] packet = world.getStatePacket();
-			robot.send(packet);
-			player1.send(packet);
-			player2.send(packet);
-			// player3.send(packet);
-			// player4.send(packet);
+				byte[] packet = world.getStatePacket();
+				robot.send(packet);
+				player1.send(packet);
+				player2.send(packet);
+				player3.send(packet);
+				player4.send(packet);
 		}
 		// ===============================CAPRICIOUS===============================
 	}
