@@ -9,25 +9,24 @@ public class CardKeyObject implements Interactable {
 	private float y;
 	private int width;
 	private int height;
-	private String name; // needed?
 	private int objectNum;
 	private Area area;
 
 	private boolean interacted;
 	private boolean interacting;
 
-	CardKeyObject(Area area, float x, float y, int width, int height, String name) {
+	CardKeyObject(Area area, float x, float y, int width, int height, String name/*needed?*/) {
 		this.area = area;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.name = name;
 	}
 
 	@Override
 	public boolean isContact(Player player, int range) {
 		// TODO Auto-generated method stub
+
 		//for interaction
 		if (range > 0)
 			return (x < (player.x + player.width + range)) && ((x + width) > (player.x - range))
@@ -56,7 +55,6 @@ public class CardKeyObject implements Interactable {
 	@Override
 	public boolean interact(Player player) {
 		// TODO Auto-generated method stub
-		//player.curArea.removeObject(objectNum);
 		area.removeObject(objectNum);
 		player.haveKey = true;
 		return true;

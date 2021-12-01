@@ -1,14 +1,11 @@
 package Prototype;
 
-import java.lang.reflect.Array;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Disposable;
@@ -65,7 +62,6 @@ public class Assets implements Disposable {
 	final Texture gateObjectSpriteSheet;
 	final Texture doorObjectSpriteSheet;
 	final Texture doorObjectRotatedSpriteSheet;
-	//final Texture gateObjectRotatedSpriteSheet;
 
 	final Animation<TextureRegion>[] robotAnimations;
 	final Animation<TextureRegion>[] player1Animations;
@@ -76,9 +72,7 @@ public class Assets implements Disposable {
 	final Animation<TextureRegion> gateAnimation;
 	final Animation<TextureRegion> doorAnimation;
 	final Animation<TextureRegion> doorAnimationRotated;
-	//final Animation<TextureRegion> gateAnimationRotated;
 
-	//final Texture remainTimeBoxClosedTexture;
 	final Texture interactableMark;
 	final Texture portraitNormalTexture;
 	final Texture portraitKeyTexture;
@@ -114,10 +108,7 @@ public class Assets implements Disposable {
 	final Sound resultPop;
 	final Sound resultMessage;
 
-	//Sound[] humanSounds;
-
 	Assets() {
-		//robotAnimations = (Animation<TextureRegion>[]) Array.newInstance(Animation.class, FRAME_ROWS_ROBOT);
 		robotAnimations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_ROBOT];
 		player1Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
 		player2Animations = (Animation<TextureRegion>[])new Animation[FRAME_ROWS_PLAYER];
@@ -158,7 +149,6 @@ public class Assets implements Disposable {
 		gateObjectSpriteSheet = new Texture(Gdx.files.internal("gate_spritesheet.png"));
 		doorObjectSpriteSheet = new Texture(Gdx.files.internal("door_spritesheet.png"));
 		doorObjectRotatedSpriteSheet = new Texture(Gdx.files.internal("door_rotated_spritesheet.png"));
-		//gateObjectRotatedSpriteSheet = new Texture(Gdx.files.internal("door_sample_rotated_spritesheet.png"));
 	
 		//robot animations
 		TextureRegion[][] tmp = TextureRegion.split(robotSpriteSheet, robotSpriteSheet.getWidth() / FRAME_COLS_ROBOT, robotSpriteSheet.getHeight() / FRAME_ROWS_ROBOT);
@@ -255,8 +245,6 @@ public class Assets implements Disposable {
 		}
 		doorAnimationRotated = new Animation<TextureRegion>(DoorObject.DOOROBJECT_FRAME_DURATION, frames); //3 frames in 0.5sec
 
-		//remainTimeBoxClosedTexture = new Texture(Gdx.files.internal("remain_time_box_texture.png"));
-		//Gdx.app.log("Assets", "" + (robotAnimations[16] == null));
 		interactableMark = new Texture(Gdx.files.internal("interactable_mark.png"));
 		portraitNormalTexture = new Texture(Gdx.files.internal("portrait_normal.png"));
 		portraitKeyTexture = new Texture(Gdx.files.internal("portrait_cardkey.png"));
@@ -269,8 +257,6 @@ public class Assets implements Disposable {
 		portraitKilledDrawable = new TextureRegionDrawable(portraitKilledTexture);
 		portraitDisconnectedDrawable = new TextureRegionDrawable(portraitDisconnectedTexture);
 		portraitEscapedDrawable = new TextureRegionDrawable(portraitEscapedTexture);
-		//portraitNormalTexture = new Texture(Gdx.files.internal("portrait_normal.png"));
-		//portraitKeyTexture = new Texture(Gdx.files.internal("portrait_cardkey.png"));
 		skin = new Skin(Gdx.files.internal("skin/craftacular-ui.json"));
 
 		resultWindowTexture = new Texture(Gdx.files.internal("result_window.png"));
@@ -292,8 +278,6 @@ public class Assets implements Disposable {
 
 		mainMenuBackgroundTexture = new Texture(Gdx.files.internal("main_menu_background.png"));
 
-		//humanSounds = new Sound[1];
-		//humanSounds[0] = Gdx.audio.newSound(Gdx.files.internal("sound/human_running.wav"));
 		mainMenuMusic = Gdx.audio.newMusic(Gdx.files.internal("music/458368__infinita08__sci-fi-theme.mp3"));
 		mainMenuMusic.setLooping(true);
 		mainMenuMusic.setVolume(0.3f);
@@ -308,7 +292,6 @@ public class Assets implements Disposable {
 	public Sound[] getHumanSounds() {
 		Sound[] humanSounds = new Sound[6];
 		humanSounds[0] = Gdx.audio.newSound(Gdx.files.internal("sound/human_running.wav"));
-		// humanSounds[1] = Gdx.audio.newSound(Gdx.files.internal("sound/human_dodge.wav"));
 		humanSounds[1] = Gdx.audio.newSound(Gdx.files.internal("sound/394426__inspectorj__bamboo-swing-b6.wav"));
 		humanSounds[2] = Gdx.audio.newSound(Gdx.files.internal("sound/snap.wav"));
 		humanSounds[3] = Gdx.audio.newSound(Gdx.files.internal("sound/human_deathscream.wav"));
@@ -382,7 +365,7 @@ public class Assets implements Disposable {
 		resultWindowDown.dispose();
 		resultPop.dispose();
 		resultMessage.dispose();
-		//gateObjectRotatedSpriteSheet.dispose();
+		
 		Gdx.app.log("Assets", "disposed");
 	}
 }

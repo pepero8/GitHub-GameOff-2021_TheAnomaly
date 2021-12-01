@@ -4,60 +4,42 @@ public class BoxObject implements Interactable {
 	static final int BOXOBJECT_WIDTH = 32;
 	static final int BOXOBJECT_HEIGHT = 32;
 	static final long BOXOBJECT_REQUIRE_TIME = 2000; //required time to finish interaction in milliseconds
-	// static int TOTAL_BOX_OBJECTS = 0;
-	// static int REMAINING_BOX_OBJECTS = 0;
-	// static int HIT = 0;
-	//static float SUCCESS_RATE;
+	
 	Map map;
 	
-	//private Interactable content;
-	// private BoxObjectModel model;
 	private float x;
 	private float y;
 	private int width;
 	private int height;
-	private String name; //needed?
 	private int objectNum;
 
 	private boolean interacted;
 	private boolean interacting;
 
-	BoxObject(Map map, float x, float y, int width, int height, String name) {
+	BoxObject(Map map, float x, float y, int width, int height, String name/*needed?*/) {
 		this.map = map;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.name = name;
-		// model = boxModel;
-		//map.TOTAL_BOX_OBJECTS++;
 		map.REMAINING_BOX_OBJECTS++;
 	}
 
 	@Override
 	public boolean interact(Player player) {
-		//if (!interacted) {
-			interacted = true;
-			int trial = (int)(Math.random() * map.REMAINING_BOX_OBJECTS);
-			System.out.println("trial: " + trial + ", HIT: " + map.HIT);
-			if (trial == map.HIT) {
-				//player.setPossession(new CardKey());
-				player.haveKey = true;
-				map.HIT = -1; //no more keys
-				//REMAINING_BOX_OBJECTS--;
-				return true;
-			}
-			map.REMAINING_BOX_OBJECTS--;
-		//}
+		interacted = true;
+		int trial = (int)(Math.random() * map.REMAINING_BOX_OBJECTS);
+		System.out.println("trial: " + trial + ", HIT: " + map.HIT);
+		if (trial == map.HIT) {
+			player.haveKey = true;
+			map.HIT = -1; //no more keys
+			return true;
+		}
+		map.REMAINING_BOX_OBJECTS--;
+
 		return false;
 	}
 
-	// @Override
-	// public boolean overlap(Player player) {
-	// 	// TODO Auto-generated method stub
-	// 	return (x <= (player.x + player.width)) && ((x + BOXOBJECT_WIDTH) >= (player.x))
-	// 			&& (y <= (player.y + player.height)) && ((y + BOXOBJECT_HEIGHT) >= (player.y));
-	// }
 	@Override
 	public boolean isContact(Player player, int range) {
 		return (x < (player.x + player.width + range)) &&

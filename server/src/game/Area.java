@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public abstract class Area {
 	private Map map;
-	//private Interactable[] objects;
 	private ArrayList<Interactable> objects;
 	private int index = -1;
 
@@ -24,7 +23,7 @@ public abstract class Area {
 	 * @param areaNum
 	 * @param numObjects number of objects in this area. It should have an empty room for the card key
 	 */
-	Area(Map map, float x, float y, int width, int height, int areaNum, int numObjects/*needed?*/) {
+	Area(Map map, float x, float y, int width, int height, int areaNum, int numObjects) {
 		this.map = map;
 		this.x = x;
 		this.y = y;
@@ -33,11 +32,9 @@ public abstract class Area {
 
 		this.areaNum = areaNum;
 		objects = new ArrayList<Interactable>();
-		//objects = new Interactable[numObjects];
 	}
 
 	void addObject(Interactable object) {
-		//objects[++index] = object;
 		objects.add(++index, object);
 		object.setNum(index);
 
@@ -55,10 +52,6 @@ public abstract class Area {
 		}
 		return ret;
 	}
-
-	// Interactable[] getObjects() {
-	// 	return objects;
-	// }
 
 	ArrayList<Interactable> getObjects() {
 		return objects;

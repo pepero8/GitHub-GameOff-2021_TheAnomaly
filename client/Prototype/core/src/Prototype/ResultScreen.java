@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,15 +43,10 @@ public class ResultScreen implements Screen {
 	private float elapsed;
 
 	private boolean playResultWindow = true;
-	//private boolean playPop = false;
-	//private boolean playMessage = true;
 
 	ResultScreen(Prototype prototype) {
 		this.game = prototype;
 		playerStates = new char[Prototype.NUM_PLAYERS - 1];
-		// for (int i = 1; i != Prototype.NUM_PLAYERS; i++) {
-		// 	playerStates[i - 1] = game.world.players[i].accessState("get", '0');
-		// }
 		elapsed = 0;
 
 		camera = new OrthographicCamera();
@@ -72,7 +66,6 @@ public class ResultScreen implements Screen {
 		resultTitle.setWrap(true);
 
 		resultMessage = new Label("You failed to eliminate all the survivors", game.assets.skin, "xp");
-		// resultMessage.setText(getResultMessage(playerStates[game.playerNum - 1]));
 		resultMessage.setHeight(resultTitle.getHeight() + 16);
 		resultMessage.setPosition(resultTitle.getX(), resultTitle.getY() - resultMessage.getHeight());
 		resultMessage.setWidth(resultTitle.getWidth() - 24);
@@ -84,10 +77,7 @@ public class ResultScreen implements Screen {
 		player2Name = new Label("player2", game.assets.skin, "default");
 		player3Name = new Label("player3", game.assets.skin, "default");
 		player4Name = new Label("player4", game.assets.skin, "default");
-		// player1Name.setText(game.world.player1.getName());
-		// player2Name.setText(game.world.player1.getName());
-		// player3Name.setText(game.world.player1.getName());
-		// player4Name.setText(game.world.player1.getName());
+
 		player1Name.setPosition(resultTitle.getX()+32, resultMessage.getY()-player1Name.getHeight());
 		player2Name.setPosition(resultTitle.getX()+32, player1Name.getY()-player2Name.getHeight());
 		player3Name.setPosition(resultTitle.getX()+32, player2Name.getY()-player3Name.getHeight());
@@ -105,10 +95,7 @@ public class ResultScreen implements Screen {
 		player2State = new Label("ESCAPED", game.assets.skin, "default");
 		player3State = new Label("ESCAPED", game.assets.skin, "default");
 		player4State = new Label("ESCAPED", game.assets.skin, "default");
-		// player1State.setText(getStateText(playerStates[0]));
-		// player2State.setText(getStateText(playerStates[1]));
-		// player3State.setText(getStateText(playerStates[2]));
-		// player4State.setText(getStateText(playerStates[3]));
+
 		player1State.setPosition(player1Name.getX() + player1State.getWidth(), player1Name.getY());
 		player2State.setPosition(player1Name.getX() + player1State.getWidth(), player2Name.getY());
 		player3State.setPosition(player1Name.getX() + player1State.getWidth(), player3Name.getY());
@@ -130,18 +117,14 @@ public class ResultScreen implements Screen {
 		okButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				//game.testScreen.init();
 				//world dispose
 				game.world.dispose();
-				//game.setScreen(game.mainMenuScreen);
 				game.init();
 				game.setScreen(new MainMenuScreen(game));
 			}
 		});
 		okButton.setWidth(65);
 		okButton.setPosition(resultWindow.getX()+resultWindow.getWidth()/2 - okButton.getWidth()/2, 64 + 16);
-		//System.out.println("(" + okButton.getX() + ", " + okButton.getY() + ")");
-		//okButton.setPosition(268, 32);
 		
 
 		stage.addActor(resultWindow);
@@ -196,18 +179,6 @@ public class ResultScreen implements Screen {
 
 		elapsed = 0;
 	}
-
-	// private String getResultMessage(char stateCode) {
-	// 	switch (stateCode) {
-	// 		case MsgCodes.Game.EXIT_STATE:
-	// 			return "Congratulations, you managed to escape!";
-	// 		case MsgCodes.Game.DEAD_STATE:
-	// 			resultMessage.setColor(Color.RED);
-	// 			return "You were killed by " + game.world.robot.getName();
-	// 		default:
-	// 			return null;
-	// 	}
-	// }
 
 	private String getResultMessage(Player player) {
 		if (game.playerNum == Prototype.PLAYER_ROBOT_NUM) {
@@ -275,7 +246,6 @@ public class ResultScreen implements Screen {
 
 		if (elapsed < 0.5f);
 		else if (elapsed < 1.5f) {
-			//stage.addActor(resultWindow);
 			resultWindow.act(delta);
 			if (playResultWindow) {
 				playResultWindow = false;
@@ -284,39 +254,30 @@ public class ResultScreen implements Screen {
 		}
 		else {
 			if (elapsed >= 2) {
-				//stage.addActor(resultTitle);
 				resultTitle.setVisible(true);
 			}
 			if (elapsed >= 2.5f && !player1Name.isVisible() && !player1State.isVisible()) {
-				//resultMessage.setVisible(true);
 				player1Name.setVisible(true);
 				player1State.setVisible(true);
-				//playPop = true;
 				game.assets.resultPop.play();
 			}
 			if (elapsed >= 3.0f && !player2Name.isVisible() && !player2State.isVisible()) {
 				player2Name.setVisible(true);
 				player2State.setVisible(true);
-				// playPop = true;
 				game.assets.resultPop.play();
 			}
 			if (elapsed >= 3.5f && !player3Name.isVisible() && !player3State.isVisible()) {
 				player3Name.setVisible(true);
 				player3State.setVisible(true);
-				// playPop = true;
 				game.assets.resultPop.play();
 			}
 			if (elapsed >= 4.0f && !player4Name.isVisible() && !player4State.isVisible()) {
 				player4Name.setVisible(true);
 				player4State.setVisible(true);
-				// playPop = true;
 				game.assets.resultPop.play();
 			}
 			if (elapsed >= 4.5f && !resultMessage.isVisible() && !okButton.isVisible()) {
-				// if (playMessage) {
-				// 	playMessage = false;
-					game.assets.resultMessage.play();
-				// }
+				game.assets.resultMessage.play();
 				resultMessage.setVisible(true);
 				okButton.setVisible(true);
 			}
@@ -324,12 +285,6 @@ public class ResultScreen implements Screen {
 			stage.act();
 		}
 
-		// if (playPop) {
-		// 	playPop = false;
-		// 	game.assets.resultPop.play();
-		// }
-
-		//stage.act();
 		stage.draw();
 	}
 

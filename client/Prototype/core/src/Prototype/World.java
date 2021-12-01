@@ -1,12 +1,10 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public class World extends Actor implements Disposable {
@@ -17,7 +15,7 @@ public class World extends Actor implements Disposable {
 	  4. instantiate the area & add/update objects
 	  5. insert area into areas
 	  6. update determineArea() of all areas
-	  7. if any determineArea() changed, apply to the server
+	  7. if any determineArea() changed, synchronize with the server
 	*/
 	private static final int NUM_AREAS = 14;
 
@@ -36,7 +34,6 @@ public class World extends Actor implements Disposable {
 	private static final int OFFICE3_AREA_NUM = 12;
 	private static final int PATHTOEXIT_AREA_NUM = 13;
 
-	//game.Assets game.assets;
 	Prototype game;
 
 	public Player robot;
@@ -44,7 +41,6 @@ public class World extends Actor implements Disposable {
 	public Player player2;
 	public Player player3;
 	public Player player4;
-	//public Array<Player> activePlayers; // array containing alive players(not including robot)
 
 	public Player[] players;
 
@@ -62,7 +58,6 @@ public class World extends Actor implements Disposable {
 	public Area office2Area;
 	public Area office3Area;
 	public Area pathToExitArea;
-	//public Area area3;
 
 	public Area[] areas;
 
@@ -73,7 +68,6 @@ public class World extends Actor implements Disposable {
 	//constructor
 	public World(Prototype game) {
 		this.game = game;
-		//game.assets = new game.Assets();
 
 		players = new Player[Prototype.NUM_PLAYERS];
 		areas = new Area[NUM_AREAS];
@@ -111,19 +105,13 @@ public class World extends Actor implements Disposable {
 		mainArea = new Area(MAIN_AREA_NUM, 18, 16, 16, game.assets.mainAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
-				//System.out.println("Main area determine");
-				//float originX = getX();
-				//float originY = getY();
-
 				//entry line to pathToEntranceArea
 				if (y >= getY() + 1536) {
 					return pathToEntranceArea;
 				}
-				// else if (x <= getX() - 16) {
 				else if (x <= getX() && y >= 1088 + 512 && y <= 1088+512+256) {
 					return westPassageArea;
 				}
-				// else if (y <= getY() - 16) {
 				else if (y <= getY() && x >= 1168 && x <= 1168+256) {
 					return southPassageArea;
 				}
@@ -148,28 +136,20 @@ public class World extends Actor implements Disposable {
 		mainArea.addObject(new WallObject(784+256, 1088+256, 512, 384));
 		mainArea.addObject(new WallObject(1056+192, 1792+176, 96, 160)); //table
 		mainArea.addObject(new WallObject(1056 + 192+32, 1792 + 176+160, 32, 32)); //chair1
-		//mainArea.addObject(new WallObject(1056 + 192+96, 1792 + 176+160-32, 32, 32)); //chair2
-		//mainArea.addObject(new WallObject(1056 + 192+96, 1792 + 176+160-96, 32, 32)); // chair3
 		mainArea.addObject(new WallObject(1056 + 192+96, 1792 + 176, 32, 160)); // chair4
 		mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176, 32, 160)); // chair5
-		//mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176+64, 32, 32)); // chair6
-		//mainArea.addObject(new WallObject(1056 + 192-32, 1792 + 176 + 160 - 32, 32, 32)); // chair7
 		mainArea.addObject(new BoxObject(1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		mainArea.addObject(new BoxObject(1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
 		mainArea.addObject(new BoxObject(1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3", game.assets.boxClosedTexture, game.assets.boxOpenedTexture));
-		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door", game.assets.doorAnimation));
-		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate", game.assets.doorAnimationRotated));
 		areas[MAIN_AREA_NUM] = mainArea;
 
 		pathToEntranceArea = new Area(PATHTOENTRANCE_AREA_NUM, 4, 16, 0, game.assets.pathToEntranceAreaTexture) {
 			@Override
 			public Area determineArea(float x, float y) {
 				//entry line to main area
-				// if (y <= getY() - 5) {
 				if (y <= getY()) {
 					return mainArea;
 				}
-				// else if (y >= 3136+16)
 				else if (y >= 3136)
 					return pathToExitArea;
 				else
@@ -220,7 +200,6 @@ public class World extends Actor implements Disposable {
 				else if (x <= 256 + 16 && y >= 1088 - 256 && y <= 1088 - 256 + 128)
 					return office3Area;
 				else {
-					//System.out.println("check!");
 					return this;
 				}
 			}
@@ -456,80 +435,32 @@ public class World extends Actor implements Disposable {
 		pathToExitArea.setBounds(1168, 3136, 256, 768);
 		pathToExitArea.setName("passage to exit");
 		areas[PATHTOEXIT_AREA_NUM] = pathToExitArea;
-		// area1.setBounds(0, 0, Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT-Prototype.CHAR_HEIGHT);
-		// area1.setName("area1");
-		// area2 = new Area() {
-		// 	@Override
-		// 	public Area determineArea(float x, float y) {
-		// 		//entry line to area1
-		// 		if (x == Prototype.MAP_WIDTH*3/8 - Prototype.CHAR_WIDTH && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
-		// 			return area1;
-		// 		}
-		// 		//entry line to area3
-		// 		else if (x == Prototype.MAP_WIDTH*5/8 && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
-		// 			return area3;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-		// area2.setBounds(Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT*3/8, Prototype.MAP_WIDTH/4+Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT/4-Prototype.CHAR_HEIGHT);
-		// area2.setName("area2");
-		// area3 = new Area() {
-		// 	@Override
-		// 	public Area determineArea(float x, float y) {
-		// 		//entry line to area2
-		// 		if (x == Prototype.MAP_WIDTH*5/8 && (y >= Prototype.MAP_HEIGHT*3/8 && y <= Prototype.MAP_HEIGHT*5/8 - Prototype.CHAR_HEIGHT)) {
-		// 			return area2;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-		// area3.setBounds(Prototype.MAP_WIDTH*5/8, 0, Prototype.MAP_WIDTH*3/8-Prototype.CHAR_WIDTH, Prototype.MAP_HEIGHT-Prototype.CHAR_HEIGHT);
-		// area3.setName("area3");
 		
 		//create characters
 		robot = new Player(Prototype.PLAYER_ROBOT_NUM, "robot", game.assets.robotAnimations);
 		robot.setSounds(game.assets.getRobotSounds());
-		// robot.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
-		//robot.setPos(0, 0); // sets the robot's initial position to the middle
 		robot.setCurrentArea(developmentRoomArea);
 		robot.setPosition(2064 + 32, 320 + 320);
 
 		player1 = new Player(Prototype.PLAYER1_NUM, "player1", game.assets.player1Animations);
 		player1.setSounds(game.assets.getHumanSounds());
-		//player1.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
-		//player1.setPos(50, 200); //sets the player1's position on the upper left quarter of the map
 		player1.setCurrentArea(mainArea);
 		player1.setPosition(1056+160, 2165);
-		//player1.setColor(Color.YELLOW);
 
 		player2 = new Player(Prototype.PLAYER2_NUM, "player2", game.assets.player2Animations);
 		player2.setSounds(game.assets.getHumanSounds());
-		// //player2.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
-		// player2.setPos(Prototype.MAP_WIDTH/2 - Prototype.CHAR_WIDTH/2, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player2's position on the bottom left quarter of the map
 		player2.setCurrentArea(mainArea);
 		player2.setPosition(player1.getX() + 32, player1.getY());
-		//player2.setColor(Color.BROWN);
 
 		player3 = new Player(Prototype.PLAYER3_NUM, "player3", game.assets.player3Animations);
 		player3.setSounds(game.assets.getHumanSounds());
-		// //player3.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
-		// player3.setPos(player2.getX()+70, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player3's position on the upper right quarter of the map
 		player3.setCurrentArea(mainArea);
 		player3.setPosition(player2.getX() + 32, player1.getY());
 		
 		player4 = new Player(Prototype.PLAYER4_NUM, "player4", game.assets.player4Animations);
 		player4.setSounds(game.assets.getHumanSounds());
-		// //player4.setPosRange(0, Prototype.MAP_WIDTH - Prototype.CHAR_WIDTH, 0, Prototype.MAP_HEIGHT - Prototype.CHAR_HEIGHT);
-		// player4.setPos(Prototype.MAP_WIDTH*5/8+100, Prototype.MAP_HEIGHT/2 - Prototype.CHAR_HEIGHT/2); //sets the player4's position on the bottom right quarter of the map
 		player4.setCurrentArea(mainArea);
 		player4.setPosition(player3.getX() + 32, player1.getY());
-		
-		//activePlayers = new Array<Player>();
-		//activePlayers.add(player1);
-		//activePlayers.add(player1, player2, player3, player4);
 
 		players[0] = robot;
 		players[1] = player1;
@@ -539,8 +470,6 @@ public class World extends Actor implements Disposable {
 
 		//create card key object
 		cardKey = new CardKeyObject(this, null, -1, -1, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", game.assets.cardKeyTexture);
-		//cardKey = new CardKeyObject(this, mainArea, mainArea.getX()+512, mainArea.getY()+896, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key", game.assets.cardKeyTexture);
-		//mainArea.addObject(cardKey);
 
 		//configure action
 		RepeatAction loop = new RepeatAction();
@@ -573,16 +502,13 @@ public class World extends Actor implements Disposable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		//System.out.println("init color: " + batch.getColor().r + ", " + batch.getColor().g + ", " + batch.getColor().b + ", " + batch.getColor().a);
 		for (Area area : areas) {
-			//Gdx.app.log("World", "area: (" + area.getWidth() + ", " + area.getHeight() + ")");
 			game.assets.baseTexture.setRegion(0, 0, (int)area.getWidth(), (int)area.getHeight());
 			batch.draw(game.assets.baseTexture, area.getX(), area.getY());
 			area.draw(batch, parentAlpha);
 		}
 		//to draw robot at the last(projectile should be drawn on the very top)
 		for (int i = players.length - 1; i != -1; i--) {
-		//for (Player player : players) {
 			players[i].draw(batch, parentAlpha);
 		}
 		if (cardKey.getX() != -1f) {
@@ -593,15 +519,8 @@ public class World extends Actor implements Disposable {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		//game.assets.dispose(); //unnecessary
 		robot.dispose();
 		player1.dispose();
-		// player2.dispose();
-		// player3.dispose();
-		// player4.dispose();
-		//area1.dispose();
-		//area2.dispose();
-		//area3.dispose();
 
 		Gdx.app.log("World", "disposed");
 	}

@@ -4,13 +4,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import game.World;
+
 class Lobby extends WorkerThread {
 	public static final int NUM_PLAYERS_PER_SESSION = 5;
-	public static final int MAX_SESSIONS = 10; // limit session numbers
+	//public static final int MAX_SESSIONS = 20; // limit session numbers
 	
 	Queue<ClientHandler> clientQueue;
-
-	private int activeSessions = 0;
 
 	//constructor
 	public Lobby() {
@@ -20,7 +20,6 @@ class Lobby extends WorkerThread {
 
 	@Override
 	protected void processInput(ClientHandler ch) {
-		// ===============================CAPRICIOUS===============================
 		ByteBuffer msg = ByteBuffer.wrap(ch.getClientMsg());
 		char msgType = msg.getChar();
 		//====================================FOR DEBUG==========================================
@@ -29,16 +28,15 @@ class Lobby extends WorkerThread {
 		if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = msg.getChar();
 			if (msgCode == MsgCodes.Client.CLOSE_CONNECTION) {
-				clientQueue.remove(ch); //update 이전에 수행되어야 함
+				clientQueue.remove(ch); //must be called before update()
 				ch.unbind();
 			}
 		}
 		if (msgType == MsgCodes.DATA) {
-			byte[] playerNameBytes = new byte[24];
+			byte[] playerNameBytes = new byte[World.MAX_PLAYERNAME_LEN*2];
 			msg.get(playerNameBytes);
 			ch.playerName = playerNameBytes.clone();
 		}
-		// ===============================CAPRICIOUS===============================
 	}
 
 	@Override
@@ -47,7 +45,6 @@ class Lobby extends WorkerThread {
 		System.out.println("(lobby)tick, current number of waiting clients: " + clientQueue.size());
 		//====================================FOR DEBUG==========================================
 
-		// ===============================CAPRICIOUS===============================
 		if (clientQueue.size() >= NUM_PLAYERS_PER_SESSION) {
 			ClientHandler robot = clientQueue.poll();
 			ClientHandler player1 = clientQueue.poll();
@@ -99,19 +96,15 @@ class Lobby extends WorkerThread {
 			System.out.println("(lobby)new session started");
 			//====================================FOR DEBUG==========================================
 		}
-		// ===============================CAPRICIOUS===============================
 	}
 
 	@Override
 	protected void broadcast() {
-		// ===============================CAPRICIOUS===============================
-		// ===============================CAPRICIOUS===============================
+
 	}
 
 	@Override
 	public synchronized void bind(ClientHandler ch) {
-		// ===============================CAPRICIOUS===============================
 		clientQueue.offer(ch);
-		// ===============================CAPRICIOUS===============================
 	}
 }

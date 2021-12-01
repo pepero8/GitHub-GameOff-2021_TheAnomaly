@@ -3,7 +3,6 @@ package game;
 public interface Interactable {
 	int INTERACTION_AVAILABLE_RANGE = 15;
 
-	//boolean overlap(Player player);
 	boolean isContact(Player player, int range);
 	boolean isContact(float x, float y); // called to check whether projectile has touched the object
 	boolean isInteractable(int playerNum);

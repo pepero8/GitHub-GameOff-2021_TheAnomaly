@@ -5,61 +5,31 @@ public class DoorObject implements Interactable {
 	static final int DOOROBJECT_HEIGHT = 64;
 	static final long DOOROBJECT_REQUIRE_TIME = 50; // required time to finish interaction in milliseconds
 													//minimum must be 17
-	//static int TOTAL_DOOR_OBJECTS = 0;
-	//static int REMAINING_DOOR_OBJECTS = 0;
-	// static float SUCCESS_RATE;
 
-	// private Interactable content;
-	// private BoxObjectModel model;
 	private float x;
 	private float y;
 	private int width;
 	private int height;
-	private String name; // needed?
 	private int objectNum;
 
 	private boolean interacted;
 	private boolean interacting;
 	private boolean open;
 
-	DoorObject(float x, float y, int width, int height, String name) {
+	DoorObject(float x, float y, int width, int height, String name/*needed?*/) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.name = name;
-		// model = boxModel;
-		//TOTAL_DOOR_OBJECTS++;
-		//REMAINING_DOOR_OBJECTS++;
 	}
 
 	@Override
 	public boolean interact(Player player) {
 		open = !open;
 
-		// if (!interacted) {
-		//interacted = true;
-		//int hit = (int) (Math.random() * REMAINING_BOX_OBJECTS);
-		//System.out.println("hit: " + hit);
-		//if (hit == 0) {
-			// player.setPossession(new CardKey());
-		//	player.haveKey = true;
-		//	REMAINING_BOX_OBJECTS--;
-		//	return true;
-		//}
-		//REMAINING_BOX_OBJECTS--;
-		// }
 		return true;
 	}
-
-	// @Override
-	// public boolean overlap(Player player) {
-	// // TODO Auto-generated method stub
-	// return (x <= (player.x + player.width)) && ((x + BOXOBJECT_WIDTH) >=
-	// (player.x))
-	// && (y <= (player.y + player.height)) && ((y + BOXOBJECT_HEIGHT) >=
-	// (player.y));
-	// }
+	
 	@Override
 	public boolean isContact(Player player, int range) {
 		//for interaction

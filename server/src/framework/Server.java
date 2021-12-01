@@ -4,37 +4,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 class Server {
-	/**
-	 * HOW TO ADD A PLAYER
-	 * Lobby
-	 * - increase NUM_PLAYERS_PER_SESSION
-	 * - add new player handling code in update()
-	 * 
-	 * Session
-	 * - add player variable
-	 * - change constructor's parameters
-	 * - add code blocks handling extra player
-	 * 
-	 * World
-	 * - increase NUM_PLAYERS value
-	 * - add new player variable
-	 * - initialize the player in constructor
-	 * - add new player to players[]
-	 * 
-	 * ClientHandler
-	 * - increase PACKET_SIZE
-	 */
 	private static final int PORT = 8014;
 
-	// ===============================CAPRICIOUS===============================
 	private static final int MAX_CLIENTS = 100; // limit client numbers
-	// ===============================CAPRICIOUS===============================
 
 	private ServerSocket welcomeSocket;
 
-	// ===============================CAPRICIOUS===============================
 	public Lobby lobbyThread;
-	// ===============================CAPRICIOUS===============================
 
 	private volatile int activeHandlerNum = 0;
 
@@ -42,10 +18,7 @@ class Server {
 	Server() {
 		try {
 			welcomeSocket = new ServerSocket(PORT);
-
-			// ===============================CAPRICIOUS===============================
 			lobbyThread = new Lobby();
-			// ===============================CAPRICIOUS===============================
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -56,9 +29,7 @@ class Server {
 		System.out.println("server started at port:" + welcomeSocket.getLocalPort());
 		//====================================FOR DEBUG==========================================
 
-		// ===============================CAPRICIOUS===============================
 		lobbyThread.start();
-		// ===============================CAPRICIOUS===============================
 
 		Socket connectionSocket;
 		

@@ -4,8 +4,6 @@ import framework.MsgCodes;
 
 public class InteractState extends PlayerState {
 	private Player player;
-	//private int areaNum;
-	//private int objectNum;
 	private Interactable targetObj;
 	private long elapsed;
 	private long requiredTime;
@@ -19,17 +17,10 @@ public class InteractState extends PlayerState {
 
 	void init(Player player, Interactable target) {
 		this.player = player;
-		//this.areaNum = areaNum;
-		//this.objectNum = objectNum;
 		targetObj = target;
 		requiredTime = target.getRequireTime();
 
 		target.setInteracting(true);
-
-		//elapsed = 0;
-		//halt = false;
-		//code = MsgCodes.Game.INTERACT_STATE;
-		//reset();
 	}
 
 	@Override
@@ -44,16 +35,13 @@ public class InteractState extends PlayerState {
 
 		if (elapsed < requiredTime) {
 			if (halt) {
-				//elapsed = 0;
 				reset();
 				return false;
 			}
 		}
 		else if (elapsed < requiredTime + 500) {
-			//if (targetObj.interacted());
 			if (interacted);
 			else if (targetObj.interact(player)) {
-				//System.out.println("success!");
 				code = MsgCodes.Game.INTERACT_SUCCESS_STATE;
 			}
 			else {
@@ -62,7 +50,6 @@ public class InteractState extends PlayerState {
 			interacted = true;
 		}
 		else {
-			//elapsed = 0;
 			reset();
 			return false;
 		}

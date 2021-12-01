@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -28,7 +25,6 @@ public class IntroScreen implements Screen {
 	private FitViewport viewport;
 	private OrthographicCamera camera;
 
-	//private SpriteBatch batch;
 	private ShapeRenderer shapeRenderer;
 
 	private Image matchInfo;
@@ -39,7 +35,6 @@ public class IntroScreen implements Screen {
 	private Label player2Name;
 	private Label player3Name;
 	private Label player4Name;
-	//private Animation<TextureRegion> introAnimation;
 
 	private float curtainY;
 
@@ -51,7 +46,6 @@ public class IntroScreen implements Screen {
 
 	private boolean playRobotMalfunction = true;
 	private boolean playRobotVoice = true;
-	private boolean playRobotAttack = true;
 	private boolean playAlarm = true;
 	private boolean playRobotMove = true;
 
@@ -61,12 +55,10 @@ public class IntroScreen implements Screen {
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(176, 128, camera);
 		stage = new Stage(viewport);
-		// viewport = new FitViewport(300, 256, camera);
 
 		matchInfoMatrix = camera.combined.cpy();
 		matchInfoMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / (viewport.getWorldWidth()/viewport.getWorldHeight()));
 
-		//batch = new SpriteBatch();
 		shapeRenderer = new ShapeRenderer();
 
 		matchInfo = new Image(game.assets.introMatchInfoTexture) {
@@ -87,8 +79,6 @@ public class IntroScreen implements Screen {
 				batch.setProjectionMatrix(getStage().getCamera().combined);
 			}
 		};
-
-		//StringBuffer playerName = new StringBuffer(12);
 
 		String playerName = game.world.player1.getName();
 		player1Name.setText(playerName.substring(0, (playerName.length() < 12) ? playerName.length() : 12));
@@ -120,8 +110,6 @@ public class IntroScreen implements Screen {
 				batch.setProjectionMatrix(getStage().getCamera().combined);
 			}
 		};
-		// playerName = game.world.player3.getName();
-		//player3Name.setText(game.world.player3.getName().subSequence(0, (playerName.length() < 12) ? playerName.length() : 12));
 		player3Name.setFontScale(0.5f);
 		player3Name.setWidth(64);
 		player3Name.setWrap(true);
@@ -135,8 +123,6 @@ public class IntroScreen implements Screen {
 				batch.setProjectionMatrix(getStage().getCamera().combined);
 			}
 		};
-		// playerName = game.world.player4.getName();
-		//player4Name.setText(game.world.player4.getName().subSequence(0, (playerName.length() < 12) ? playerName.length() : 12));
 		player4Name.setFontScale(0.5f);
 		player4Name.setWidth(64);
 		player4Name.setWrap(true);
@@ -170,7 +156,6 @@ public class IntroScreen implements Screen {
 				curFrame = game.assets.introRobotAnimation.getKeyFrame(stateTime);
 				if (stateTime >= 11) {
 					setX(getX() - 50 * delta);
-					//game.world.robot.getSounds()[0].play();
 				}
 			}
 
@@ -180,7 +165,6 @@ public class IntroScreen implements Screen {
 			}
 		};
 		robot.setBounds(64+32-16, 32+32-16, 32, 32);
-		//introAnimation = game.assets.introAnimation;
 
 		stage.addActor(background);
 		stage.addActor(robot);
@@ -192,51 +176,9 @@ public class IntroScreen implements Screen {
 		stage.addActor(robotName);
 	}
 
-	// void init() {
-	// 	//matchInfoMatrix.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / (viewport.getWorldWidth()/viewport.getWorldHeight()));
-	// 	//matchInfo.setPosition(Gdx.graphics.getWidth()/2-matchInfo.getWidth()/2, Gdx.graphics.getHeight()/2-matchInfo.getHeight()/2);
-		
-	// 	robot = new Actor() {
-	// 		private TextureRegion curFrame;
-	// 		private float stateTime = 0;
-
-	// 		@Override
-	// 		public void act(float delta) {
-	// 			stateTime += delta;
-	// 			curFrame = game.assets.introRobotAnimation.getKeyFrame(stateTime);
-	// 			if (stateTime >= 11) {
-	// 				setX(getX() - 50 * delta);
-	// 				// game.world.robot.getSounds()[0].play();
-	// 			}
-	// 		}
-
-	// 		@Override
-	// 		public void draw(Batch batch, float parentAlpha) {
-	// 			batch.draw(curFrame, getX(), getY());
-	// 		}
-	// 	};
-	// 	robot.setBounds(64 + 32 - 16, 32 + 32 - 16, 32, 32);
-
-	// 	stage.addActor(robot);
-
-	// 	robotName.setText(game.world.robot.getName());
-	// 	player1Name.setText(game.world.player1.getName());
-	// 	player2Name.setText(game.world.player2.getName());
-	// 	// player3Name.setText(game.world.player3.getName());
-	// 	// player4Name.setText(game.world.player4.getName());
-
-	// 	// System.out.println("[IntroScreen]" + "player names:");
-	// 	// System.out.println("- robot: " + robotName.getText());
-	// 	// System.out.println("- player1: " + player1Name.getText());
-	// 	// System.out.println("- player2: " + player2Name.getText());
-	// 	// System.out.println("- player3: " + player3Name.getText());
-	// 	// System.out.println("- player4: " + player4Name.getText());
-	// }
-
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		//stage.addActor(game.world);
 		elapsed = 0;
 		curtainY = 0;
 		game.assets.introBackground.play(0.3f);
@@ -262,12 +204,6 @@ public class IntroScreen implements Screen {
 			playRobotVoice = false;
 			game.assets.introRobotVoice.play();
 		}
-		// if (elapsed >= 9 && playRobotAttack) {
-		// 	playRobotAttack = false;
-		// 	game.world.robot.getSounds()[1].play(0.4f);
-		// 	game.world.robot.getSounds()[2].play();
-		// 	game.world.player1.getSounds()[4].play();
-		// }
 		if (elapsed >= 10 && playAlarm) {
 			playAlarm = false;
 			game.assets.introAlarm.play(0.2f);
@@ -282,8 +218,6 @@ public class IntroScreen implements Screen {
 				ready = true;
 			}
 			if (game.gameStart) {
-				//game.testScreen.init();
-				//game.setScreen(game.testScreen);
 				game.setScreen(new TestScreen(game));
 			}
 		}
@@ -293,14 +227,13 @@ public class IntroScreen implements Screen {
 		camera.position.set(64+32, 32+32, 0);
 		camera.update();
 
-		//elapsed += delta;
 		stage.act();
 		game.assets.baseTexture.setRegion(0, 0, (int)viewport.getWorldWidth(), (int)viewport.getWorldHeight());
 		stage.getBatch().begin();
 		stage.getBatch().draw(game.assets.baseTexture, 0, 0);
 		stage.getBatch().end();
 		stage.draw();
-		// TODO Auto-generated method stub
+
 		if (curtainY <= viewport.getWorldHeight()) {
 			shapeRenderer.setProjectionMatrix(camera.combined);
 			shapeRenderer.begin(ShapeType.Filled);
@@ -310,12 +243,6 @@ public class IntroScreen implements Screen {
 
 			curtainY += viewport.getWorldHeight()*2 * delta;
 		}
-		// else {
-		// 	//batch.draw(introAnimation.getKeyFrame(elapsed), 0, 0);
-		// 	stage.act(delta);
-		// }
-
-
 	}
 
 	@Override
@@ -340,7 +267,6 @@ public class IntroScreen implements Screen {
 	@Override
 	public void hide() {
 		// TODO Auto-generated method stub
-		//game.assets.introAlarm.stop();
 		game.assets.introBackground.stop();
 		dispose();
 	}
@@ -348,7 +274,6 @@ public class IntroScreen implements Screen {
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
-		//batch.dispose();
 		shapeRenderer.dispose();
 		Gdx.app.log("introScreen", "disposed");
 	}

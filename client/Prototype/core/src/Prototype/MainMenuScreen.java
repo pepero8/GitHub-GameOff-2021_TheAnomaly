@@ -1,7 +1,6 @@
 package Prototype;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -18,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -49,7 +46,8 @@ public class MainMenuScreen implements Screen {
 		curtainY = Prototype.VP_HEIGHT;
 
 		camera = new OrthographicCamera();
-		viewport = new FitViewport(600, 600, camera);
+		//viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
+		viewport = new FitViewport(Prototype.VP_WIDTH, Prototype.VP_HEIGHT);
 		stage = new Stage(viewport);
 
 		shapeRenderer = new ShapeRenderer();
@@ -59,9 +57,9 @@ public class MainMenuScreen implements Screen {
 
 		title = new Label("The Anomaly", game.assets.skin, "title");
 		title.setAlignment(Align.center);
-		title.setWidth(600);
+		title.setWidth(viewport.getWorldWidth());
 		title.setWrap(true);
-		title.setPosition(Gdx.graphics.getWidth()/2-title.getWidth()/2, 472-title.getHeight());
+		title.setPosition(viewport.getWorldWidth()/2-title.getWidth()/2, 472-title.getHeight());
 
 		playButton = new TextButton("Play", game.assets.skin, "default");
 		playButton.addListener(new ChangeListener() {
@@ -72,17 +70,17 @@ public class MainMenuScreen implements Screen {
 			}
 		});
 		playButton.setWidth(100);
-		playButton.setPosition(Gdx.graphics.getWidth()/2-playButton.getWidth()/2, title.getHeight() + 100);
+		playButton.setPosition(viewport.getWorldWidth()/2-playButton.getWidth()/2, title.getHeight() + 100);
 
 		inputPrompt = new Window("Enter your name", game.assets.skin, "default");
 		inputPrompt.setSize(568, 100);
-		inputPrompt.setPosition(Gdx.graphics.getWidth() / 2 - inputPrompt.getWidth() / 2, 0);
+		inputPrompt.setPosition(viewport.getWorldWidth() / 2 - inputPrompt.getWidth() / 2, 0);
 		inputPrompt.getTitleLabel().setWrap(true);
 		inputPrompt.setVisible(false);
 
 		inputField = new TextField("", game.assets.skin, "default");
 		inputField.setSize(250, 80);
-		inputField.setMaxLength(12);
+		inputField.setMaxLength(Prototype.MAX_PLAYERNAME_LEN);
 
 		okButton = new TextButton("OK", game.assets.skin, "default");
 		okButton.addListener(new ChangeListener() {
@@ -92,7 +90,6 @@ public class MainMenuScreen implements Screen {
 				String name = inputField.getText();
 				if (name.length() != 0)
 					game.playerName = name;
-				//game.setScreen(game.waitScreen);
 				game.world = new World(game);
 				game.connect();
 				inputPrompt.setVisible(false);
@@ -108,15 +105,13 @@ public class MainMenuScreen implements Screen {
 				inputPrompt.setVisible(false);
 			}
 		});
-		//inputPrompt.add().setActor(inputField);
 		inputPrompt.add(inputField).width(250);
 		inputPrompt.add(okButton).width(60).padLeft(10);
 		inputPrompt.add(cancelButton).width(150).padLeft(10);
-		//inputPrompt.addActor(inputField);
 
 		sessionWaitWindow = new Window("", game.assets.skin, "default");
 		sessionWaitWindow.setSize(568, 100);
-		sessionWaitWindow.setPosition(Gdx.graphics.getWidth() / 2 - inputPrompt.getWidth() / 2, 0);
+		sessionWaitWindow.setPosition(viewport.getWorldWidth() / 2 - inputPrompt.getWidth() / 2, 0);
 		sessionWaitWindow.setVisible(false);
 
 		sessionWaitLabel = new Label("searching for players.", game.assets.skin, "default");
@@ -186,7 +181,7 @@ public class MainMenuScreen implements Screen {
 				shapeRenderer.setProjectionMatrix(camera.combined);
 				shapeRenderer.begin(ShapeType.Filled);
 				shapeRenderer.setColor(Color.BLACK);
-				shapeRenderer.rect(0, curtainY, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+				shapeRenderer.rect(0, curtainY, viewport.getWorldWidth(), viewport.getWorldHeight());
 				shapeRenderer.end();
 
 				curtainY -= Prototype.VP_HEIGHT*2 * delta;
@@ -194,9 +189,6 @@ public class MainMenuScreen implements Screen {
 				return;
 			}
 			Gdx.app.log("MainMenuScreen", "session starting...");
-			// game.setScreen(game.testScreen);
-			//game.introScreen.init();
-			//game.setScreen(game.introScreen);
 			game.setScreen(new IntroScreen(game));
 		}
 	}

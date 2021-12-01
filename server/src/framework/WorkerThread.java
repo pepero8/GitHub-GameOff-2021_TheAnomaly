@@ -28,7 +28,7 @@ abstract public class WorkerThread extends Thread {
 				lag += elapsed;
 
 				// take and process all inputs from msgque
-				int msgNum = msgque.size(); //메시지가 무한으로 계속 들어올 때 처리할 메시지 수를 제한하기 위해 만듦
+				int msgNum = msgque.size(); //to limit number of processing messages
 				while (msgNum != 0) {
 					nextInput = msgque.pollMsg();
 					processInput(nextInput);
@@ -37,8 +37,7 @@ abstract public class WorkerThread extends Thread {
 				}
 
 				if (lag >= MS_PER_UPDATE) {
-					while (lag >= MS_PER_UPDATE) { // MS_PER_UPDATE : 각 업데이트마다 진행시키는 게임 시간
-						//System.out.println("[WorkThread]calling update");
+					while (lag >= MS_PER_UPDATE) { // MS_PER_UPDATE : world time to run per update
 						update(MS_PER_UPDATE);
 						lag -= MS_PER_UPDATE;
 					}
@@ -63,10 +62,8 @@ abstract public class WorkerThread extends Thread {
 		return msgque;
 	}
 
-	//should be called by only ClientHandler
+	//should be called only by ClientHandler
 	public abstract void bind(ClientHandler ch);
-
-	//abstract protected void unbind(ClientHandler ch);
 
 	abstract protected void processInput(ClientHandler msg);
 

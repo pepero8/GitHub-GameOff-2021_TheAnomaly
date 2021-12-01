@@ -29,14 +29,9 @@ public class Map {
 
 	public static final int EXIT_AREA_NUM = 14;
 
-	//int TOTAL_BOX_OBJECTS = 0;
 	int REMAINING_BOX_OBJECTS = 0;
 	int HIT = 0;
 
-	// MovableSpace spaceMainNorth;
-	// MovableSpace spaceMainEast;
-	// MovableSpace spaceMainWest;
-	// MovableSpace spaceMainSouth;
 	MovableSpace spaceMiddleArea;
 	MovableSpace spaceWestPassage;
 	MovableSpace spaceWestArea;
@@ -77,12 +72,6 @@ public class Map {
 			@Override
 			MovableSpace determineSpace(float playerX, float playerY) {
 				// TODO Auto-generated method stub
-				// if (playerX >= 224 && playerY <= 1304 && playerY >= 1304 - 224) {
-				// 	return spaceMainNorth;
-				// } else if (playerX >= 224 && playerY >= 0 && playerY <= 224) {
-				// 	// System.out.println("MainWest - playerX: " + playerX);
-				// 	return spaceMainSouth;
-				// } else
 				if (playerX <= 784 && playerY >= 1088+512 && playerY <= 1088+768-World.PLAYER_HEIGHT)
 					return spaceWestPassage;
 				else if (playerY <= 1088 && playerX >= 1168 && playerX <= 1168+256-World.PLAYER_WIDTH)
@@ -98,7 +87,7 @@ public class Map {
 			@Override
 			MovableSpace determineSpace(float playerX, float playerY) {
 				// TODO Auto-generated method stub
-				if (playerX > 784/* && playerY >= 1088 + 512 && playerY <= 1088 + 768*/)
+				if (playerX > 784)
 					return spaceMiddleArea;
 				else if (playerX <= 512+16-World.PLAYER_WIDTH)
 					return spaceWestArea;
@@ -222,68 +211,6 @@ public class Map {
 			}
 		};
 
-		// spaceMainWest = new MovableSpace(0, 0, 224, 1304) {
-		// 	@Override
-		// 	MovableSpace determineSpace(float playerX, float playerY) {
-		// 		// TODO Auto-generated method stub
-		// 		if (playerX >= 224 && playerY <= 1304 && playerY >= 1304-224) {
-		// 			return spaceMainNorth;
-		// 		}
-		// 		else if (playerX >= 224 && playerY >= 0 && playerY <= 224) {
-		// 			//System.out.println("MainWest - playerX: " + playerX);
-		// 			return spaceMainSouth;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-
-		// spaceMainNorth = new MovableSpace(224, 1304-224, 664, 224) {
-		// 	@Override
-		// 	MovableSpace determineSpace(float x, float y) {
-		// 		// TODO Auto-generated method stub
-		// 		if (x <= 224 && y >= 1304-224 && y <= 1304) {
-		// 			return spaceMainWest;
-		// 		}
-		// 		else if (x >= 224+664 && y >= 1304-224 && y <= 1304) {
-		// 			return spaceMainEast;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-
-		// spaceMainEast = new MovableSpace(224+664, 0, 224, 1304) {
-		// 	@Override
-		// 	MovableSpace determineSpace(float x, float y) {
-		// 		// TODO Auto-generated method stub
-		// 		if (x <= 224+664 && y >= 1304-224 && y <= 1304) {
-		// 			return spaceMainNorth;
-		// 		}
-		// 		else if (x <= 224 + 664 && y >= 0 && y <= 224) {
-		// 			return spaceMainSouth;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-
-		// spaceMainSouth = new MovableSpace(224, 0, 664, 224) {
-		// 	@Override
-		// 	MovableSpace determineSpace(float playerX, float playerY) {
-		// 		// TODO Auto-generated method stub
-		// 		if (playerX >= 224 + 664 && playerY >= 0 && playerY <= 224) {
-		// 			return spaceMainEast;
-		// 		}
-		// 		else if (playerX <= 224 && playerY >= 0 && playerY <= 224) {
-		// 			//System.out.println("MainSouth - x: " + playerX);
-		// 			return spaceMainWest;
-		// 		}
-		// 		else
-		// 			return this;
-		// 	}
-		// };
-
 		//doors & gates & walls
 		GateObject mainGate1 = new GateObject(784+0, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, "entrance gate1");
 		GateObject mainGate2 = new GateObject(784+256*3, 1088+1536-5, GateObject.GATEOBJECT_WIDTH, GateObject.GATEOBJECT_HEIGHT+5, "entrance gate2");
@@ -317,19 +244,15 @@ public class Map {
 		mainArea = new Area(this, 784, 1088, 1024, 1536, MAIN_AREA_NUM, 18) {
 			@Override
 			Area determineArea(float x, float y) {
-			// Area determineArea(Player player) {
 				// TODO Auto-generated method stub
-				//float originY = getY();
 
 				//entry line to pathToEntranceArea
 				if (y >= this.y + 1536) {
 					return pathToEntranceArea;
 				}
-				//else if (x <= this.x - 16) {
 				else if (x <= this.x && y >= 1088 + 512 && y <= 1088 + 512 + 256) { //to change projectile's area before hitWall() is processed
 					return westPassageArea;
 				}
-				// else if (y <= this.y - 16) {
 				else if (y <= this.y && x >= 1168 && x <= 1168 + 256) {
 					return southPassageArea;
 				}
@@ -352,30 +275,20 @@ public class Map {
 		mainArea.addObject(new WallObject(784+256, 1088+256, 512, 384));
 		mainArea.addObject(new WallObject(1056 + 192, 1792 + 176, 96, 160)); // table
 		mainArea.addObject(new WallObject(1056 + 192 + 32, 1792 + 176 + 160, 32, 32)); // chair1
-		//mainArea.addObject(new WallObject(1056 + 192 + 96, 1792 + 176 + 160 - 32, 32, 32)); // chair2
-		//mainArea.addObject(new WallObject(1056 + 192 + 96, 1792 + 176 + 160 - 96, 32, 32)); // chair3
 		mainArea.addObject(new WallObject(1056 + 192 + 96, 1792 + 176, 32, 160)); // chair4
 		mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176, 32, 160)); // chair5
-		//mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176 + 64, 32, 32)); // chair6
-		//mainArea.addObject(new WallObject(1056 + 192 - 32, 1792 + 176 + 160 - 32, 32, 32)); // chair7
 		mainArea.addObject(new BoxObject(this, 1056, 1792, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box1"));
 		mainArea.addObject(new BoxObject(this, 1056+480-32, 1792+512-32, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box2"));
 		mainArea.addObject(new BoxObject(this, 1056+480-32, 1792+160, BoxObject.BOXOBJECT_WIDTH, BoxObject.BOXOBJECT_HEIGHT, "conference room box3"));
-		//mainArea.addObject(new DoorObject(0, 668, DoorObject.DOOROBJECT_WIDTH, DoorObject.DOOROBJECT_HEIGHT, "test door"));
-		//mainArea.addObject(new GateObject(888, 0, GateObject.GATEOBJECT_HEIGHT, GateObject.GATEOBJECT_WIDTH, "test gate"));
-		//mainArea.addObject(new CardKeyObject(mainArea, mainArea.x+512, mainArea.y+896, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key"));
 		areas[MAIN_AREA_NUM] = mainArea;
 
 		pathToEntranceArea = new Area(this, 784, 1088+1536, 1024, 512, PATHTOENTRANCE_AREA_NUM, 3+1) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				// entry line to main area
-				// if (y <= this.y - 5) {
 				if (y <= this.y) {
 					return mainArea;
 				}
-				// else if (y >= 3136 + 16)
 				else if (y >= 3136)
 					return pathToExitArea;
 				else
@@ -391,7 +304,6 @@ public class Map {
 		westPassageArea = new Area(this, 784-256, 1088+512, 256, 256, WESTPASSAGE_AREA_NUM, 1) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				// entry line to main area
 				if (x >= this.x + 256) {
 					return mainArea;
@@ -406,7 +318,6 @@ public class Map {
 		westHallwayArea = new Area(this, 256+16, 512, 256, 1664, WESTHALLWAY_AREA_NUM, 13) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				// entry line to west passage
 				if (x >= this.x + 256 && y >= 1088+512 && y <= 1088+512+256) {
 					return westPassageArea;
@@ -424,7 +335,6 @@ public class Map {
 				else if (x <= 256 + 16 && y >= 1088 - 256 && y <= 1088 - 256 + 128)
 					return office3Area;
 				else {
-					//System.out.println("check!");
 					return this;
 				}
 			}
@@ -447,7 +357,6 @@ public class Map {
 		southPassageArea = new Area(this, 1168, 832, 256, 256, SOUTHPASSAGE_AREA_NUM, 1) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				// entry line to main area
 				if (y >= this.y + 256) {
 					return mainArea;
@@ -463,7 +372,6 @@ public class Map {
 		southHallwayArea = new Area(this, 528, 576, 1536, 256, SOUTHHALLWAY_AREA_NUM, 6) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				// entry line to south passage
 				if (y >= 576 + 256) {
 					return southPassageArea;
@@ -487,7 +395,6 @@ public class Map {
 		testRoomArea = new Area(this, 1168, 0, 512, 576, TESTROOM_AREA_NUM, 10) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (y >= 576)
 					return southHallwayArea;
 				else
@@ -508,7 +415,6 @@ public class Map {
 		developmentRoomArea = new Area(this, 2064, 320, 512, 768, DEVELOPMENTROOM_AREA_NUM, 13) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (x <= 2064 && y >= 576 && y <= 576 + 256)
 					return southHallwayArea;
 				else
@@ -532,7 +438,6 @@ public class Map {
 		directorOfficeArea = new Area(this, 272, 2176, 256, 256, DIRECTOROFFICE_AREA_NUM, 10) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (y <= 2176)
 					return westHallwayArea;
 				else
@@ -553,7 +458,6 @@ public class Map {
 		serverRoomArea = new Area(this, 272, 256, 256, 256, SERVERROOM_AREA_NUM, 7) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (y >= 512)
 					return westHallwayArea;
 				else
@@ -571,7 +475,6 @@ public class Map {
 		office1Area = new Area(this, 0, 1088+512, 256+16, 256, OFFICE1_AREA_NUM, 12) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (x >= 256 + 16)
 					return westHallwayArea;
 				else
@@ -594,7 +497,6 @@ public class Map {
 		office2Area = new Area(this, 0, 1088+128, 256+16, 256, OFFICE2_AREA_NUM, 11) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (x >= 256 + 16)
 					return westHallwayArea;
 				else
@@ -616,7 +518,6 @@ public class Map {
 		office3Area = new Area(this, 0, 1088-256, 256+16, 256, OFFICE3_AREA_NUM, 13) {
 			@Override
 			public Area determineArea(float x, float y) {
-			// public Area determineArea(Player player) {
 				if (x >= 256 + 16)
 					return westHallwayArea;
 				else

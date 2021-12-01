@@ -14,7 +14,6 @@ public abstract class MovableSpace {
 	}
 
 	float clampPosX(float oldX) {
-		//System.out.println("clampX - min: " + x + ", oldX: " + oldX);
 		if (oldX < x) return x;
 		if (oldX > x + width) return x + width;
 		return oldX;

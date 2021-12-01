@@ -27,20 +27,19 @@ public class RushState extends PlayerState {
 				}
 			}
 			if (robot.moveUp) {
-				robot.y += World.RUSH_SPEED * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+				robot.y += World.RUSH_SPEED * progressTime / 1000; // go 'moveSpeed' pixels in 1 sec
 			}
 			if (robot.moveDown) {
-				robot.y -= World.RUSH_SPEED * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+				robot.y -= World.RUSH_SPEED * progressTime / 1000;
 			}
 			if (robot.moveLeft) {
-				robot.x -= World.RUSH_SPEED * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+				robot.x -= World.RUSH_SPEED * progressTime / 1000;
 			}
 			if (robot.moveRight) {
-				robot.x += World.RUSH_SPEED * progressTime / 1000; // 1초에 moveSpeed픽셀씩 움직임
+				robot.x += World.RUSH_SPEED * progressTime / 1000;
 			}
 		}
 		else if (elapsed >= 3000) {
-			//elapsed = 0;
 			reset();
 			return false;
 		}

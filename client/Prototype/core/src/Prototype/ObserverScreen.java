@@ -1,12 +1,10 @@
 package Prototype;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -45,10 +43,7 @@ public class ObserverScreen implements Screen {
 			public boolean keyDown(InputEvent event, int keycode) {
 				switch(keycode) {
 					case Keys.TAB:
-						// do {
-							curPlayer = (curPlayer + 1) % Prototype.NUM_PLAYERS;
-						// } while(game.world.players[curPlayer].accessState("get", '0') == MsgCodes.Game.EXIT_STATE);
-							
+						curPlayer = (curPlayer + 1) % Prototype.NUM_PLAYERS;
 						return true;
 					default:
 						return false;
@@ -83,14 +78,11 @@ public class ObserverScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		//System.out.println("[Observer Screen] rendering");
 		if (!game.sessionStart) {
 			if (elapsed < 2)
 				elapsed += delta;
 			else {
 				game.disconnect();
-				//game.resultScreen.init();
-				//game.setScreen(game.resultScreen);
 				game.setScreen(new ResultScreen(game));
 				return;
 			}

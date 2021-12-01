@@ -6,14 +6,12 @@ public class Player {
 	World world;
 
 	int playerNum;
-	//private World world;
-	// ===============================CAPRICIOUS===============================
+	
 	char curDirection; //direction the player's looking at
 
 	Area curArea;
 	MovableSpace curSpace;
 
-	//private Interactable possession;
 	boolean haveKey;
 
 	float x, y;
@@ -25,11 +23,6 @@ public class Player {
 	boolean moveDown;
 	boolean moveLeft;
 	boolean moveRight;
-	// char moveUp;
-	// char moveDown;
-	// char moveLeft;
-	// char moveRight;
-	//boolean dead;
 
 	float moveSpeed; //movement speed(pixels per second)
 
@@ -47,17 +40,11 @@ public class Player {
 	boolean exit;
 
 	long elapsedFromLastRush = World.RUSH_COOL_DOWN; //used by robot
-	//constructor
-	// public Player() {
-	// 	normalState = new NormalState(this);
-	// 	dodgeState = new DodgeState(this);
-	// }
 
 	//constructor
 	public Player(World world, int playerNum, float initX, float initY, int playerWidth, int playerHeight, float initSpeed, int initState/* needed? */) {
 		this.world = world;
 		this.playerNum = playerNum;
-		//this.world = world;
 		curDirection = MsgCodes.Game.DIRECTION_SOUTH;
 		x = initX;
 		y = initY;
@@ -74,9 +61,6 @@ public class Player {
 
 		//duplicate. replace with setState()
 		switch (initState) {
-			// case MsgCodes.Game.NORMAL_STATE:
-			// 	curState = normalState;
-			// 	break;
 			case MsgCodes.Game.NORMAL_STATE_STANDING:
 			case MsgCodes.Game.NORMAL_STATE_MOVING:
 				curState = normalState;
@@ -140,24 +124,12 @@ public class Player {
 		curSpace = space;
 	}
 
-	// public void setPossession(Interactable object) {
-	// 	possession = object;
-	// }
-
 	public boolean isContact(Player player, int range) {
-		// System.out.println("fuck player.x: " + player.x);
-		// System.out.println("fuck player.width: " + player.width);
-		// System.out.println("fuck attack_range: " + World.ROBOT_ATTACK_RANGE);
-		//System.out.println("fuck: " + player.x + player.width + World.ROBOT_ATTACK_RANGE);
 
 		boolean ret =  (x < (player.x + player.width + range)) &&
 			   ((x + width) > (player.x - range)) &&
 			   (y < (player.y + player.height + range)) &&
 			   ((y + height) > (player.y - range));
-
-		// System.out.println("[Player]contact with robot: " + ret);
-		// System.out.println("[Player]player1's pos: (" + x + ", " + y + ")");
-		// System.out.println("{Player]robot pos: (" + player.x + ", " + player.y + ")");
 
 		return ret;
 	}
@@ -167,25 +139,10 @@ public class Player {
 			   projectileY > y && projectileY < y + height;
 	}
 
-	// public void dodge() {
-	// 	//dodgeState.setDirection(curDirection);
-	// 	//dodgeState.init(curDirection, moveUp, moveDown, moveLeft, moveRight);
-	// 	dodgeState.init(curDirection);
-	// 	curState = dodgeState;
-	// }
-
-	// public void attack() {
-	// 	curState = attackState;
-	// }
-
 	public void kill() {
 		if (curState == deadState) return;
 		curState.reset();
 		dropKey();
-		// if (curState == dodgeState) {
-		// 	dodgeState.reset();
-		// }
-		//dead = true;
 		world.DEAD_SURVIVORS++;
 		world.REMAINING_SURVIVORS--;
 		curState = deadState;
@@ -196,20 +153,11 @@ public class Player {
 			Interactable cardkey = new CardKeyObject(curArea, x + width/4, y + height/4, CardKeyObject.CARDKEYOBJECT_WIDTH, CardKeyObject.CARDKEYOBJECT_HEIGHT, "card key");
 			curArea.addObject(cardkey);
 			haveKey = false;
-			//world.cardKey = cardkey;
 		}
 	}
 
-	// public void grab(float cursorX, float cursorY) {
-	// 	grabbingState.init(cursorX, cursorY);
-	// 	curState = grabbingState;
-	// }
-
 	//called by grabbingState
 	public void drag() {
-		// if (curState == dodgeState) {
-		// 	dodgeState.reset();
-		// }
 		curState.reset();
 		curState = draggedState;
 	}
@@ -224,9 +172,6 @@ public class Player {
 
 	public void setState(int state) {
 		switch (state) {
-			// case MsgCodes.Game.NORMAL_STATE:
-			// 	curState = normalState;
-			// 	break;
 			case MsgCodes.Game.NORMAL_STATE_STANDING:
 			case MsgCodes.Game.NORMAL_STATE_MOVING:
 				curState = normalState;
@@ -259,7 +204,6 @@ public class Player {
 	public void update(long progressTime) {
 		if (playerNum == World.ROBOT_NUM) {
 			elapsedFromLastRush += progressTime;
-			//System.out.println("elapsedRush: " + elapsedFromLastRush);
 		}
 
 		float prevX = x;
@@ -270,7 +214,6 @@ public class Player {
 
 		// if player overlaps with any object
 		if (curArea.hitObject(this)) {
-			//System.out.println("Player hit an object");
 			x = prevX;
 			y = prevY;
 		}
@@ -292,25 +235,6 @@ public class Player {
 			x = curSpace.clampPosX(x);
 			y = curSpace.clampPosY(y);
 		}
-
-		// //if player overlaps with any object
-		// if (curArea.hitObject(this)) {
-		// 	x = prevX;
-		// 	y = prevY;
-		// }
-
-		
-
-		// MovableSpace newSpace = curSpace.determineSpace(x, y);
-		// if (newSpace != curSpace) {
-		// 	System.out.println("space changed");
-		// }
-
-		// if (curState == grabbingState) {
-		// 	grabbingState.projectileX = curArea.clampPosX(x);
-		// 	grabbingState.projectileY = curArea.clampPosY(y);
-		// }
-		
 	}
 
 	public void updateDirection() {
@@ -339,13 +263,4 @@ public class Player {
 			curDirection = MsgCodes.Game.DIRECTION_NORTH_WEST;
 		}
 	}
-
-	// public float getX() {
-	// 	return x;
-	// }
-
-	// public float getY() {
-	// 	return y;
-	// }
-	// ===============================CAPRICIOUS===============================
 }

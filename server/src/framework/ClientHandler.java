@@ -10,9 +10,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class ClientHandler extends Thread {
-	// ===============================CAPRICIOUS===============================
+	//public static final int PACKET_SIZE_PLAYERNAMES = 122;
 	public static final int PACKET_SIZE = 108;
-	// ===============================CAPRICIOUS===============================
+
 	private Socket connectionSocket;
 	private InetAddress ip_client;
 	private int port_client;
@@ -63,10 +63,7 @@ public class ClientHandler extends Thread {
 			while (true) {
 				read_ch = in.read(msgClient); // blocked until arrival of message
 				if (read_ch == -1) break; //remote socket is closed
-				//====================================FOR DEBUG==========================================
-				System.out.print("[" + ip_client + ":" + port_client + "]");
-				System.out.println("(" + read_ch + "bytes)");
-				//====================================FOR DEBUG==========================================
+
 				handleInput(msgClient);
 				emptyMsgBuffer(); //cache is necessary since buffer is emptied right after forwarding message to work thread
 			}
@@ -77,13 +74,11 @@ public class ClientHandler extends Thread {
 			e.printStackTrace();
 		}
 
+		
 		terminate();
 	}
 
 	private void handleInput(byte[] input) {
-		//====================================FOR DEBUG==========================================
-		//System.out.println("(ClientHandler)handling input: [" + msg + "]");
-		//====================================FOR DEBUG==========================================
 
 		msgClientCache = input.clone();
 
@@ -122,11 +117,8 @@ public class ClientHandler extends Thread {
 		try {
 			out.write(packet);
 			out.flush();
-			// ====================================FOR DEBUG==========================================
-			System.out.println("sent msg(" + ip_client + ":" + port_client + "): [" + packetBuffer.asCharBuffer() + "]");
-			// ====================================FOR DEBUG==========================================
 		} catch (IOException e) {
-			//e.printStackTrace();
+
 		}
 	}
 
@@ -134,11 +126,8 @@ public class ClientHandler extends Thread {
 		try {
 			out.write(packet);
 			out.flush();
-			// ====================================FOR DEBUG==========================================
-			//System.out.println("sent msg(" + ip_client + ":" + port_client + "): [" + ByteBuffer.wrap(packet).asCharBuffer() + "]");
-			// ====================================FOR DEBUG==========================================
 		} catch (IOException e) {
-			//e.printStackTrace();
+			
 		}
 	}
 
@@ -149,7 +138,7 @@ public class ClientHandler extends Thread {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		System.out.println("closed connection from " + ip_client + ":" + port_client + '\n');
+		System.out.println("\nclosed connection from " + ip_client + ":" + port_client + '\n');
 		server.clientClosed();
 	}
 }

@@ -29,7 +29,6 @@ public class AttackState extends PlayerState {
 		}
 		else if (elapsed >= 600) {
 			reset();
-			//robot.setState(MsgCodes.Game.NORMAL_STATE);
 			return false;
 		}
 

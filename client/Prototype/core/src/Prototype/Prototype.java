@@ -6,19 +6,7 @@ import com.badlogic.gdx.Gdx;
 import net.Client;
 
 public class Prototype extends Game {
-	/**
-	 * HOW TO ADD A PLAYER
-	 * - change NUM_PLAYERS
-	 * 
-	 * World
-	 * - add new player variable
-	 * - add initialization of player variable in constructor
-	 * - add player variable to players[] in constructor
-	 * 
-	 * Client
-	 * - increase PACKET_SIZE
-	 * - add code block for handling player input
-	 */
+	public static final int MAX_PLAYERNAME_LEN = 10;
 	public static final int NUM_PLAYERS = 5; //number of players in each session
 	public static final int PLAYER_ROBOT_NUM = 0;
 	public static final int PLAYER1_NUM = 1;
@@ -43,13 +31,6 @@ public class Prototype extends Game {
 	public int playerNum = -1; //initialized by client
 	public String playerName = "player";
 
-	//TestScreen testScreen;
-	//SessionWaitScreen waitScreen;
-	//ObserverScreen observerScreen;
-	//ResultScreen resultScreen;
-	//IntroScreen introScreen;
-	//MainMenuScreen mainMenuScreen;
-
 	public World world;
 	public Assets assets;
 
@@ -61,21 +42,8 @@ public class Prototype extends Game {
 
 	@Override
 	public void create() {
-		//world = new World(this);
 
 		assets = new Assets();
-
-		//testScreen = new TestScreen(this);
-		//waitScreen = new SessionWaitScreen(this);
-		//observerScreen = new ObserverScreen(this);
-		//resultScreen = new ResultScreen(this);
-		//introScreen = new IntroScreen(this);
-		//mainMenuScreen = new MainMenuScreen(this);
-		//this.setScreen(testScreen);
-		//this.setScreen(waitScreen);
-		//this.setScreen(resultScreen);
-		//this.setScreen(introScreen);
-		//this.setScreen(mainMenuScreen);
 		this.setScreen(new MainMenuScreen(this));
 	}
 
@@ -97,12 +65,6 @@ public class Prototype extends Game {
 	@Override
 	public void dispose() {
 		super.dispose();
-		//testScreen.dispose();
-		//waitScreen.dispose();
-		//observerScreen.dispose();
-		//resultScreen.dispose();
-		//introScreen.dispose();
-		//mainMenuScreen.dispose();
 		if (world != null)
 			world.dispose();
 		assets.dispose();
@@ -123,6 +85,5 @@ public class Prototype extends Game {
 			client.dispose();
 			client = null;
 		}
-		//dispose(); //temp
 	}
 }

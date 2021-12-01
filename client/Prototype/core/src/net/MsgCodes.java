@@ -46,7 +46,6 @@ public class MsgCodes {
 		public static final char KEY_DOWN = 'd'; // key pressed
 
 		// player's states
-		//public static final char NORMAL_STATE = 'n';
 		public static final char NORMAL_STATE_STANDING = 'n';
 		public static final char NORMAL_STATE_MOVING = 'm';
 		public static final char DODGE_STATE = 'd';
@@ -62,7 +61,7 @@ public class MsgCodes {
 		public static final char EXIT_STATE = 'e';
 
 		// player's direction
-		// used also as index of animations
+		// used also as index for animations
 		public static final char DIRECTION_NORTH = '1';
 		public static final char DIRECTION_NORTH_EAST = '2';
 		public static final char DIRECTION_EAST = '3';

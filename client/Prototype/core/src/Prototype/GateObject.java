@@ -1,6 +1,5 @@
 package Prototype;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class GateObject extends Actor implements Interactable {
 	static final int GATEOBJECT_WIDTH = 256;
@@ -18,13 +16,6 @@ public class GateObject extends Actor implements Interactable {
 
 	private Animation<TextureRegion> animation;
 	private TextureRegion curFrame;
-	// private Interactable content;
-	// private BoxObjectModel model;
-	// private float x;
-	// private float y;
-	// private int width;
-	// private int height;
-	// private String name;
 	private int objectNum;
 
 	private int offsetX, offsetY;
@@ -41,12 +32,6 @@ public class GateObject extends Actor implements Interactable {
 		setName(name);
 		this.offsetX = offsetX;
 		this.offsetY = offsetY;
-		// this.x = x;
-		// this.y = y;
-		// this.width = width;
-		// this.height = height;
-		// this.name = name;
-		//model = boxModel;
 		animation = anim;
 
 		stateTime = GATEOBJECT_ANIMATION_DURATION;
@@ -74,35 +59,6 @@ public class GateObject extends Actor implements Interactable {
 		return (x < (player.getX() + player.getWidth() + range)) && ((x + getWidth()) > (player.getX() - range))
 				&& (y < (player.getY() + player.getHeight() + range)) && ((y + getHeight()) > (player.getY() - range));
 	}
-
-	// @Override
-	// public float getX() {
-	// 	// TODO Auto-generated method stub
-	// 	return x;
-	// }
-
-	// @Override
-	// public float getY() {
-	// 	// TODO Auto-generated method stub
-	// 	return y;
-	// }
-
-	// @Override
-	// public String getName() {
-	// 	return name;
-	// }
-
-	// @Override
-	// public float getWidth() {
-	// 	// TODO Auto-generated method stub
-	// 	return width;
-	// }
-
-	// @Override
-	// public float getHeight() {
-	// 	// TODO Auto-generated method stub
-	// 	return height;
-	// }
 
 	@Override
 	public void setNum(int num) {
@@ -157,13 +113,7 @@ public class GateObject extends Actor implements Interactable {
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		// if (nearby) {
-		// 	//batch.setColor(Color.YELLOW);
-		// 	nearby = false;
-		// }
 		batch.draw(curFrame, getX() + offsetX, getY() + offsetY);
-		//batch.setColor(Color.CLEAR);
-		//batch.setColor(1, 1, 1, 1);
 	}
 
 	

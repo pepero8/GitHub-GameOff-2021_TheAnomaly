@@ -6,7 +6,7 @@ import framework.ClientHandler;
 import framework.MsgCodes;
 
 public class World {
-	// ===============================CAPRICIOUS===============================
+	public static final int MAX_PLAYERNAME_LEN = 10;
 	public static final long TIME_LIMIT = 300000; //5min
 	public static final int NUM_PLAYERS = 5;
 	public static final float ROBOT_SPEED = 110f;
@@ -34,8 +34,6 @@ public class World {
 	private Player player3;
 	private Player player4;
 
-	//Interactable cardKey;
-
 	private Map map;
 
 	Player[] players;
@@ -51,17 +49,11 @@ public class World {
 		robot = new Player(this, ROBOT_NUM, 2064+32, 320+320, PLAYER_WIDTH, PLAYER_HEIGHT, ROBOT_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		robot.setMovableSpace(map.spaceDevelopmentRoom);
 		robot.setArea(map.developmentRoomArea);
-		// robot = new Player();
-		// robot.setPosition(0, 0);
-		// robot.setSpeed(ROBOT_SPEED);
-		// robot.setState(Player.NORMAL_STATE);
+
 		player1 = new Player(this, PLAYER1_NUM, 1056+160, 2165, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		player1.setMovableSpace(map.spaceMiddleArea);
 		player1.setArea(map.mainArea);
-		// player1 = new Player();
-		// player1.setPosition(100, 100);
-		// player1.setSpeed(PLAYER_SPEED);
-		// player1.setState(Player.NORMAL_STATE);
+
 		player2 = new Player(this, PLAYER2_NUM, player1.x + 32, player1.y, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, MsgCodes.Game.NORMAL_STATE_STANDING);
 		player2.setMovableSpace(map.spaceMiddleArea);
 		player2.setArea(map.mainArea);
@@ -132,7 +124,6 @@ public class World {
 			if (downOrUp == MsgCodes.Game.KEY_DOWN) {
 				int areaNum = msg.getInt();
 				int objectNum = msg.getInt();
-				//System.out.println("[World] areaNum: " + areaNum + ", objectNum: " + objectNum);
 				Interactable obj = map.areas[areaNum].getObjects().get(objectNum);
 				players[playerNum].curState.interact(playerNum, obj);
 			}
@@ -141,7 +132,6 @@ public class World {
 				if (curPlayer.curState == curPlayer.interactState)
 					((InteractState)players[playerNum].curState).haltInteract();
 			}
-			//map.areas[areaNum].getObjects()[objectNum].interact(playerNum);
 		}
 	}
 
@@ -159,7 +149,6 @@ public class World {
 			gameEndCode = MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN;
 			gameEnd = true;
 		}
-		//System.out.println(" robot.x + ", " + robot.y + ")");
 	}
 
 	public byte[] getStatePacket() {
@@ -173,10 +162,8 @@ public class World {
 		packetBuffer.putFloat(robot.x);
 		packetBuffer.putFloat(robot.y);
 		packetBuffer.putChar(robot.curState.code);
-		//System.out.println("robot: " + robot.curState.code);
 		//if robot's current state is grabbing
 		if (robot.curState.code == MsgCodes.Game.GRABBING_STATE || robot.curState.code == MsgCodes.Game.ATTACK_GRABBING_STATE) {
-			//System.out.println("(" + robot.grabbingState.projectileX + ", " + robot.grabbingState.projectileY + ")");
 			packetBuffer.putFloat(robot.grabbingState.projectileX);
 			packetBuffer.putFloat(robot.grabbingState.projectileY);
 		}
@@ -186,9 +173,7 @@ public class World {
 		packetBuffer.putFloat(player1.x);
 		packetBuffer.putFloat(player1.y);
 		packetBuffer.putChar(player1.curState.code);
-		//System.out.println(player1.curState.code);
 		packetBuffer.putChar(player1.getHaveKeyAsCode());
-		//System.out.println(player1.getHaveKeyAsCode());
 		packetBuffer.putChar(player1.curDirection);
 
 		// add player2's state
@@ -225,11 +210,10 @@ public class World {
 
 		return packetBuffer.array();
 	}
-	// ===============================CAPRICIOUS===============================
+	
 
 	public void playerDisconnect(int playerNum) {
 		if (playerNum == World.ROBOT_NUM);
-			//robot.kill();
 		else if (playerNum == World.PLAYER1_NUM)
 			player1.kill();
 		else if (playerNum == World.PLAYER2_NUM)

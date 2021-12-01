@@ -1,15 +1,10 @@
 package Prototype;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
 
 public abstract class Area extends Actor {
 	private Texture image;
@@ -18,10 +13,9 @@ public abstract class Area extends Actor {
 
 	private int areaNum;
 
-	private int offsetX, offsetY; //used for rendering texture
+	private int offsetX, offsetY; //used for texture rendering
 
 	Area(int areaNum, int numObjects, int offsetX, int offsetY, Texture image) {
-		//super(image);
 		this.image = image;
 		this.areaNum = areaNum;
 		this.offsetX = offsetX;
@@ -49,7 +43,6 @@ public abstract class Area extends Actor {
 
 	public void addObject(Interactable object) {
 		objects[++index] = object;
-		//objects.add(object);
 		object.setNum(index);
 	}
 
@@ -70,7 +63,6 @@ public abstract class Area extends Actor {
 	public Interactable checkCollision(Player player) {
 		//returns card key first if exists
 		for (int i = objects.length - 1; i != -1; i--) {
-		//for (Interactable object : objects) {
 			if (objects[i] != null && objects[i].isContact(player, Interactable.INTERACTION_AVAILABLE_RANGE)) {
 				return objects[i];
 			}
@@ -84,13 +76,6 @@ public abstract class Area extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		batch.draw(image, getX() - offsetX, getY() - offsetY);
-		// float originX = getX();
-		// float originY = getY();
-		// float originWidth = getWidth();
-		// float originHeight = getHeight();
-		//setBounds(originX - offsetX, originY - offsetY, originWidth);
-		//super.draw(batch, parentAlpha);
-		//setPosition(originX, originY);
 
 		for (int i = 0; i != objects.length - 1; i++) {
 			if (objects[i] != null) {
@@ -98,11 +83,4 @@ public abstract class Area extends Actor {
 			}
 		}
 	}
-
-	// @Override
-	// public void dispose() {
-	// 	// TODO Auto-generated method stub
-	// 	Gdx.app.log("Area", "disposed");
-	// }
-	
 }
