@@ -422,7 +422,10 @@ public class TestScreen implements Screen {
 			//update portrait image
 			Player player = game.world.players[i];
 			char state = player.accessState("get", '0');
-			if (game.playerNum != Prototype.PLAYER_ROBOT_NUM && player.accessHasKey("get", false)) {
+			if (state == MsgCodes.Game.EXIT_STATE) {
+				player.setPortraitDrawable(game.assets.portraitEscapedDrawable);
+			}
+			else if (game.playerNum != Prototype.PLAYER_ROBOT_NUM && player.accessHasKey("get", false)) {
 				player.setPortraitDrawable(game.assets.portraitKeyDrawable);
 			}
 			else if (state == MsgCodes.Game.DEAD_STATE) {
@@ -430,9 +433,6 @@ public class TestScreen implements Screen {
 					player.setPortraitDrawable(game.assets.portraitDisconnectedDrawable);
 				else
 					player.setPortraitDrawable(game.assets.portraitKilledDrawable);
-			}
-			else if (state == MsgCodes.Game.EXIT_STATE) {
-				player.setPortraitDrawable(game.assets.portraitEscapedDrawable);
 			}
 			else
 				player.setPortraitDrawable(game.assets.portraitNormalDrawable);

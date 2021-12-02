@@ -81,7 +81,7 @@ public class IntroScreen implements Screen {
 		};
 
 		String playerName = game.world.player1.getName();
-		player1Name.setText(playerName.substring(0, (playerName.length() < 12) ? playerName.length() : 12));
+		player1Name.setText(playerName);
 		player1Name.setFontScale(0.5f);
 		player1Name.setWidth(64);
 		player1Name.setWrap(true);
@@ -96,7 +96,7 @@ public class IntroScreen implements Screen {
 			}
 		};
 		playerName = game.world.player2.getName();
-		player2Name.setText(game.world.player2.getName().subSequence(0, (playerName.length() < 12) ? playerName.length() : 12));
+		player2Name.setText(playerName);
 		player2Name.setFontScale(0.5f);
 		player2Name.setWidth(64);
 		player2Name.setWrap(true);
@@ -110,6 +110,8 @@ public class IntroScreen implements Screen {
 				batch.setProjectionMatrix(getStage().getCamera().combined);
 			}
 		};
+		playerName = game.world.player3.getName();
+		player3Name.setText(playerName);
 		player3Name.setFontScale(0.5f);
 		player3Name.setWidth(64);
 		player3Name.setWrap(true);
@@ -123,6 +125,8 @@ public class IntroScreen implements Screen {
 				batch.setProjectionMatrix(getStage().getCamera().combined);
 			}
 		};
+		playerName = game.world.player4.getName();
+		player4Name.setText(playerName);
 		player4Name.setFontScale(0.5f);
 		player4Name.setWidth(64);
 		player4Name.setWrap(true);
@@ -137,7 +141,7 @@ public class IntroScreen implements Screen {
 			}
 		};
 		playerName = game.world.robot.getName();
-		robotName.setText(game.world.robot.getName().subSequence(0, (playerName.length() < 12) ? playerName.length() : 12));
+		robotName.setText(playerName);
 		robotName.setFontScale(0.5f);
 		robotName.setWidth(64);
 		robotName.setWrap(true);

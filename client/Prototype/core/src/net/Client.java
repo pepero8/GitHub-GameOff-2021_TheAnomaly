@@ -20,8 +20,6 @@ public class Client extends Thread implements Disposable {
 	private static final String SERVER_IP = "127.0.0.1";
 	private static final int SERVER_PORT = 8014;
 	private static final int PACKET_SIZE = 108;
-	//private static final int PACKET_SIZE_PLAYERNAME = 26; //12*2 + 2
-	//private static final int PACKET_SIZE = 122;
 
 	public byte[] netResponse;
 	public Socket socket;
