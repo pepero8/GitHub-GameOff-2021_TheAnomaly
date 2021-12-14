@@ -1,3 +1,19 @@
+/**
+ *	Copyright 2021 Jaehwan Lee
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+	<http://www.apache.org/licenses/LICENSE-2.0>
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+ */
+
 package net;
 
 import java.io.IOException;
@@ -17,7 +33,9 @@ import com.badlogic.gdx.utils.Disposable;
 import Prototype.Prototype;
 
 public class Client extends Thread implements Disposable {
-	private static final String SERVER_IP = "127.0.0.1";
+	private static final String SERVER_IP = "13.125.202.253"; //test server
+	//private static final String SERVER_IP = "3.144.77.66";
+	//private static final String SERVER_IP = "192.168.123.106";
 	private static final int SERVER_PORT = 8014;
 	private static final int PACKET_SIZE = 108;
 
@@ -37,7 +55,7 @@ public class Client extends Thread implements Disposable {
 	@Override
 	public void run() {
 		
-		int read_ch = 0;
+		//int read_ch = 0;
 		try {
 			socket = Gdx.net.newClientSocket(Protocol.TCP, SERVER_IP, SERVER_PORT, null);
 			in = socket.getInputStream();
@@ -45,11 +63,21 @@ public class Client extends Thread implements Disposable {
 
 			sendPlayerName();
 			
+			//long cur, latency;
 			while(true) {
-				read_ch = in.read(netResponse);
-				if (read_ch == -1) break;
-				handleResponse(netResponse);
-				emptyMsgBuffer();
+				//cur = System.currentTimeMillis();
+				byte[] netResponse = in.readNBytes(PACKET_SIZE);
+				//latency = TimeUtils.timeSinceMillis(cur);
+				//System.out.println("[Client] latency: " + latency + "ms");
+
+				//read_ch = in.read(netResponse);
+				// if (read_ch != PACKET_SIZE)
+				// 	System.out.println("read bytes: " + read_ch);
+				//if (read_ch == -1) break;
+				if (netResponse == null) break;
+				//if (read_ch == PACKET_SIZE)
+					handleResponse(netResponse);
+				//emptyMsgBuffer();
 			}
 
 		} catch (SocketException e) {
@@ -65,8 +93,10 @@ public class Client extends Thread implements Disposable {
 	}
 
 	private void handleResponse(byte[] packet) {
+		//System.out.println("===========================");
 		ByteBuffer packetBuffer = ByteBuffer.wrap(packet);
 		char msgType = packetBuffer.getChar();
+		//System.out.println("msgCode = " + msgType);
 
 		//lot of duplicate codes here
 		if (msgType == MsgCodes.INPUT) {
@@ -76,6 +106,7 @@ public class Client extends Thread implements Disposable {
 			float x = packetBuffer.getFloat();
 			//System.out.println("robot x: " + x);
 			float y = packetBuffer.getFloat();
+			//System.out.println("robot  : (" + x + ", " + y + ")");
 			float projectileX = 0;
 			float projectileY = 0;
 			char state = packetBuffer.getChar();
@@ -93,6 +124,7 @@ public class Client extends Thread implements Disposable {
 			//player1
 			x = packetBuffer.getFloat();
 			y = packetBuffer.getFloat();
+			//System.out.println("player1: (" + x + ", " + y + ")");
 			state = packetBuffer.getChar();
 			char hasKey = packetBuffer.getChar();
 			direction = packetBuffer.getChar();
@@ -105,6 +137,7 @@ public class Client extends Thread implements Disposable {
 			// player2
 			x = packetBuffer.getFloat();
 			y = packetBuffer.getFloat();
+			//System.out.println("player2: (" + x + ", " + y + ")");
 			state = packetBuffer.getChar();
 			hasKey = packetBuffer.getChar();
 			direction = packetBuffer.getChar();
@@ -117,6 +150,7 @@ public class Client extends Thread implements Disposable {
 			// player3
 			x = packetBuffer.getFloat();
 			y = packetBuffer.getFloat();
+			//System.out.println("player3: (" + x + ", " + y + ")");
 			state = packetBuffer.getChar();
 			hasKey = packetBuffer.getChar();
 			direction = packetBuffer.getChar();
@@ -129,6 +163,7 @@ public class Client extends Thread implements Disposable {
 			// player4
 			x = packetBuffer.getFloat();
 			y = packetBuffer.getFloat();
+			//System.out.println("player4: (" + x + ", " + y + ")");
 			state = packetBuffer.getChar();
 			hasKey = packetBuffer.getChar();
 			direction = packetBuffer.getChar();
@@ -151,7 +186,7 @@ public class Client extends Thread implements Disposable {
 		else if (msgType == MsgCodes.MESSAGECODE) {
 			char msgCode = packetBuffer.getChar();
 			if (msgCode == MsgCodes.Server.SESSION_TERMINATE_OD) {
-				Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
+				//Gdx.app.log("Client", "Session terminated[SESSION_TERMINATE_OD]");
 				game.sessionStart = false;
 			}
 			else if (msgCode == MsgCodes.Server.DISCONNECT_ROBOT) {
@@ -172,7 +207,7 @@ public class Client extends Thread implements Disposable {
 			}
 			else if (msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_ROBOT_WIN ||
 					 msgCode == MsgCodes.Server.SESSION_TERMINATE_GAMEOVER_SURVIVORS_WIN) {
-				Gdx.app.log("Client", "Session terminate[GAMEOVER]: " + msgCode);
+				//Gdx.app.log("Client", "Session terminate[GAMEOVER]: " + msgCode);
 				game.gameEndCode = msgCode;
 				game.sessionStart = false;
 			}
@@ -261,6 +296,9 @@ public class Client extends Thread implements Disposable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+		else {
+			System.out.println("[Client] invalid packet");
 		}
 	}
 
@@ -375,6 +413,6 @@ public class Client extends Thread implements Disposable {
 			send(MsgCodes.MESSAGECODE, MsgCodes.Client.CLOSE_CONNECTION); //request to close connection
 			socket.dispose();
 		}
-		Gdx.app.log("Client", "disposed");
+		//Gdx.app.log("Client", "disposed");
 	}
 }
